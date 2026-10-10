@@ -16,6 +16,15 @@ handles_smaller_pools_test() ->
     ?assertEqual({12, "4 * 3"}, solver:solve(10, [3, 4])),
     ?assertEqual({6, "3 * 2"}, solver:solve(6, [2, 3, 50])).
 
+reports_a_lone_number_as_closest_test() ->
+    ?assertEqual({7, "7"}, solver:solve(100, [7])).
+
+solves_with_a_lone_number_test() ->
+    ?assertEqual({7, "7"}, solver:solve(7, [7])).
+
+reports_closest_with_two_numbers_test() ->
+    ?assertEqual({12, "4 * 3"}, solver:solve(100, [3, 4])).
+
 deals_a_valid_pool_test() ->
     [begin
          {Target, Pool} = countdown:generate_round(),

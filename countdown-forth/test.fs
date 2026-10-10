@@ -15,6 +15,11 @@ create round 6 cells allot
 552 round 6 solve 2drop 552 = s" solves 552" check
 8 8 6 8 25 100 deal
 974 round 6 solve 2drop 974 - abs 1 = s" reports closest when unsolvable" check
+7 round !
+100 round 1 solve s" 7" compare 0= swap 7 = and s" reports a lone number as closest" check
+7 round 1 solve s" 7" compare 0= swap 7 = and s" solves with a lone number" check
+3 round ! 4 round cell+ !
+100 round 2 solve s" 4 * 3" compare 0= swap 12 = and s" reports closest with two numbers" check
 require deal.fs
 
 \ Return how often v occurs in hand

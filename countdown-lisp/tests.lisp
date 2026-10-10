@@ -25,6 +25,12 @@
   (expect (and (= value 7) (string= expr "7")) "reports a single number when it misses"))
 (multiple-value-bind (value expr) (countdown-solver:solve 9 '(2 3))
   (expect (and (= value 6) (string= expr "3 * 2")) "handles smaller pools"))
+(multiple-value-bind (value expr) (countdown-solver:solve 100 '(7))
+  (expect (and (= value 7) (string= expr "7")) "reports a lone number as closest"))
+(multiple-value-bind (value expr) (countdown-solver:solve 7 '(7))
+  (expect (and (= value 7) (string= expr "7")) "solves with a lone number"))
+(multiple-value-bind (value expr) (countdown-solver:solve 100 '(3 4))
+  (expect (and (= value 12) (string= expr "4 * 3")) "reports closest with two numbers"))
 
 (multiple-value-bind (value expr) (countdown-solver:solve 999 '(10 10 25 50 75 100))
   (expect (and (= value 999) (string= expr "(((75 + 25) * 100) - 10) / 10")) "solves a four-large cats round"))

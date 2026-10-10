@@ -58,3 +58,15 @@ test("handles smaller pools", () => {
     assert.deepEqual(solve(7, [7]), [7, "7"]);
     assert.deepEqual(solve(12, [3, 4]), [12, "4 * 3"]);
 });
+
+test("reports a lone number as closest", () => {
+    assert.deepEqual(solve(100, [7]), [7, "7"]);
+});
+
+test("solves with a lone number", () => {
+    assert.deepEqual(solve(7, [7]), [7, "7"]);
+});
+
+test("reports closest with two numbers", () => {
+    assert.deepEqual(solve(100, [3, 4]), [12, "4 * 3"]);
+});

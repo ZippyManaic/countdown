@@ -65,6 +65,8 @@ object SolverTest {
             "reports closest when unsolvable")
         expect(Solver.solve(7, intArrayOf(7)) == Result(7, "7"), "handles a single number")
         expect(Solver.solve(10, intArrayOf(3, 4)) == Result(12, "4 * 3"), "handles smaller pools")
+        expect(Solver.solve(100, intArrayOf(7)) == Result(7, "7"), "reports a lone number as closest")
+        expect(Solver.solve(100, intArrayOf(3, 4)) == Result(12, "4 * 3"), "reports closest with two numbers")
         testDealer()
         testCatsRounds()
         repeat(1000) {

@@ -405,6 +405,21 @@ mod tests {
         assert_eq!(value.abs_diff(974), 1);
     }
 
+    #[test]
+    fn reports_a_lone_number_as_closest() {
+        assert_eq!(solve(100, &[7]), (7, "7".to_string()));
+    }
+
+    #[test]
+    fn solves_with_a_lone_number() {
+        assert_eq!(solve(7, &[7]), (7, "7".to_string()));
+    }
+
+    #[test]
+    fn reports_closest_with_two_numbers() {
+        assert_eq!(solve(100, &[3, 4]), (12, "4 * 3".to_string()));
+    }
+
     /// Return the arguments as owned strings for parse_args
     fn args(list: &[&str]) -> Vec<String> {
         list.iter().map(|s| s.to_string()).collect()

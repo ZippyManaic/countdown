@@ -18,6 +18,12 @@ expect(value == 125 and expr == "75 + 50", "finds simplest solution")
 expect(solver.solve(552, { 8, 4, 2, 5, 100, 25 }) == 552, "solves 552")
 value = solver.solve(974, { 8, 8, 6, 8, 25, 100 })
 expect(math.abs(value - 974) == 1, "reports closest when unsolvable")
+value, expr = solver.solve(100, { 7 })
+expect(value == 7 and expr == "7", "reports a lone number as closest")
+value, expr = solver.solve(7, { 7 })
+expect(value == 7 and expr == "7", "solves with a lone number")
+value, expr = solver.solve(100, { 3, 4 })
+expect(value == 12 and expr == "4 * 3", "reports closest with two numbers")
 
 local deal = require("deal")
 

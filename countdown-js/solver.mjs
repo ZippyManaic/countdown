@@ -358,7 +358,9 @@ export function solve(target, pool) {
         // Rank by distance from the target then by how many numbers are used so the simplest answer wins
         let bestDistance = Infinity;
         let bestUsed = 99;
-        for (let mask = 1; mask < s.full; mask++) {
+        // Include a one-number pool here since the whole-pool pass below needs at least two numbers
+        const last = s.n > 1 ? s.full - 1 : s.full;
+        for (let mask = 1; mask <= last; mask++) {
             const used = popcount(mask);
             for (let i = s.off[mask]; i < s.off[mask] + s.len[mask]; i++) {
                 const d = Math.abs(arena[i * STRIDE] - target);

@@ -404,7 +404,9 @@ public final class Solver {
         // Rank by distance from the target then by how many numbers are used so the simplest answer wins
         long bestDistance = Long.MAX_VALUE;
         int bestUsed = 99;
-        for (int mask = 1; mask < s.full; mask++) {
+        // Include a one-number pool here since the whole-pool pass below needs at least two numbers
+        final int last = s.n > 1 ? s.full - 1 : s.full;
+        for (int mask = 1; mask <= last; mask++) {
             final int used = Integer.bitCount(mask);
             for (int i = s.off[mask]; i < s.off[mask] + s.len[mask]; i++) {
                 final long d = Math.abs((arena[2 * i] & LOW) - t);

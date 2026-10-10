@@ -550,7 +550,7 @@ end;
 function Solve(Target: Cardinal; const Pool: TPool; out Expr: string): Cardinal;
 var
   S: TState;
-  N, Mask, Left, Size, K, I, Used, BestUsed: Integer;
+  N, Mask, Left, Size, K, I, Used, BestUsed, Last: Integer;
   A, B: QWord;
   Largest: array[0..9] of QWord;
   First, Fill: array[0..9] of Integer;
@@ -649,7 +649,12 @@ begin
     { Rank by distance from the target then by how many numbers are used so the simplest answer wins }
     BestDistance := High(Cardinal);
     BestUsed := 99;
-    for Mask := 1 to S.Full - 1 do
+    { Include a one-number pool here since the whole-pool pass below needs at least two numbers }
+    if N > 1 then
+      Last := S.Full - 1
+    else
+      Last := S.Full;
+    for Mask := 1 to Last do
     begin
       Used := PopCnt(DWord(Mask));
       Values := S.Arena + S.Off[Mask];

@@ -13,6 +13,18 @@ test("reports closest when unsolvable", () => {
     assert.equal(Math.abs(solve(974, [8, 8, 6, 8, 25, 100])[0] - 974), 1);
 });
 
+test("reports a lone number as closest", () => {
+    assert.deepEqual(solve(100, [7]), [7, "7"]);
+});
+
+test("solves with a lone number", () => {
+    assert.deepEqual(solve(7, [7]), [7, "7"]);
+});
+
+test("reports closest with two numbers", () => {
+    assert.deepEqual(solve(100, [3, 4]), [12, "4 * 3"]);
+});
+
 test("deals a valid pool", () => {
     for (let i = 0; i < 1000; i++) {
         const [target, pool] = generateRound();

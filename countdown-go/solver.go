@@ -481,7 +481,12 @@ func solve(target uint32, pool []uint32) (uint32, string) {
 	if !solved {
 		// Rank by distance from the target then by how many numbers are used so the simplest answer wins
 		bestDistance, bestUsed := uint32(math.MaxUint32), 99
-		for mask := uint(1); mask < s.full; mask++ {
+		// Include a one-number pool here since the whole-pool pass below needs at least two numbers
+		last := s.full - 1
+		if len(pool) == 1 {
+			last = s.full
+		}
+		for mask := uint(1); mask <= last; mask++ {
 			used := bits.OnesCount(mask)
 			for _, e := range s.values(mask) {
 				d := distance(e.value(), target)

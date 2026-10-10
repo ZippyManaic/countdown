@@ -72,6 +72,29 @@ PROCEDURE DIVISION.
         DISPLAY "FAIL: reports closest when unsolvable"
         ADD 1 TO failures
     END-IF
+    MOVE 1 TO pool-size
+    MOVE 100 TO target
+    MOVE 7 TO pool-number(1)
+    CALL "solve" USING target pool pool-size expr answer expr-len
+    IF answer NOT = 7 OR expr(1:expr-len) NOT = "7"
+        DISPLAY "FAIL: reports a lone number as closest"
+        ADD 1 TO failures
+    END-IF
+    MOVE 7 TO target
+    CALL "solve" USING target pool pool-size expr answer expr-len
+    IF answer NOT = 7 OR expr(1:expr-len) NOT = "7"
+        DISPLAY "FAIL: solves with a lone number"
+        ADD 1 TO failures
+    END-IF
+    MOVE 2 TO pool-size
+    MOVE 100 TO target
+    MOVE 3 TO pool-number(1) MOVE 4 TO pool-number(2)
+    CALL "solve" USING target pool pool-size expr answer expr-len
+    IF answer NOT = 12 OR expr(1:expr-len) NOT = "4 * 3"
+        DISPLAY "FAIL: reports closest with two numbers"
+        ADD 1 TO failures
+    END-IF
+    MOVE 6 TO pool-size
     COMPUTE r = FUNCTION RANDOM(1)
     MOVE 0 TO game-mode MOVE 1 TO lo-count MOVE 2 TO hi-count
     PERFORM check-mode

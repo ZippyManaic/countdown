@@ -416,7 +416,9 @@ pub fn solve(gpa: Allocator, target: u32, pool: []const u32, out: []u8) !Solutio
         // Rank by distance from the target then by how many numbers are used so the simplest answer wins
         var best_distance: u32 = std.math.maxInt(u32);
         var best_used: usize = 99;
-        for (1..s.full) |mask| {
+        // Include a one-number pool here since the whole-pool pass below needs at least two numbers
+        const last = if (pool.len > 1) s.full else s.full + 1;
+        for (1..last) |mask| {
             const used = @popCount(mask);
             for (s.values(mask)) |e| {
                 const d = distance(e.value(), target);
@@ -458,4 +460,25 @@ test "reports closest when unsolvable" {
     var buf: [128]u8 = undefined;
     const s = try solve(std.testing.allocator, 974, &.{ 8, 8, 6, 8, 25, 100 }, &buf);
     try std.testing.expectEqual(1, distance(s.value, 974));
+}
+
+test "reports a lone number as closest" {
+    var buf: [128]u8 = undefined;
+    const s = try solve(std.testing.allocator, 100, &.{7}, &buf);
+    try std.testing.expectEqual(7, s.value);
+    try std.testing.expectEqualStrings("7", s.expr);
+}
+
+test "solves with a lone number" {
+    var buf: [128]u8 = undefined;
+    const s = try solve(std.testing.allocator, 7, &.{7}, &buf);
+    try std.testing.expectEqual(7, s.value);
+    try std.testing.expectEqualStrings("7", s.expr);
+}
+
+test "reports closest with two numbers" {
+    var buf: [128]u8 = undefined;
+    const s = try solve(std.testing.allocator, 100, &.{ 3, 4 }, &buf);
+    try std.testing.expectEqual(12, s.value);
+    try std.testing.expectEqualStrings("4 * 3", s.expr);
 }

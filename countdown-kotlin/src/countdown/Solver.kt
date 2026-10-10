@@ -285,7 +285,9 @@ private fun closest(s: State): LongArray? {
     // Rank by distance from the target then by how many numbers are used so the simplest answer wins
     var bestDistance = Long.MAX_VALUE
     var bestUsed = 99
-    for (mask in 1 until s.full) {
+    // Include a one-number pool here since the whole-pool pass below needs at least two numbers
+    val last = if (s.n > 1) s.full - 1 else s.full
+    for (mask in 1..last) {
         val used = Integer.bitCount(mask)
         for (i in s.off[mask] until s.off[mask] + s.len[mask]) {
             val d = Math.abs((arena[2 * i] and LOW) - t)

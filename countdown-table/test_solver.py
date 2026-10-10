@@ -52,6 +52,15 @@ class SolverTest(unittest.TestCase):
     def test_outside_table_falls_back(self):
         self.assertEqual(solve(5, [1, 2, 3, 4, 5, 6]), (5, "5"))
 
+    def test_lone_number_closest(self):
+        self.assertEqual(solve(100, [7]), (7, "7"))
+
+    def test_lone_number_solved(self):
+        self.assertEqual(solve(7, [7]), (7, "7"))
+
+    def test_two_numbers_closest(self):
+        self.assertEqual(solve(100, [3, 4]), (12, "4 * 3"))
+
     def test_cats_rounds(self):
         # Expect the plain solver's exact answers since the table holds none of these pools
         self.assertEqual(solve(999, [10, 10, 25, 50, 75, 100]), (999, "(((75 + 25) * 100) - 10) / 10"))

@@ -23,6 +23,10 @@ value, expr = Solver.solve(9, [7])
 expect.call(value == 7 && expr == "7", "reports a single number when it misses")
 value, expr = Solver.solve(9, [2, 3])
 expect.call(value == 6 && expr == "3 * 2", "handles smaller pools")
+value, expr = Solver.solve(100, [7])
+expect.call(value == 7 && expr == "7", "reports a lone number as closest")
+value, expr = Solver.solve(100, [3, 4])
+expect.call(value == 12 && expr == "4 * 3", "reports closest with two numbers")
 # Check one dealt round and return its large count
 check_round = lambda do |mode, target, pool, counts|
   expect.call((100..999).cover?(target), "#{mode}: target in range")

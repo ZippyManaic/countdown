@@ -92,6 +92,12 @@ begin
    Expect (Value = 552, "solves 552");
    Solve (974, (8, 8, 6, 8, 25, 100), Value, Expr);
    Expect (Value = 973 or else Value = 975, "reports closest when unsolvable");
+   Solve (100, (1 => 7), Value, Expr);
+   Expect (Value = 7 and then To_String (Expr) = "7", "reports a lone number as closest");
+   Solve (7, (1 => 7), Value, Expr);
+   Expect (Value = 7 and then To_String (Expr) = "7", "solves with a lone number");
+   Solve (100, (3, 4), Value, Expr);
+   Expect (Value = 12 and then To_String (Expr) = "4 * 3", "reports closest with two numbers");
 
    for M in Game_Mode loop
       Check_Deals (M);

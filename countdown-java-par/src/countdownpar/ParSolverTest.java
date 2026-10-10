@@ -89,6 +89,12 @@ public final class ParSolverTest {
         ParSolver.Result single = ParSolver.solve(10, new int[] {7});
         expect(single.value() == 7 && single.expr().equals("7"), "answers a one-number pool");
         expect(ParSolver.solve(10, new int[] {3, 4}).expr().equals("4 * 3"), "handles smaller pools");
+        ParSolver.Result lone = ParSolver.solve(100, new int[] {7});
+        expect(lone.value() == 7 && lone.expr().equals("7"), "reports a lone number as closest");
+        lone = ParSolver.solve(7, new int[] {7});
+        expect(lone.value() == 7 && lone.expr().equals("7"), "solves with a lone number");
+        ParSolver.Result pair = ParSolver.solve(100, new int[] {3, 4});
+        expect(pair.value() == 12 && pair.expr().equals("4 * 3"), "reports closest with two numbers");
         Random random = new Random();
         for (int i = 0; i < 1000; i++) {
             int[] target = new int[1];

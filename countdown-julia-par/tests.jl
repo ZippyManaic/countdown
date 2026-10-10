@@ -16,6 +16,8 @@ include(joinpath(@__DIR__, "dealer.jl"))
     @test solve(10, [3, 4]) == (12, "4 * 3")
     @test solve(7, [7]) == (7, "7")
     @test solve(5, [9]) == (9, "9")
+    @test solve(100, [7]) == (7, "7")
+    @test solve(100, [3, 4]) == (12, "4 * 3")
     # Solve the same round twice since the pool must carry nothing from one solve to the next
     @test solve(431, [3, 2, 3, 4, 2, 25]) == solve(431, [3, 2, 3, 4, 2, 25])
 end

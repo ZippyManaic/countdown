@@ -47,6 +47,15 @@ class SolverTest(unittest.TestCase):
         self.assertEqual(countdown.solve(100, [1, 1, 2, 2, 3, 3]), (81, "(((2 + 1) * (2 + 1)) * 3) * 3"))
         self.assertEqual(countdown.solve(999, [2, 3, 87, 62, 37, 12]), (999, "37 * ((87 / 3) - 2)"))
 
+    def test_lone_number_closest(self):
+        self.assertEqual(countdown.solve(100, [7]), (7, "7"), "reports a lone number as closest")
+
+    def test_lone_number_solved(self):
+        self.assertEqual(countdown.solve(7, [7]), (7, "7"), "solves with a lone number")
+
+    def test_two_numbers_closest(self):
+        self.assertEqual(countdown.solve(100, [3, 4]), (12, "4 * 3"), "reports closest with two numbers")
+
 
 if __name__ == "__main__":
     unittest.main()

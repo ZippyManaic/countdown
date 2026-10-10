@@ -850,7 +850,8 @@ find-closest.
     *> Rank by distance from the target then by how many numbers are used so the simplest answer wins
     MOVE 4294967295 TO best-distance
     MOVE 99 TO best-used
-    PERFORM VARYING mask FROM 1 BY 1 UNTIL mask >= full
+    *> Include a one-number pool here since the whole-pool pass below needs at least two numbers
+    PERFORM VARYING mask FROM 1 BY 1 UNTIL mask > full OR (mask = full AND lk-n > 1)
         IF subset-len(mask) > 0
             SET ADDRESS OF l-table TO subset-ptr(mask)
             MOVE subset-len(mask) TO l-count

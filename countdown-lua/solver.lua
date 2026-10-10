@@ -380,7 +380,8 @@ local function solve(target, pool)
     if not value_mask then
         -- Rank by distance from the target then by how many numbers are used so the simplest answer wins
         local best_distance, best_used
-        for m = 1, full - 1 do
+        -- Include a one-number pool here since the whole-pool pass below needs at least two numbers
+        for m = 1, n > 1 and full - 1 or full do
             local used = sizes[m]
             local list = values[m]
             for i = 1, #list do

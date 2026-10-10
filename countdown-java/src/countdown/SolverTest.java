@@ -81,6 +81,12 @@ public final class SolverTest {
         expect(Solver.solve(552, new int[] {8, 4, 2, 5, 100, 25}).value() == 552, "solves 552");
         expect(Math.abs(Solver.solve(974, new int[] {8, 8, 6, 8, 25, 100}).value() - 974) == 1,
                 "reports closest when unsolvable");
+        Solver.Result lone = Solver.solve(100, new int[] {7});
+        expect(lone.value() == 7 && lone.expr().equals("7"), "reports a lone number as closest");
+        lone = Solver.solve(7, new int[] {7});
+        expect(lone.value() == 7 && lone.expr().equals("7"), "solves with a lone number");
+        Solver.Result pair = Solver.solve(100, new int[] {3, 4});
+        expect(pair.value() == 12 && pair.expr().equals("4 * 3"), "reports closest with two numbers");
         Random random = new Random();
         for (int i = 0; i < 1000; i++) {
             int[] target = new int[1];

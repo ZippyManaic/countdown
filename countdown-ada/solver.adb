@@ -498,9 +498,11 @@ package body Solver is
             Best_Used     : Natural := 99;
             Whole         : Entry_Type := (16#FFFF_FFFF#, 0);
             Whole_Distance : Unsigned_64 := Unsigned_64'Last;
+            --  Include a one-number pool here since the whole-pool pass below needs at least two numbers
+            Last          : constant Mask_Type := (if N > 1 then S.Full - 1 else S.Full);
          begin
             --  Rank by distance from the target then by how many numbers are used so the simplest answer wins
-            for Mask in 1 .. S.Full - 1 loop
+            for Mask in 1 .. Last loop
                for I in S.Off (Mask) .. S.Off (Mask) + S.Len (Mask) - 1 loop
                   declare
                      D    : constant Unsigned_64 := Distance (Value_Of (S.Arena (I)), S.Target);

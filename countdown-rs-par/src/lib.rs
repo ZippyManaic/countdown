@@ -547,6 +547,21 @@ mod tests {
     }
 
     #[test]
+    fn reports_a_lone_number_as_closest() {
+        assert_eq!(solve(100, &[7]), (7, "7".to_string()));
+    }
+
+    #[test]
+    fn solves_with_a_lone_number() {
+        assert_eq!(solve(7, &[7]), (7, "7".to_string()));
+    }
+
+    #[test]
+    fn reports_closest_with_two_numbers() {
+        assert_eq!(solve(100, &[3, 4]), (12, "4 * 3".to_string()));
+    }
+
+    #[test]
     fn handles_smaller_pools() {
         assert_eq!(solve(10, &[3, 4]), (12, "4 * 3".to_string()));
         assert_eq!(solve(7, &[5]), (5, "5".to_string()));

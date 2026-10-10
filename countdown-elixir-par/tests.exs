@@ -31,6 +31,18 @@ defmodule CountdownPar.SolverTest do
     assert Solver.solve(10, [3, 4]) == {12, "4 * 3"}
   end
 
+  test "reports a lone number as closest" do
+    assert Solver.solve(100, [7]) == {7, "7"}
+  end
+
+  test "solves with a lone number" do
+    assert Solver.solve(7, [7]) == {7, "7"}
+  end
+
+  test "reports closest with two numbers" do
+    assert Solver.solve(100, [3, 4]) == {12, "4 * 3"}
+  end
+
   test "matches every reference answer" do
     data = Path.join([__DIR__, "..", "bench", "data"])
     rounds = File.read!(Path.join(data, "rounds1k.txt")) |> String.split("\n", trim: true)

@@ -13,6 +13,12 @@
 130 IF RV <> 10 OR RE$ <> "6 + 4" THEN PRINT "FAIL: handles smaller pools": XF = XF + 1
 140 T = 7: N = 1: P(0) = 5: GOSUB 1000
 150 IF RV <> 5 OR RE$ <> "5" THEN PRINT "FAIL: handles a single number": XF = XF + 1
+151 T = 100: N = 1: P(0) = 7: GOSUB 1000
+152 IF RV <> 7 OR RE$ <> "7" THEN PRINT "FAIL: reports a lone number as closest": XF = XF + 1
+153 T = 7: N = 1: P(0) = 7: GOSUB 1000
+154 IF RV <> 7 OR RE$ <> "7" THEN PRINT "FAIL: solves with a lone number": XF = XF + 1
+155 T = 100: N = 2: P(0) = 3: P(1) = 4: GOSUB 1000
+156 IF RV <> 12 OR RE$ <> "4 * 3" THEN PRINT "FAIL: reports closest with two numbers": XF = XF + 1
 160 T = 999: N = 6: P(0) = 10: P(1) = 10: P(2) = 25: P(3) = 50: P(4) = 75: P(5) = 100: GOSUB 1000
 170 IF RV <> 999 OR RE$ <> "(((75 + 25) * 100) - 10) / 10" THEN PRINT "FAIL: solves cats round 999": XF = XF + 1
 180 T = 100: N = 6: P(0) = 1: P(1) = 1: P(2) = 2: P(3) = 2: P(4) = 3: P(5) = 3: GOSUB 1000

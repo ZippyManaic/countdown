@@ -20,6 +20,24 @@ func TestReportsClosestWhenUnsolvable(t *testing.T) {
 	}
 }
 
+func TestReportsALoneNumberAsClosest(t *testing.T) {
+	if value, expr := solve(100, []uint32{7}); value != 7 || expr != "7" {
+		t.Errorf("got %s = %d", expr, value)
+	}
+}
+
+func TestSolvesWithALoneNumber(t *testing.T) {
+	if value, expr := solve(7, []uint32{7}); value != 7 || expr != "7" {
+		t.Errorf("got %s = %d", expr, value)
+	}
+}
+
+func TestReportsClosestWithTwoNumbers(t *testing.T) {
+	if value, expr := solve(100, []uint32{3, 4}); value != 12 || expr != "4 * 3" {
+		t.Errorf("got %s = %d", expr, value)
+	}
+}
+
 // Deal many rounds in a mode and check each is legal and every allowed large count occurs
 func checkDeals(t *testing.T, mode string) {
 	lo, hi := largeRange(mode)

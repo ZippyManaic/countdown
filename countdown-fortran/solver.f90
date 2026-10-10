@@ -522,7 +522,7 @@ contains
         type(state) :: s
         type(entry) :: best, whole
         integer(int64) :: largest(0:9), a, b, best_distance, whole_distance, d
-        integer :: n, mask, left, i, size_, k, used, best_used, first(0:10), fill(0:10), order(255)
+        integer :: n, mask, left, i, size_, k, used, best_used, last, first(0:10), fill(0:10), order(255)
         logical :: solved
 
         n = size(pool)
@@ -596,7 +596,10 @@ contains
             ! Rank by distance from the target then by how many numbers are used so the simplest answer wins
             best_distance = huge(best_distance)
             best_used = 99
-            do mask = 1, s%full - 1
+            ! Include a one-number pool here since the whole-pool pass below needs at least two numbers
+            last = s%full - 1
+            if (n == 1) last = s%full
+            do mask = 1, last
                 used = popcnt(mask)
                 do i = s%off(mask) + 1, s%off(mask) + s%len(mask)
                     d = abs(value_of(s%arena(i)) - target)

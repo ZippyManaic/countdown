@@ -91,6 +91,12 @@ begin
   Expect(Solve(552, [8, 4, 2, 5, 100, 25], Expr) = 552, 'solves 552');
   Value := Solve(974, [8, 8, 6, 8, 25, 100], Expr);
   Expect((Value = 973) or (Value = 975), 'reports closest when unsolvable');
+  Value := Solve(100, [7], Expr);
+  Expect((Value = 7) and (Expr = '7'), 'reports a lone number as closest');
+  Value := Solve(7, [7], Expr);
+  Expect((Value = 7) and (Expr = '7'), 'solves with a lone number');
+  Value := Solve(100, [3, 4], Expr);
+  Expect((Value = 12) and (Expr = '4 * 3'), 'reports closest with two numbers');
 
   for Mode := Low(TGameMode) to High(TGameMode) do
     CheckDeals(Mode);

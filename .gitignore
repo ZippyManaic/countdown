@@ -84,3 +84,6 @@ solvability/csolve/solve_all
 .lake/
 solvability/sat/tools/
 verification/cbmc/native/build/
+countdown-ada/tests
+countdown-haskell/tests
+countdown-ocaml/tests

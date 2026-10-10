@@ -334,7 +334,8 @@ variable whole-distance
     best-mask @ 0= if
         \ Rank by distance from the target then by how many numbers are used so the simplest answer wins
         -1 1 rshift best-distance ! 99 best-used !
-        full @ 1 ?do
+        \ Include a one-number pool here since the whole-pool pass below needs at least two numbers
+        full @ pool-n @ 1 = - 1 ?do
             sub-addr i cells + @ dup sub-len i cells + @ 2* cells + swap ?do
                 i @ distance { d }
                 d best-distance @ < d best-distance @ = j sub-size swap cells + @ best-used @ < and or if

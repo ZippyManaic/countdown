@@ -447,7 +447,9 @@ Function Solve(ByVal target As ULong, pool() As ULong, ByRef expr As String) As 
         ' Rank by distance from the target then by how many numbers are used so the simplest answer wins
         Dim As ULong best_distance = &hFFFFFFFF
         Dim As Long best_used = 99
-        For mask As ULong = 1 To s.full - 1
+        ' Include a one-number pool here since the whole-pool pass below needs at least two numbers
+        Dim As ULong last = IIf(n > 1, s.full - 1, s.full)
+        For mask As ULong = 1 To last
             Dim As Long used = PopCount64(mask)
             Dim As Entry Ptr values = s.arena + s.off(mask)
             For i As ULong = 0 To s.length(mask) - 1

@@ -34,6 +34,16 @@ Dim As ULong pair(0 To 1) = {6, 4}
 value = Solve(10, pair(), expr)
 Expect(value = 10 AndAlso expr = "6 + 4", "handles smaller pools")
 
+Dim As ULong lone(0 To 0) = {7}
+value = Solve(100, lone(), expr)
+Expect(value = 7 AndAlso expr = "7", "reports a lone number as closest")
+value = Solve(7, lone(), expr)
+Expect(value = 7 AndAlso expr = "7", "solves with a lone number")
+
+Dim As ULong two(0 To 1) = {3, 4}
+value = Solve(100, two(), expr)
+Expect(value = 12 AndAlso expr = "4 * 3", "reports closest with two numbers")
+
 Dim As ULong four_large(0 To 5) = {10, 10, 25, 50, 75, 100}
 value = Solve(999, four_large(), expr)
 Expect(value = 999 AndAlso expr = "(((75 + 25) * 100) - 10) / 10", "solves a four-large cats round")
