@@ -46,20 +46,18 @@ class DealerTest(unittest.TestCase):
         for bad in (["standard", "3"], ["cats", "5"], ["dogs"], ["cats", "1", "2"], ["cats", "x"]):
             self.assertIsNone(countdown.parse_args(bad), bad)
 
-    def test_refuses_large_pool(self):
-        # Deal a cats round whose products overflow the packing and expect a one-line refusal with exit code 3
-        err = io.StringIO()
+    def test_solves_large_pool(self):
+        # Deal a cats round with four large numbers whose products need the widest packing and expect it solved
+        out = io.StringIO()
         with mock.patch.object(countdown, "generate_round", return_value=(999, [10, 10, 25, 50, 75, 100])), \
-                mock.patch("sys.argv", ["countdown.py", "cats", "4"]), \
-                contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(err):
-            self.assertEqual(countdown.main(), 3)
-        self.assertEqual(err.getvalue(), countdown.REFUSED + "\n")
+                mock.patch("sys.argv", ["countdown.py", "cats", "4"]), contextlib.redirect_stdout(out):
+            self.assertEqual(countdown.main(), 0)
+        self.assertTrue(out.getvalue().endswith("Solved: (((75 + 25) * 100) - 10) / 10 = 999\n"))
 
 
 class SolverTest(unittest.TestCase):
     def test_cats_rounds(self):
-        with self.assertRaises(ValueError):
-            solve(999, [10, 10, 25, 50, 75, 100])
+        self.assertEqual(solve(999, [10, 10, 25, 50, 75, 100]), (999, "(((75 + 25) * 100) - 10) / 10"))
         self.assertEqual(solve(100, [1, 1, 2, 2, 3, 3]), (81, "(((2 + 1) * (2 + 1)) * 3) * 3"))
         self.assertEqual(solve(999, [2, 3, 87, 62, 37, 12]), (999, "37 * ((87 / 3) - 2)"))
 

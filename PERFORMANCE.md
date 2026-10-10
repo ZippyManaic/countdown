@@ -10,7 +10,7 @@ Solve time is the best of three runs over 10,000 fixed rounds, measured inside e
 
 | Language | Solve, ms per round | Straight port, ms per round | Gained by optimising | Whole program, ms per run |
 |---|---|---|---|---|
-| Rust + CUDA (GPU, batched) | 0.000466 | 0.0107 (first kernel) | 23x | 203 |
+| Rust + CUDA (GPU, batched) | 0.000442 | 0.0107 (first kernel) | 24x | 199 |
 | Lookup table (Python, precomputed) | 0.00069 | – | – | 13.4 |
 | PyTorch on the GPU (Python, batched) | 0.0157 | 0.142 (first version) | 9.0x | 3,218 |
 | ISPC (AVX2, four 64-bit lanes)† | 0.0115 | 0.078 | 6.8x | 0.35 |
@@ -52,7 +52,9 @@ Solve time is the best of three runs over 10,000 fixed rounds, measured inside e
 
 The FreeBASIC, WebAssembly, F#, Haskell, Kotlin, Common Lisp, OCaml, Ruby and BASIC rows were added on 2026-10-09 with `bench/run.sh -n 3 --whole` in a session where C measured 0.0182 ms, so they read about 10% fast against the older rows. bwBASIC is timed once on the 1,000-round set, like Python, because one pass takes five minutes. Ruby's RJIT row is the standard interpreter's code under the experimental JIT, timed after three warm-up passes; its straight port was not timed under RJIT. The WebAssembly straight port is the first C version compiled to WebAssembly.
 
-The CUDA, lookup table, PyTorch and transformer rows were measured on 2026-10-09 in a quieter session, when C measured 0.0184–0.0188 ms, so PyTorch is about 17% faster than C rather than the 23% the table suggests. The PyTorch figures are throughput for all 10,000 rounds solved as one batch, not the time one round takes, and their whole-program times average 10 runs rather than 300 because each takes about three seconds; see their language notes.
+The lookup table, PyTorch and transformer rows were measured on 2026-10-09 in a quieter session, when C measured 0.0184–0.0188 ms, so PyTorch is about 17% faster than C rather than the 23% the table suggests. The PyTorch figures are throughput for all 10,000 rounds solved as one batch, not the time one round takes, and their whole-program times average 10 runs rather than 300 because each takes about three seconds; see their language notes.
+
+The CUDA row was re-measured on 2026-10-10, after it gained cats support, in a session where C measured 0.0182 ms.
 
 †ISPC was added on 2026-10-10 in a session where C measured 0.0183 ms, so it is 1.6 times faster than C rather than the 1.8 times the table suggests.
 
@@ -105,6 +107,9 @@ Times below are from one run of each solver (`-n 1`), so they are rougher than t
 
 | Solver | Standard, ms | Cats, ms | Cats ÷ standard | Nasty-cats, ms | Cats result | Nasty-cats result |
 |---|---|---|---|---|---|---|
+| Rust + CUDA | 0.000442 | 0.000617 | 1.4x | 0.000471 | all identical | all identical |
+| PyTorch on the GPU | 0.0157 | 0.0229 | 1.5x | 0.0159 | all identical | all identical |
+| PyTorch with transformer proposals | 0.0354 | 0.0441 | 1.2x | 0.0212 | 431 ties | 8 ties |
 | `elixir-par` (parallel) | – | 0.0599 | – | 0.0462 | all identical | all identical |
 | `erlang-par` (parallel) | – | 0.0632 | – | 0.0500 | all identical | all identical |
 | `rust-par` (parallel) | – | 0.0937 | – | 0.0265 | all identical | all identical |
@@ -147,14 +152,12 @@ Times below are from one run of each solver (`-n 1`), so they are rougher than t
 | Lookup table | 0.00069 | 4.677 | – | 6.74 | 1431 ties | 232 ties |
 | Python | 7.23 | 7.33 | 1.0x | 6.825 | 25 ties | 20 ties |
 | BASIC (bwBASIC, line-numbered) | 306 | 494 | 1.6x | 284 | all identical | all identical |
-| PyTorch on the GPU | 0.0157 | failed | – | failed | refuses | refuses |
-| PyTorch with transformer proposals | 0.0354 | failed | – | failed | refuses | refuses |
-| Rust + CUDA | 0.000466 | failed | – | failed | refuses | refuses |
 
 ### Findings
 
 - **No solver gives a wrong answer.** Every CPU solver gives the reference answer on every round in both modes, apart from Python's usual equally good ties. Values reach 937,500,000 with four large numbers, but the bound of Proposition `prop:bound` keeps them below 2^31, so 32-bit values are still enough. For C, `verification/cbmc/` also proves there is no overflow or out-of-bounds access.
-- **The three GPU solvers refuse rather than answer wrongly.** PyTorch, the transformer (which checks its proposals with the PyTorch solver) and Rust + CUDA pack each value into a fixed number of bits sized for the standard game. On a larger pool they stop with an error: "pool numbers too large to pack" or "outside what the kernel can pack". Supporting cats would mean wider packing.
+- **Rust + CUDA is the fastest solver on both sets.** Subsets up to two smaller than the pool stay below 2^24 in every mode (at most 9,375,000), so only the global-memory table of subsets one smaller than the pool needs more than 24 bits, up to 93,750,000. Rounds that need it (2,287 cats and 1,012 nasty-cats rounds) go to a second instantiation of the kernel whose global keys are 64 bits wide; shared memory and occupancy are unchanged. It slows by 1.4x on cats and by 7% on nasty-cats, which was not broken down further. It also matches C on every distinct cats and nasty-cats pool with three targets each (39,729 rounds per mode). The times are the best of three runs with `-n 3`; a re-run with the GPU otherwise idle gave 0.000444, 0.000626 and 0.000475 ms.
+- **PyTorch is second only to CUDA on cats and loses nothing on nasty-cats.** Its keys now give each value 27 bits, enough for the largest bound any cats round reaches (93,750,000), at no cost on the standard set. It slows by 1.5x on cats, like the sorting and hashing CPU solvers, because sorting each level's values does not care how large they are. The transformer version gives no wrong answers but stays about twice as slow as the solver alone (0.044 against 0.023 ms on cats), with more ties than on the standard set, since the model was trained only on standard pools. The model has no tokens for 12, 37, 62 and 87, so rounds with a nasty card skip it and go straight to the exact search; its 8 nasty-cats ties come from rounds with no large numbers. A re-run with the GPU otherwise idle gave the same times within 1%.
 - **The lookup table falls back to Python.** It only holds pools with one or two standard large numbers. Every other pool goes to the Python solver, so it runs at Python's speed and inherits Python's ties. `run.sh` now times it once on these sets rather than 20 times.
 - **Four large numbers are what make cats slow.** C takes 0.029 ms on rounds with no large numbers, 0.018 with one, 0.019 with two, 0.059 with three and 0.456 with four (5 runs on CPU 2). C, Rust and many of the other ports mark the values a subset has already made in a bitset sized by that subset's largest possible value. With four large numbers that bitset is up to 11.7 MB, and clearing it costs more than the search.
 - **Sorting and hashing solvers cope best.** Erlang and Elixir sort each subset's values instead of using a bitset. They slow by only 1.8x and are the fastest single-core solvers on cats, ahead of C (5.6x) and ISPC (10.1x). Ruby, Lua and LuaJIT use hash tables and slow by 1.4x to 2.1x.
@@ -305,6 +308,7 @@ That cut decimal arithmetic from about 65% of the time to 3%. Moving a literal i
 - `torch.compile` fusing pair generation into one Triton kernel, removing the intermediate arrays: 0.030 ms
 - scanning the shorter half when searching, with the tie-break comparing operand values rather than positions, and building five-number subsets only for rounds the whole pool cannot hit exactly, working out the others from four-number subsets: 0.0167 ms
 - dropping illegal results before the sort: 0.0157 ms
+- widening each value from 24 to 27 bits so every cats and nasty-cats round fits, picking the lowest subset and then its first way in two passes because a subset, split and both operands no longer share one 63-bit key: no measurable change (0.0156–0.0161 ms against 0.0158–0.0159 before, 2026-10-10, when C measured 0.0183 ms)
 
 The GPU is then busy for the whole run, and about 30% of that is the radix sort. Batch size is everything: one round takes 11 ms (slower than plain Python), 100 rounds take 0.14 ms each, 1,000 take 0.021 ms and 10,000 take 0.0157 ms. On the CPU (`COUNTDOWN_DEVICE=cpu`, one core) the same code takes 0.53 ms, still 14 times plain Python. The whole program takes over three seconds because importing PyTorch and starting CUDA dominates.
 
@@ -314,12 +318,13 @@ The GPU is then busy for the whole run, and about 30% of that is the radix sort.
 - a 5,120-slot table and smaller job lists, so three blocks fit: 0.00073 ms
 - appending small subsets' values straight to lists reserved from the pair counts instead of scanning the table afterwards, and not zeroing output buffers the kernel overwrites: 0.00056 ms
 - in performance mode, unfolding the answer a tree level at a time, laying out the text without recursion, and building Rust strings without lossy conversion: 0.000466 ms
+- supporting cats and nasty-cats with a second kernel instantiation for rounds whose largest values need 27 bits, which also packs each way as a split numbered across its level and two 27-bit operands instead of a subset, a split and two 24-bit operands: 0.000442 ms (2026-10-10, when C measured 0.0182 ms; the old build measured 0.000467–0.000469 ms alternated with the new one's 0.000443–0.000448 ms, a gain not investigated further)
 
 Each round still runs through dozens of barrier-separated phases with little work in each, so the SMs issue an instruction on only about half of all cycles (6% for the first kernel).
 
 **Lookup table.** `countdown-table/` is plain CPython with no solver at all. Only 9,498 different pools can be dealt (one or two large numbers and up to two of each small number) and there are 900 targets, so `make` has the PyTorch solver answer all 8,548,200 rounds once (165 seconds) and writes them to a 248 MB file. `solve` sorts the pool, finds its row in a dictionary and reads the answer through `mmap`, so a run only touches the pages it needs and the whole program is faster than plain Python's. Each answer takes about 0.7 µs, 27 times faster than C; the harness repeats the lookups 20 times because one pass takes only 7 ms. The table is keyed by the sorted pool, so its answer is the one the solver gives for the pool in ascending order; the shared algorithm breaks ties by position, so 31% of answers are a different, equally short expression from the reference's. Making it byte-identical would mean keying on the dealt order, about 430 million answers. Rounds outside the table fall back to the plain Python solver.
 
-**Transformer proposals.** `countdown-ml/` trains a 4.8-million-parameter decoder-only transformer (six layers, width 256) on 3 million rounds solved by the PyTorch solver, taking 7 minutes on the GPU, to write the reference answer in postfix with numbers named by pool position. Decoding is constrained so every proposal is a legal Countdown expression, and a proposal is kept only if it hits the target. A proposal using k numbers is then accepted only after the exact solver has searched every smaller size and found nothing, which needs only the smaller subsets built. That never gives a wrong answer and saves building four-number subsets for the rounds whose five-number answer it proposed. The model hits the target with the fewest numbers on 42% of rounds overall, but only on 25% of five-number rounds and 7% of six-number rounds, which are the costly ones. Greedy decoding of 10,000 rounds takes 218 ms against the 157 ms the exact solver needs for everything, so the hybrid is 2.3 times slower than the solver alone. Four beams find more answers but take 0.15 ms per round. Getting decoding that fast meant replacing flash attention, which is slow for one query over a 22-token context, with plain matrix products over a preallocated cache, cutting it from 700 ms. On its own the model gives a shortest answer for at most 42% of rounds, which also rules out using it to compress the lookup table: corrections for the rest would take more space than packing each answer into 4 bytes.
+**Transformer proposals.** `countdown-ml/` trains a 4.8-million-parameter decoder-only transformer (six layers, width 256) on 3 million rounds solved by the PyTorch solver, taking 7 minutes on the GPU, to write the reference answer in postfix with numbers named by pool position. Decoding is constrained so every proposal is a legal Countdown expression, and a proposal is kept only if it hits the target. A proposal using k numbers is then accepted only after the exact solver has searched every smaller size and found nothing, which needs only the smaller subsets built. That never gives a wrong answer and saves building four-number subsets for the rounds whose five-number answer it proposed. The model hits the target with the fewest numbers on 42% of rounds overall, but only on 25% of five-number rounds and 7% of six-number rounds, which are the costly ones. Rounds with a nasty-cats card skip the model, since its vocabulary cannot name those numbers, and are solved by the exact search alone. Greedy decoding of 10,000 rounds takes 218 ms against the 157 ms the exact solver needs for everything, so the hybrid is 2.3 times slower than the solver alone. Four beams find more answers but take 0.15 ms per round. Getting decoding that fast meant replacing flash attention, which is slow for one query over a 22-token context, with plain matrix products over a preallocated cache, cutting it from 700 ms. On its own the model gives a shortest answer for at most 42% of rounds, which also rules out using it to compress the lookup table: corrections for the rest would take more space than packing each answer into 4 bytes.
 
 **Python.** Has had the first round of algorithmic improvements only: values without origins while searching, and origins rebuilt for the answer.
 
@@ -361,7 +366,8 @@ Each round still runs through dozens of barrier-separated phases with little wor
 - Checking the six-number answers by recursive searches instead of building five-number subsets: far more lookups than building.
 - A SIMD rewrite of the assembly.
 - Sorting JavaScript values with the native `Float64Array` sort on packed keys: 60% slower than the rank sort.
-- CUDA: reading a hash slot before claiming it with compare-and-swap (4% slower), 256 or 384 threads per block instead of 512 (no better), and plain lists with duplicates for five-number subsets (they would make the whole-pool pass four times longer).
+- CUDA: reading a hash slot before claiming it with compare-and-swap (4% slower), 256 or 384 threads per block instead of 512 (no better), and plain lists with duplicates for five-number subsets (they would make the whole-pool pass four times longer). Sending every round through the wide kernel measured 0.000445–0.000453 ms on the standard set against 0.000443 ms for the two paths, close to noise, so the narrow path was kept.
+- Transformer: feeding nasty-cats pools to the model with the cards it has no tokens for as padding cost 0.038 ms per round on the nasty set against 0.021 ms for skipping the model on those rounds.
 - PyTorch: removing duplicates with a hash table (atomic minimum per slot, retrying collisions) and sorting only the survivors was 20% slower than sorting every result; deferring four-number subsets as well as five was 30% slower because of the nested searches.
 - .NET runtime settings (tiered compilation, dynamic PGO, ReadyToRun) and GNAT `-funroll-loops` or `-gnatN`: no clear change.
 

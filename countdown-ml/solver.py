@@ -190,13 +190,16 @@ def solve_many(rounds, device=None):
         targets = torch.tensor([rounds[i][0] for i in indices], dtype=torch.int64, device=device)
         pools = torch.tensor([list(rounds[i][1]) for i in indices], dtype=torch.int64, device=device)
         n = pools.shape[1]
-        if n == 6:
+        tokens, numbers = None, torch.zeros_like(targets)
+        # Ask the model only about pools its vocabulary can name which leaves out any with a nasty-cats card
+        named = torch.isin(pools, torch.tensor(POOL_VALUES, device=device)).all(1).nonzero(as_tuple=True)[0]
+        if n == 6 and named.numel():
             step = max(SEQUENCES // BEAMS, 1)
-            parts = [propose(model, targets[k:k + step], pools[k:k + step], BEAMS)
-                     for k in range(0, len(indices), step)]
-            tokens, numbers = torch.cat([p[0] for p in parts]), torch.cat([p[1] for p in parts])
-        else:
-            tokens, numbers = None, torch.zeros_like(targets)
+            parts = [propose(model, targets[named[k:k + step]], pools[named[k:k + step]], BEAMS)
+                     for k in range(0, named.numel(), step)]
+            tokens = torch.full((len(indices), ANSWER_LEN), PAD, dtype=torch.int64, device=device)
+            tokens[named] = torch.cat([p[0] for p in parts])
+            numbers[named] = torch.cat([p[1] for p in parts])
         known = torch.where(numbers > 0, numbers, n + 1)
         solved = exact.solve_batch(targets, pools, known)
         if tokens is not None and any(a is None for a in solved):

@@ -6,14 +6,13 @@ Generate a Countdown numbers round and work out whether it can be solved using t
 import random
 import sys
 
-from solver import VALUE_BITS, solve
+from solver import solve
 
 # Map each mode to its large cards, with nasty-cats using the cards of the 2010 specials
 LARGE_NUMBERS = {"standard": [25, 50, 75, 100], "cats": [25, 50, 75, 100], "nasty": [12, 37, 62, 87]}
 # Hold two cards of each small number to match the game's deck
 SMALL_NUMBERS = list(range(1, 11)) * 2
 USAGE = "usage: countdown.py [standard|cats|nasty] [LARGE]"
-REFUSED = f"countdown.py: the PyTorch solver supports only pools whose values fit its {VALUE_BITS}-bit packing"
 
 
 def generate_round(mode="standard", large_count=None):
@@ -53,12 +52,7 @@ def main():
     print(f"Target: {target}")
     print(f"Pool:   {' '.join(str(n) for n in pool)}")
 
-    try:
-        value, expr = solve(target, pool)
-    except ValueError:
-        # Refuse rounds such as big cats pools whose products overflow the packed keys
-        print(REFUSED, file=sys.stderr)
-        return 3
+    value, expr = solve(target, pool)
     if value == target:
         print(f"Solved: {expr} = {value}")
         return 0

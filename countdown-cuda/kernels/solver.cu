@@ -15,9 +15,13 @@ typedef unsigned char u8;
 // Hold the values of subsets one smaller than the pool in global memory since few rounds need them
 #define BIG_SLOTS 16384u
 #define BIG_LIST 20480
+// Pack shared-memory keys as a subset over 24 bits of value since no dealt pool's subsets two smaller reach 2^24
 #define VALUE_BITS 24
 #define VALUE_LIMIT (1u << VALUE_BITS)
 #define VALUE_MASK (VALUE_LIMIT - 1)
+// Give each operand of a way 27 bits since cats pools' subsets one smaller than the pool reach 93,750,000
+#define WAY_BITS 27
+#define WAY_MASK ((1u << WAY_BITS) - 1)
 #define NONE 0xFFFFFFFFFFFFFFFFull
 #define TEXT 64
 // Allow every split of every subset of six numbers
@@ -66,8 +70,24 @@ struct State {
     char text[TEXT];
 };
 
-struct Scratch {
-    u32 *table, *list;
+// Pack global-memory keys for subsets one smaller than the pool in 32 bits when every value is below 2^24
+struct Narrow {
+    typedef u32 Key;
+    static const u32 SHIFT = VALUE_BITS;
+    static const u32 LIMIT = VALUE_LIMIT;
+    static const u32 MASK = VALUE_MASK;
+};
+
+// Pack them in 64 bits with the subset above the value for pools whose largest values need up to 27 bits
+struct Wide {
+    typedef u64 Key;
+    static const u32 SHIFT = 32;
+    static const u32 LIMIT = 1u << WAY_BITS;
+    static const u32 MASK = WAY_MASK;
+};
+
+template <class P> struct Scratch {
+    typename P::Key *table, *list;
 };
 
 // Spread keys over any number of slots by taking the high half of a scaled multiplicative hash
@@ -76,12 +96,18 @@ __device__ __forceinline__ u32 slot_of(u32 key, u32 slots)
     return __umulhi(key * 2654435761u, slots);
 }
 
+// Fold the subset into the spare high bits of the value before hashing a wide key
+__device__ __forceinline__ u32 slot_of(u64 key, u32 slots)
+{
+    return slot_of((u32)key ^ (u32)(key >> 32) << WAY_BITS, slots);
+}
+
 // Add a key to a hash table and return whether it was new, flagging an error if the table is full
-__device__ bool insert(u32 *table, u32 slots, u32 key, u32 *error)
+template <class K> __device__ bool insert(K *table, u32 slots, K key, u32 *error)
 {
     u32 s = slot_of(key, slots);
     for (u32 probe = 0; probe < slots; probe++) {
-        u32 old = atomicCAS(&table[s], 0u, key);
+        K old = atomicCAS(&table[s], (K)0, key);
         if (old == 0)
             return true;
         if (old == key)
@@ -92,11 +118,11 @@ __device__ bool insert(u32 *table, u32 slots, u32 key, u32 *error)
     return false;
 }
 
-__device__ bool contains(const u32 *table, u32 slots, u32 key)
+template <class K> __device__ bool contains(const K *table, u32 slots, K key)
 {
     u32 s = slot_of(key, slots);
     for (;;) {
-        u32 k = table[s];
+        K k = table[s];
         if (k == key)
             return true;
         if (k == 0)
@@ -116,21 +142,25 @@ __device__ __forceinline__ bool is_big(const State *s, u32 mask)
 }
 
 // Return whether a stored subset can make a value
-__device__ __forceinline__ bool has(const State *s, Scratch g, u32 mask, u32 value)
+template <class P> __device__ __forceinline__ bool has(const State *s, Scratch<P> g, u32 mask, u32 value)
 {
+    if (is_big(s, mask))
+        return value < P::LIMIT && value != 0 &&
+               contains(g.table, BIG_SLOTS, (typename P::Key)mask << P::SHIFT | value);
     if (value >= VALUE_LIMIT || value == 0)
         return false;
-    u32 key = mask << VALUE_BITS | value;
-    return is_big(s, mask) ? contains(g.table, BIG_SLOTS, key) : contains(s->table, SMALL_SLOTS, key);
+    return contains(s->table, SMALL_SLOTS, mask << VALUE_BITS | value);
 }
 
-__device__ __forceinline__ const u32 *values_of(const State *s, Scratch g, u32 mask)
+// Return the value at a position in a subset's list
+template <class P> __device__ __forceinline__ u32 value_at(const State *s, Scratch<P> g, u32 mask, u32 i)
 {
-    return (size_of(mask) >= s->global_from ? g.list : s->list) + s->off[mask];
+    u32 at = s->off[mask] + i;
+    return size_of(mask) >= s->global_from ? (u32)g.list[at] & P::MASK : s->list[at] & VALUE_MASK;
 }
 
 // Fill m and op with every number that combines with a to make t in operator order and return how many
-__device__ __forceinline__ int partners(u32 a, u32 t, u32 *m, u32 *op)
+template <class P> __device__ __forceinline__ int partners(u32 a, u32 t, u32 *m, u32 *op)
 {
     int count = 0;
     if (t > a)
@@ -143,7 +173,7 @@ __device__ __forceinline__ int partners(u32 a, u32 t, u32 *m, u32 *op)
         m[count] = t / a, op[count++] = OP_MUL;
     if (a >= 2 * t && a % t == 0)
         m[count] = a / t, op[count++] = OP_DIV;
-    if (a != 1 && (u64)a * t < VALUE_LIMIT)
+    if (a != 1 && (u64)a * t < P::LIMIT)
         m[count] = a * t, op[count++] = OP_DIV;
     return count;
 }
@@ -151,7 +181,7 @@ __device__ __forceinline__ int partners(u32 a, u32 t, u32 *m, u32 *op)
 // Order ways of making a value by split, left value, right value and operator so the minimum is building's first
 __device__ __forceinline__ u64 way(u32 k, u32 a, u32 b, u32 op)
 {
-    return (u64)k << 50 | (u64)a << 26 | (u64)b << 2 | op;
+    return (u64)k << (2 * WAY_BITS + 2) | (u64)a << (WAY_BITS + 2) | (u64)b << 2 | op;
 }
 
 // Return the exclusive prefix sum of x across the block and leave the total in total
@@ -222,7 +252,7 @@ __device__ __forceinline__ Scan scan_of(const State *s, u32 split)
 }
 
 // Search every job's split for ways to make its value folding each into its result slot
-__device__ void run_search(State *s, Scratch g, bool with_mask, bool queue)
+template <class P> __device__ void run_search(State *s, Scratch<P> g, bool level_order, bool queue)
 {
     u32 t = threadIdx.x, count = 0;
     if (t < s->jobs)
@@ -234,19 +264,20 @@ __device__ void run_search(State *s, Scratch g, bool with_mask, bool queue)
     for (u32 item = t; item < total; item += THREADS) {
         u32 job = job_of(s, item);
         Scan c = scan_of(s, s->job_split[job]);
-        u32 v = values_of(s, g, c.scan)[item - s->job_prefix[job]] & VALUE_MASK, value = s->job_value[job];
-        u64 high = with_mask ? (u64)c.mask << 55 : 0;
+        u32 v = value_at(s, g, c.scan, item - s->job_prefix[job]), value = s->job_value[job];
+        // Number splits across the level when ways from different subsets compete so the subset orders first
+        u32 k = level_order ? s->job_split[job] - s->level_start[size_of(c.mask)] : c.k;
         u32 m[6], op[6];
-        int pc = partners(v, value, m, op);
+        int pc = partners<P>(v, value, m, op);
         for (int i = 0; i < pc; i++) {
             u32 a = c.scan_left ? v : m[i], b = c.scan_left ? m[i] : v;
             if (c.other_stored) {
                 if (has(s, g, c.other, m[i]))
-                    atomicMin(&s->results[s->job_slot[job]], high | way(c.k, a, b, op[i]));
-            } else if (queue && m[i] < VALUE_LIMIT) {
+                    atomicMin(&s->results[s->job_slot[job]], way(k, a, b, op[i]));
+            } else if (queue && m[i] < P::LIMIT) {
                 u32 q = atomicAdd(&s->queued, 1u);
                 if (q < MAX_QUERIES)
-                    s->queries[q] = Query{c.mask, c.k, a, b, op[i], c.other, m[i]};
+                    s->queries[q] = Query{c.mask, k, a, b, op[i], c.other, m[i]};
                 else
                     atomicOr(&s->error, (u32)ERROR_QUEUE);
             }
@@ -255,8 +286,8 @@ __device__ void run_search(State *s, Scratch g, bool with_mask, bool queue)
     __syncthreads();
 }
 
-// Return the first way building makes the target from any subset of this size with the subset in the top bits
-__device__ u64 find_exact(State *s, Scratch g, u32 size)
+// Return the first way building makes the target from any subset of this size numbering splits across the level
+template <class P> __device__ u64 find_exact(State *s, Scratch<P> g, u32 size)
 {
     u32 t = threadIdx.x, first = s->level_start[size], splits = s->level_start[size + 1] - first;
     if (t < splits) {
@@ -289,7 +320,7 @@ __device__ u64 find_exact(State *s, Scratch g, u32 size)
         run_search(s, g, false, false);
         if (t < batch && s->results[1 + t] != NONE) {
             Query q = s->queries[done + t];
-            atomicMin(&s->results[0], (u64)q.mask << 55 | way(q.k, q.a, q.b, q.op));
+            atomicMin(&s->results[0], way(q.k, q.a, q.b, q.op));
         }
         done += batch;
         __syncthreads();
@@ -298,7 +329,7 @@ __device__ u64 find_exact(State *s, Scratch g, u32 size)
 }
 
 // Return the first way building makes a value from a subset as split, values and operator
-__device__ u64 first_way(State *s, Scratch g, u32 mask, u32 value)
+template <class P> __device__ u64 first_way(State *s, Scratch<P> g, u32 mask, u32 value)
 {
     u32 t = threadIdx.x;
     if (t < s->mask_splits[mask]) {
@@ -334,24 +365,25 @@ __device__ u32 pair_jobs(State *s, u32 size)
 }
 
 // Return the pair of values behind a flattened item with its split
-__device__ __forceinline__ void pair_of(const State *s, Scratch g, u32 item, u32 *mask, u32 *k, u32 *a, u32 *b)
+template <class P>
+__device__ __forceinline__ void pair_of(const State *s, Scratch<P> g, u32 item, u32 *mask, u32 *k, u32 *a, u32 *b)
 {
     u32 job = job_of(s, item), split = s->job_split[job], p = item - s->job_prefix[job];
     u32 left = s->split_left[split], right = s->split_mask[split] ^ left, nr = s->len[right], i = p / nr;
     *mask = s->split_mask[split];
     *k = s->split_k[split];
-    *a = values_of(s, g, left)[i] & VALUE_MASK;
-    *b = values_of(s, g, right)[p - i * nr] & VALUE_MASK;
+    *a = value_at(s, g, left, i);
+    *b = value_at(s, g, right, p - i * nr);
 }
 
-// Count and list the values of every subset of this size held in a table in global memory
-__device__ void list_values(State *s, Scratch g, const u32 *table, u32 slots, u32 size)
+// Count and list in global memory the values of every subset of this size held in a table packed with this shift
+template <class P, class K> __device__ void list_values(State *s, Scratch<P> g, const K *table, u32 slots, u32 shift, u32 size)
 {
     u32 t = threadIdx.x;
     for (u32 i = t; i < slots; i += THREADS) {
-        u32 key = table[i];
-        if (key && size_of(key >> VALUE_BITS) == size)
-            atomicAdd(&s->fill[key >> VALUE_BITS], 1u);
+        K key = table[i];
+        if (key && size_of((u32)(key >> shift)) == size)
+            atomicAdd(&s->fill[key >> shift], 1u);
     }
     __syncthreads();
     if (t == 0) {
@@ -371,12 +403,13 @@ __device__ void list_values(State *s, Scratch g, const u32 *table, u32 slots, u3
     }
     __syncthreads();
     for (u32 i = t; i < slots; i += THREADS) {
-        u32 key = table[i], mask = key >> VALUE_BITS;
+        K key = table[i];
+        u32 mask = (u32)(key >> shift);
         if (key && size_of(mask) == size) {
             u32 at = s->off[mask] + atomicAdd(&s->fill[mask], 1u);
             // Keep the subset with each value so the closest search can scan the list directly
             if (at < BIG_LIST)
-                g.list[at] = key;
+                g.list[at] = (typename P::Key)mask << P::SHIFT | ((u32)key & (u32)(((K)1 << shift) - 1));
         }
     }
     __syncthreads();
@@ -386,14 +419,12 @@ __device__ void list_values(State *s, Scratch g, const u32 *table, u32 slots, u3
 }
 
 // Store every value each subset of this size can make
-__device__ void build(State *s, Scratch g, u32 size)
+template <class P> __device__ void build(State *s, Scratch<P> g, u32 size)
 {
     u32 t = threadIdx.x;
     bool big = size == s->big_size;
     // List small subsets as values are found and leave the rest to a table scan only if a round needs them
     bool listed = !big && size != s->table_only;
-    u32 *table = big ? g.table : s->table;
-    u32 slots = big ? BIG_SLOTS : SMALL_SLOTS;
     if (big)
         for (u32 i = t; i < BIG_SLOTS; i += THREADS)
             g.table[i] = 0;
@@ -412,7 +443,7 @@ __device__ void build(State *s, Scratch g, u32 size)
     for (u32 item = t; item < total; item += THREADS) {
         u32 mask, k, a, b;
         pair_of(s, g, item, &mask, &k, &a, &b);
-        u32 x = max(a, b), y = min(a, b), key = mask << VALUE_BITS;
+        u32 x = max(a, b), y = min(a, b);
         u32 made[4], count = 0;
         made[count++] = x + y;
         // Skip a zero result since every intermediate value must be a positive integer
@@ -425,7 +456,9 @@ __device__ void build(State *s, Scratch g, u32 size)
                 made[count++] = x / y;
         }
         for (u32 i = 0; i < count; i++) {
-            if (insert(table, slots, key | made[i], &s->error) && listed) {
+            bool fresh = big ? insert(g.table, BIG_SLOTS, (typename P::Key)mask << P::SHIFT | made[i], &s->error)
+                             : insert(s->table, SMALL_SLOTS, mask << VALUE_BITS | made[i], &s->error);
+            if (fresh && listed) {
                 u32 at = s->off[mask] + atomicAdd(&s->len[mask], 1u);
                 if (at < SMALL_LIST)
                     s->list[at] = made[i];
@@ -441,11 +474,11 @@ __device__ void build(State *s, Scratch g, u32 size)
     }
     __syncthreads();
     if (big)
-        list_values(s, g, table, slots, size);
+        list_values(s, g, g.table, BIG_SLOTS, P::SHIFT, size);
 }
 
 // Fold every whole-pool value into out as distance then value, or with nearest given the first way to make it
-__device__ void whole(State *s, Scratch g, u64 nearest, u64 *out)
+template <class P> __device__ void whole(State *s, Scratch<P> g, u64 nearest, u64 *out)
 {
     if (threadIdx.x == 0)
         *out = NONE;
@@ -470,12 +503,12 @@ __device__ void whole(State *s, Scratch g, u64 nearest, u64 *out)
     __syncthreads();
 }
 
-// Fill a node's operator and children from the first way of making it
-__device__ void expand_node(State *s, u32 index, u64 key)
+// Fill a node's operator and children from the first way of making it with its split counted from first
+__device__ void expand_node(State *s, u32 index, u64 key, u32 first)
 {
     Node *node = &s->nodes[index];
-    u32 k = (u32)(key >> 50) & 31, a = (u32)(key >> 26) & VALUE_MASK, b = (u32)(key >> 2) & VALUE_MASK;
-    u32 left = s->split_left[s->mask_start[node->mask] + k], right = node->mask ^ left;
+    u32 k = (u32)(key >> (2 * WAY_BITS + 2)), a = (u32)(key >> (WAY_BITS + 2)) & WAY_MASK, b = (u32)(key >> 2) & WAY_MASK;
+    u32 left = s->split_left[first + k], right = node->mask ^ left;
     bool a_larger = a >= b;
     u32 big = a_larger ? left : right, small = a_larger ? right : left;
     node->op = (u32)key & 3;
@@ -486,7 +519,7 @@ __device__ void expand_node(State *s, u32 index, u64 key)
 }
 
 // Work out every pending node's way of being made a level at a time until every leaf is a pool number
-__device__ void unfold(State *s, Scratch g)
+template <class P> __device__ void unfold(State *s, Scratch<P> g)
 {
     for (u32 from = 0; from < s->node_count;) {
         u32 end = s->node_count;
@@ -512,7 +545,7 @@ __device__ void unfold(State *s, Scratch g)
             if (threadIdx.x == 0)
                 for (u32 i = from; i < end; i++)
                     if (s->nodes[i].op == PENDING)
-                        expand_node(s, i, s->results[i - from]);
+                        expand_node(s, i, s->results[i - from], s->mask_start[s->nodes[i].mask]);
             __syncthreads();
         }
         from = end;
@@ -598,13 +631,13 @@ __device__ void list_splits(State *s, u32 n)
     s->level_start[n + 1] = count;
 }
 
-extern "C" __global__ void __launch_bounds__(THREADS, 3) solve(const u32 *rounds, u32 count, u32 n, u32 *out_value,
-                                                             char *out_text, u32 *next, u32 *big_tables,
-                                                             u32 *big_lists, u32 *errors)
+template <class P>
+__device__ void solve_rounds(const u32 *rounds, u32 count, u32 n, u32 *out_value, char *out_text, u32 *next,
+                             typename P::Key *big_tables, typename P::Key *big_lists, u32 *errors)
 {
     extern __shared__ unsigned char shared[];
     State *s = (State *)shared;
-    Scratch g = {big_tables + (size_t)blockIdx.x * BIG_SLOTS, big_lists + (size_t)blockIdx.x * BIG_LIST};
+    Scratch<P> g = {big_tables + (size_t)blockIdx.x * BIG_SLOTS, big_lists + (size_t)blockIdx.x * BIG_LIST};
     u32 t = threadIdx.x;
     if (t == 0)
         list_splits(s, n);
@@ -660,8 +693,9 @@ extern "C" __global__ void __launch_bounds__(THREADS, 3) solve(const u32 *rounds
             u64 key = find_exact(s, g, size);
             if (key != NONE) {
                 if (t == 0) {
-                    s->nodes[s->node_count++] = Node{(u32)(key >> 55), s->target, PENDING, 0, 0, 0, 0};
-                    expand_node(s, 0, key);
+                    u32 first = s->level_start[size], mask = s->split_mask[first + (u32)(key >> (2 * WAY_BITS + 2))];
+                    s->nodes[s->node_count++] = Node{mask, s->target, PENDING, 0, 0, 0, 0};
+                    expand_node(s, 0, key, first);
                 }
                 __syncthreads();
                 break;
@@ -672,7 +706,7 @@ extern "C" __global__ void __launch_bounds__(THREADS, 3) solve(const u32 *rounds
 
         if (s->node_count == 0) {
             if (s->table_only)
-                list_values(s, g, s->table, SMALL_SLOTS, s->table_only);
+                list_values(s, g, s->table, SMALL_SLOTS, VALUE_BITS, s->table_only);
             if (t == 0)
                 s->big_from = s->global_used;
             __syncthreads();
@@ -685,11 +719,18 @@ extern "C" __global__ void __launch_bounds__(THREADS, 3) solve(const u32 *rounds
             // Scan the shared table for smaller subsets and the global list for the largest
             u32 big_count = s->global_used - s->big_from;
             for (u32 i = t; i < SMALL_SLOTS + big_count; i += THREADS) {
-                u32 key = i < SMALL_SLOTS ? s->table[i] : g.list[s->big_from + i - SMALL_SLOTS];
-                if (key == 0)
-                    continue;
-                u32 v = key & VALUE_MASK, d = v > s->target ? v - s->target : s->target - v;
-                atomicMin(&s->best, (u64)d << 36 | (u64)size_of(key >> VALUE_BITS) << 32 | key);
+                u32 mask, v;
+                if (i < SMALL_SLOTS) {
+                    u32 key = s->table[i];
+                    if (key == 0)
+                        continue;
+                    mask = key >> VALUE_BITS, v = key & VALUE_MASK;
+                } else {
+                    typename P::Key key = g.list[s->big_from + i - SMALL_SLOTS];
+                    mask = (u32)(key >> P::SHIFT), v = (u32)key & P::MASK;
+                }
+                u32 d = v > s->target ? v - s->target : s->target - v;
+                atomicMin(&s->best, (u64)d << 36 | (u64)size_of(mask) << 33 | (u64)mask << WAY_BITS | v);
             }
             __syncthreads();
             // Check the whole pool's values as they are made since no larger subset is built from them
@@ -699,10 +740,10 @@ extern "C" __global__ void __launch_bounds__(THREADS, 3) solve(const u32 *rounds
                 whole(s, g, s->nearest, &s->results[0]);
                 if (t == 0) {
                     s->nodes[s->node_count++] = Node{s->full, (u32)s->nearest, PENDING, 0, 0, 0, 0};
-                    expand_node(s, 0, s->results[0]);
+                    expand_node(s, 0, s->results[0], s->level_start[n]);
                 }
             } else if (t == 0) {
-                u32 mask = (u32)(s->best >> VALUE_BITS) & 63, v = (u32)s->best & VALUE_MASK;
+                u32 mask = (u32)(s->best >> WAY_BITS) & 63, v = (u32)s->best & WAY_MASK;
                 s->nodes[s->node_count++] = Node{mask, v, size_of(mask) > 1 ? PENDING : LEAF, 0, 0, 0, 0};
             }
             __syncthreads();
@@ -722,6 +763,21 @@ extern "C" __global__ void __launch_bounds__(THREADS, 3) solve(const u32 *rounds
             ((u32 *)(out_text + (size_t)round * TEXT))[t] = ((const u32 *)s->text)[t];
         __syncthreads();
     }
+}
+
+extern "C" __global__ void __launch_bounds__(THREADS, 3) solve(const u32 *rounds, u32 count, u32 n, u32 *out_value,
+                                                             char *out_text, u32 *next, u32 *big_tables,
+                                                             u32 *big_lists, u32 *errors)
+{
+    solve_rounds<Narrow>(rounds, count, n, out_value, out_text, next, big_tables, big_lists, errors);
+}
+
+// Solve rounds whose subsets one smaller than the pool make values of 2^24 or more
+extern "C" __global__ void __launch_bounds__(THREADS, 3) solve_wide(const u32 *rounds, u32 count, u32 n,
+                                                                  u32 *out_value, char *out_text, u32 *next,
+                                                                  u64 *big_tables, u64 *big_lists, u32 *errors)
+{
+    solve_rounds<Wide>(rounds, count, n, out_value, out_text, next, big_tables, big_lists, errors);
 }
 
 // Report the shared memory each block needs so the host can reserve it

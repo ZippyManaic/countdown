@@ -27,7 +27,7 @@ countdown cats            # none to four large numbers from 25, 50, 75 and 100
 countdown nasty 4         # four large numbers from the "nasty" 12, 37, 62 and 87
 ```
 
-A number after the mode fixes how many large numbers are dealt: 1 or 2 for `standard`, 0 to 4 for `cats` and `nasty`. The program exits with 0 when it hits the target, 1 when it cannot and 2 when the arguments are invalid. The PyTorch, transformer and CUDA programs exit with 3 for pools too large for their GPU packing. Line-numbered BASIC gets its arguments through its `countdown` wrapper, which passes them on in environment variables.
+A number after the mode fixes how many large numbers are dealt: 1 or 2 for `standard`, 0 to 4 for `cats` and `nasty`. The program exits with 0 when it hits the target, 1 when it cannot and 2 when the arguments are invalid. Line-numbered BASIC gets its arguments through its `countdown` wrapper, which passes them on in environment variables.
 
 ## How often is there no solution?
 

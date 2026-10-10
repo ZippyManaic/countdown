@@ -733,7 +733,7 @@ one batch, not the latency of a single round.
 Implementation & \multicolumn{1}{c}{Solve} & \multicolumn{1}{c}{Straight port} & \multicolumn{1}{c}{Gain}
   & \multicolumn{1}{c}{Whole program} & Answers \\
  & ms/round & ms/round & & ms/run & \\ \midrule
-Rust + CUDA (GPU, batched)          & 0.000466 & 0.0107\rlap{$^a$} & 23$\times$  & 203   & identical \\
+Rust + CUDA (GPU, batched)          & 0.000442 & 0.0107\rlap{$^a$} & 24$\times$  & 199   & identical \\
 Lookup table (Python)               & 0.00069  & --                & --          & 13.4  & 31\% ties \\
 PyTorch on the GPU (batched)        & 0.0157   & 0.142\rlap{$^a$}  & 9.0$\times$ & 3{,}218 & identical \\
 ISPC (AVX2, four 64-bit lanes)\rlap{$^d$} & 0.0115 & 0.078       & 6.8$\times$ & 0.35  & identical \\
@@ -869,7 +869,7 @@ Lua 5.4 & 1.10 & 0.550 & 2.0$\times$ & each origin packed into one number; \text
 Python & 12.0$^a$ & 7.23 & 1.7$\times$ & values without origins while searching; origins rebuilt only for the answer \\
 bwBASIC & 1{,}114 & 306 & 3.6$\times$ & one hash table of values without origins; hot subroutines placed first because \texttt{GOTO} searches from the top \\ \midrule
 PyTorch & 0.142$^a$ & 0.0157 & 9.0$\times$ & expressions typeset on the GPU; pair generation fused by \texttt{torch.compile}; shorter half scanned; five-number subsets deferred; illegal results dropped before sorting \\
-Rust + CUDA & 0.0107$^a$ & 0.000466 & 23$\times$ & split tables computed once; phases flattened across threads; four-number subsets as tables only; answer unfolded a level at a time \\ \bottomrule
+Rust + CUDA & 0.0107$^a$ & 0.000442 & 24$\times$ & split tables computed once; phases flattened across threads; four-number subsets as tables only; answer unfolded a level at a time \\ \bottomrule
 \end{tabular}
 \caption{Straight port against optimised version for each language. $^a$First version rather than a
 straight port. $^b$Re-measured (Section~\ref{sec:surprises}). $^c$Defers the four- and five-number subsets, extending Lemma~\ref{lem:defer}, and so does less work than the other CPU versions.}\label{tab:opt}
@@ -1334,10 +1334,14 @@ Two further benchmark sets of $10{,}000$ rounds each, one per mode, deal $\ell$ 
 Their reference answers come from the C solver and agree with the Rust version on every round; each
 answer's distance from the target also matches the exhaustive checker. Table~\ref{tab:catsbench} gives
 the results for a selection of solvers; \texttt{PERFORMANCE.md} lists all of them. Every CPU solver gives
-the reference answer on every round in both modes, apart from Python's usual equally good ties. The three
-GPU solvers pack values into a fixed number of bits chosen for the standard game, and they stop with an
-error on larger pools rather than answer wrongly. The lookup table covers only standard pools and passes
-every other round to the Python solver.
+the reference answer on every round in both modes, apart from Python's usual equally good ties. The GPU
+solvers first packed each value into 24 bits, enough for the standard game, and refused larger pools rather
+than answer wrongly. Cats values below the whole pool reach $93{,}750{,}000$, which needs 27 bits. PyTorch
+now gives every value 27 bits, at no cost on the standard set. CUDA keeps its 24-bit shared-memory tables,
+since subsets two smaller than the pool stay below $2^{24}$, and sends the rounds that need it to a second
+kernel with 64-bit keys for the larger subsets. Both now give the reference answer on every round, and the
+transformer, which proves its proposals with the PyTorch solver, gives no wrong answers. The lookup table
+covers only standard pools and passes every other round to the Python solver.
 
 \begin{table}[ht]
 \centering
@@ -1345,6 +1349,9 @@ every other round to the Python solver.
 \begin{tabular}{@{}lrrrl@{}}
 \toprule
 Solver & Standard & Cats & Nasty-cats & Result in both modes \\ \midrule
+Rust + CUDA & 0.000442 & 0.000626 & 0.000475 & all identical \\
+PyTorch & 0.0156 & 0.0229 & 0.0158 & all identical \\
+PyTorch with transformer & 0.0354 & 0.0441 & 0.0211 & equally good ties only \\
 ISPC & 0.0115 & 0.116 & 0.0153 & all identical \\
 C & 0.0208 & 0.117 & 0.0236 & all identical \\
 Erlang & 0.0575 & 0.103 & 0.0641 & all identical \\
@@ -1355,8 +1362,7 @@ Java & 0.0391 & 0.251 & 0.0467 & all identical \\
 Haskell & 0.0360 & 0.565 & 0.0487 & all identical \\
 Ruby & 0.494 & 1.06 & 0.494 & all identical \\
 Python & 7.23 & 7.33 & 6.83 & equally good ties only \\
-Lookup table & 0.00069 & 4.68 & 6.74 & ties from its Python fallback \\
-PyTorch, transformer and CUDA & & --- & --- & refuse: values too large to pack \\ \bottomrule
+Lookup table & 0.00069 & 4.68 & 6.74 & ties from its Python fallback \\ \bottomrule
 \end{tabular}
 \caption{Solve time in milliseconds per round on the standard, cats and nasty-cats benchmark sets. The
 cats and nasty-cats times are from a single run and so are rougher than those of

@@ -1,6 +1,5 @@
 //! Generate a Countdown numbers round and work out on the GPU whether it can be solved
 
-use std::error::Error;
 use std::process::ExitCode;
 
 use rand::seq::SliceRandom;
@@ -80,11 +79,6 @@ fn parse_args(args: &[String]) -> Option<(Mode, Option<usize>)> {
     (lo..=hi).contains(&count).then_some((mode, Some(count)))
 }
 
-/// Return whether the solver refused a round because its values do not fit the kernel's packing
-fn is_packing_refusal(e: &dyn Error) -> bool {
-    e.to_string().contains("outside what the kernel can pack")
-}
-
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let Some((mode, large_count)) = parse_args(&args) else {
@@ -98,10 +92,6 @@ fn main() -> ExitCode {
 
     let (value, expr) = match solve(target, &pool) {
         Ok(answer) => answer,
-        Err(e) if is_packing_refusal(e.as_ref()) => {
-            eprintln!("countdown: the GPU solver supports only pools whose values fit its 24-bit packing ({e})");
-            return ExitCode::from(3);
-        }
         Err(e) => {
             eprintln!("countdown: {e}");
             return ExitCode::from(2);
@@ -185,7 +175,7 @@ mod tests {
     }
 
     #[test]
-    fn solves_cats_rounds_that_fit_the_packing() {
+    fn solves_cats_rounds() {
         assert_eq!(
             solve(100, &[1, 1, 2, 2, 3, 3]).unwrap(),
             (81, "(((2 + 1) * (2 + 1)) * 3) * 3".to_string())
@@ -197,8 +187,10 @@ mod tests {
     }
 
     #[test]
-    fn refuses_pools_beyond_the_packing() {
-        let e = solve(999, &[10, 10, 25, 50, 75, 100]).unwrap_err();
-        assert!(is_packing_refusal(e.as_ref()));
+    fn solves_pools_that_need_wide_packing() {
+        assert_eq!(
+            solve(999, &[10, 10, 25, 50, 75, 100]).unwrap(),
+            (999, "(((75 + 25) * 100) - 10) / 10".to_string())
+        );
     }
 }

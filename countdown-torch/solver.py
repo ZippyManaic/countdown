@@ -8,12 +8,18 @@ import torch
 
 OPS = "+-*/"
 ADD, SUB, MUL, DIV = range(4)
-# Pack each value under its subset size, round and subset in one sortable key with this many bits for the value
-VALUE_BITS = 24
+# Pack each value under its subset size, round and subset in one sortable key with enough bits for any cats round
+VALUE_BITS = 27
 VALUE_LIMIT = 1 << VALUE_BITS
 VALUE_MASK = VALUE_LIMIT - 1
+# Pack an origin's larger subset above its two values and its operator above that
+MASK_SHIFT = 2 * VALUE_BITS
+OP_SHIFT = MASK_SHIFT + 6
 # Order the ways of making a value by split, larger then smaller operand and operator in one key
 SPLIT_SHIFT = 2 * VALUE_BITS + 2
+# Rank the closest stored value by distance above subset size above subset and value
+SIZE_RANK_SHIFT = VALUE_BITS + 6
+DISTANCE_SHIFT = SIZE_RANK_SHIFT + 3
 # Cap the value pairs combined at once so building fits in memory
 PAIR_BUDGET = 1 << 23
 INF = (1 << 63) - 1
@@ -126,7 +132,7 @@ class Store:
 
 
 def pack_origin(op, larger_mask, larger, smaller):
-    return op << 56 | larger_mask << 48 | larger << VALUE_BITS | smaller
+    return op << OP_SHIFT | larger_mask << MASK_SHIFT | larger << VALUE_BITS | smaller
 
 
 def pair_groups(store, split_rows, rounds):
@@ -211,7 +217,7 @@ def build(store, size, rounds):
         keep[1:] = primary[1:] != primary[:-1]
         index = legal[index[keep]]
         keys.append(primary[keep])
-        origins.append(origin[index >> 2] | (index & 3) << 56)
+        origins.append(origin[index >> 2] | (index & 3) << OP_SHIFT)
     store.add(torch.cat(keys), torch.cat(origins))
     store.built[rounds, size] = True
 
@@ -284,12 +290,11 @@ def find_exact(store, size, targets, rounds):
     r = rounds.repeat_interleave(masks.numel())
     mask = masks.repeat(rounds.numel())
     key, origin = first_ways(store, r, mask, targets[r])
-    # Prefer the lowest subset then the first way within it
+    # Prefer the lowest subset in two passes since a subset and a way do not fit one key together
     hit = key != INF
-    r, mask, key, origin = r[hit], mask[hit], key[hit], origin[hit]
-    rank = mask << (SPLIT_SHIFT + store.n - 1) | key
-    best = torch.full_like(targets, INF).scatter_reduce(0, r, rank, "amin")
-    win = rank == best[r]
+    r, mask, origin = r[hit], mask[hit], origin[hit]
+    best = torch.full_like(targets, INF).scatter_reduce(0, r, mask, "amin")
+    win = mask == best[r]
     return r[win], mask[win], origin[win]
 
 
@@ -309,7 +314,7 @@ def closest_whole(store, targets, rounds):
         first = torch.full_like(targets, INF).scatter_reduce(0, r4, index, "amin")[part]
         out_round.append(part)
         out_value.append(best[part] & ((1 << 32) - 1))
-        out_origin.append(origin[first >> 2] | (first & 3) << 56)
+        out_origin.append(origin[first >> 2] | (first & 3) << OP_SHIFT)
     return torch.cat(out_round), torch.cat(out_value), torch.cat(out_origin)
 
 
@@ -445,10 +450,11 @@ def solve_batch(targets, pools, known=None):
         key = store.key
         r = (key >> store.round_shift) & ((1 << (store.size_shift - store.round_shift)) - 1)
         value = key & VALUE_MASK
-        rank = (value - targets[r]).abs() << 36 | (key >> store.size_shift) << 32 | key & ((1 << store.round_shift) - 1)
+        rank = ((value - targets[r]).abs() << DISTANCE_SHIFT | (key >> store.size_shift) << SIZE_RANK_SHIFT
+                | key & ((1 << store.round_shift) - 1))
         rank = torch.where(solved[r], INF, rank)
         best = torch.full_like(targets, INF).scatter_reduce(0, r, rank, "amin")[active]
-        best_distance = best >> 36
+        best_distance = best >> DISTANCE_SHIFT
         res_mask[active] = (best >> VALUE_BITS) & ((1 << n) - 1)
         res_value[active] = best & VALUE_MASK
         pos = store.find(active, res_mask[active], res_value[active])
@@ -487,11 +493,11 @@ def solve_batch(targets, pools, known=None):
         p = p + lo
         node_kind[r, p] = 2
         origin = node_origin[r, p]
-        larger = (origin >> 48) & 0xFF
+        larger = (origin >> MASK_SHIFT) & 0x3F
         for child, mask, value in ((2 * p + 1, larger, (origin >> VALUE_BITS) & VALUE_MASK),
                                    (2 * p + 2, node_mask[r, p] ^ larger, origin & VALUE_MASK)):
             node_mask[r, child], node_value[r, child], node_kind[r, child] = mask, value, 1
-    node_op = torch.where(node_origin >= 0, node_origin >> 56, 0)
+    node_op = torch.where(node_origin >= 0, node_origin >> OP_SHIFT, 0)
     answers = zip(res_value.tolist(), render(node_value, node_kind, node_op), proposed.tolist())
     return [None if taken else (value, expr) for value, expr, taken in answers]
 

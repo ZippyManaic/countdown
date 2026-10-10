@@ -14,15 +14,41 @@ const MAX_POOL: usize = 6;
 const BIG_SLOTS: usize = 16384;
 const BIG_LIST: usize = 20480;
 const VALUE_LIMIT: u64 = 1 << 24;
+const WIDE_LIMIT: u64 = 1 << 27;
 const ERROR_LIST: u32 = 1;
 const ERROR_TABLE: u32 = 2;
 
 pub type Answer = (u32, String);
 
+/// Name the two ways the kernel packs a round's values
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Packing {
+    Narrow,
+    Wide,
+}
+
+/// Return the packing a round needs from the bounds on its stored subsets' values or None when neither fits
+fn packing(pool: &[u32]) -> Option<Packing> {
+    let mut bound: Vec<u64> = pool.iter().map(|&p| u64::from(p).max(2)).collect();
+    bound.sort_unstable();
+    let n = bound.len();
+    // Bound the shared-memory subsets in 24 bits as those up to two smaller than the pool or single numbers
+    let small: u64 = bound[n - (n.max(3) - 2)..].iter().product();
+    let below: u64 = bound[1..].iter().product();
+    if small >= VALUE_LIMIT || below >= WIDE_LIMIT {
+        None
+    } else if below < VALUE_LIMIT {
+        Some(Packing::Narrow)
+    } else {
+        Some(Packing::Wide)
+    }
+}
+
 /// Hold the GPU context and loaded kernels which carry nothing from one batch of rounds to the next
 pub struct Solver {
     stream: Arc<CudaStream>,
-    function: CudaFunction,
+    narrow: CudaFunction,
+    wide: CudaFunction,
     blocks: u32,
     shared: u32,
 }
@@ -33,18 +59,22 @@ impl Solver {
         let ctx = CudaContext::new(0)?;
         let stream = ctx.default_stream();
         let module = ctx.load_module(Ptx::from_binary(KERNELS.to_vec()))?;
-        let function = module.load_function("solve")?;
+        let narrow = module.load_function("solve")?;
+        let wide = module.load_function("solve_wide")?;
         let size = module.load_function("state_size")?;
         let mut shared = stream.alloc_zeros::<u32>(1)?;
         unsafe { stream.launch_builder(&size).arg(&mut shared).launch(LaunchConfig::for_num_elems(1))? };
         let shared = stream.clone_dtoh(&shared)?[0];
-        function.set_attribute(
-            CUfunction_attribute_enum::CU_FUNC_ATTRIBUTE_MAX_DYNAMIC_SHARED_SIZE_BYTES,
-            shared as i32,
-        )?;
-        let per_sm = function.occupancy_max_active_blocks_per_multiprocessor(THREADS, shared as usize, None)?;
+        for function in [&narrow, &wide] {
+            function.set_attribute(
+                CUfunction_attribute_enum::CU_FUNC_ATTRIBUTE_MAX_DYNAMIC_SHARED_SIZE_BYTES,
+                shared as i32,
+            )?;
+        }
+        // Size both launches by the narrow kernel since the two share its state and launch bounds
+        let per_sm = narrow.occupancy_max_active_blocks_per_multiprocessor(THREADS, shared as usize, None)?;
         let sms = ctx.attribute(CUdevice_attribute_enum::CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT)? as u32;
-        Ok(Solver { stream, function, blocks: sms * per_sm.max(1), shared })
+        Ok(Solver { stream, narrow, wide, blocks: sms * per_sm.max(1), shared })
     }
 
     /// Return the value and expression of the answer to every (target, pool) round in order
@@ -52,30 +82,44 @@ impl Solver {
         if let Some((_, pool)) = rounds.iter().find(|(_, p)| p.is_empty() || p.len() > MAX_POOL) {
             return Err(format!("pools must hold one to {MAX_POOL} numbers, not {}", pool.len()).into());
         }
-        let mut answers = vec![(0, String::new()); rounds.len()];
-        // Solve pools of each size together since the kernel takes one pool size per launch
-        for n in 1..=MAX_POOL {
-            let indices: Vec<usize> = (0..rounds.len()).filter(|&i| rounds[i].1.len() == n).collect();
-            if indices.is_empty() {
-                continue;
+        let mut packings = Vec::with_capacity(rounds.len());
+        for (target, pool) in rounds {
+            match packing(pool) {
+                Some(p) if *target != 0 => packings.push(p),
+                _ => return Err(format!("round {target} {pool:?} is outside what the kernel can pack").into()),
             }
-            let batch: Vec<&(u32, Vec<u32>)> = indices.iter().map(|&i| &rounds[i]).collect();
-            for (i, answer) in indices.into_iter().zip(self.solve_batch(n, &batch)?) {
-                answers[i] = answer;
+        }
+        let mut answers = vec![(0, String::new()); rounds.len()];
+        // Solve pools of each size and packing together since the kernel takes one of each per launch
+        for n in 1..=MAX_POOL {
+            for packing in [Packing::Narrow, Packing::Wide] {
+                let indices: Vec<usize> =
+                    (0..rounds.len()).filter(|&i| rounds[i].1.len() == n && packings[i] == packing).collect();
+                if indices.is_empty() {
+                    continue;
+                }
+                let batch: Vec<&(u32, Vec<u32>)> = indices.iter().map(|&i| &rounds[i]).collect();
+                let solved = match packing {
+                    Packing::Narrow => self.solve_batch::<u32>(&self.narrow, n, &batch)?,
+                    Packing::Wide => self.solve_batch::<u64>(&self.wide, n, &batch)?,
+                };
+                for (i, answer) in indices.into_iter().zip(solved) {
+                    answers[i] = answer;
+                }
             }
         }
         Ok(answers)
     }
 
-    fn solve_batch(&self, n: usize, rounds: &[&(u32, Vec<u32>)]) -> Result<Vec<Answer>, Box<dyn Error>> {
+    /// Solve rounds of one pool size with a kernel whose global tables hold keys of type K
+    fn solve_batch<K: cudarc::driver::DeviceRepr + cudarc::driver::ValidAsZeroBits>(
+        &self,
+        function: &CudaFunction,
+        n: usize,
+        rounds: &[&(u32, Vec<u32>)],
+    ) -> Result<Vec<Answer>, Box<dyn Error>> {
         let mut flat = Vec::with_capacity(rounds.len() * (n + 1));
         for (target, pool) in rounds {
-            // Keep every value below the whole pool within the kernel's 24-bit values
-            let mut bound: Vec<u64> = pool.iter().map(|&p| u64::from(p).max(2)).collect();
-            bound.sort_unstable();
-            if bound[1..].iter().product::<u64>() >= VALUE_LIMIT || *target == 0 {
-                return Err(format!("round {target} {pool:?} is outside what the kernel can pack").into());
-            }
             flat.push(*target);
             flat.extend_from_slice(pool);
         }
@@ -89,8 +133,8 @@ impl Solver {
         let mut errors = stream.alloc_zeros::<u32>(1)?;
         let blocks = self.blocks.min(count as u32);
         // Give each block global room for the rare rounds that need subsets one smaller than the pool
-        let mut big_tables = unsafe { stream.alloc::<u32>(blocks as usize * BIG_SLOTS)? };
-        let mut big_lists = unsafe { stream.alloc::<u32>(blocks as usize * BIG_LIST)? };
+        let mut big_tables = unsafe { stream.alloc::<K>(blocks as usize * BIG_SLOTS)? };
+        let mut big_lists = unsafe { stream.alloc::<K>(blocks as usize * BIG_LIST)? };
         let config = LaunchConfig {
             grid_dim: (blocks, 1, 1),
             block_dim: (THREADS, 1, 1),
@@ -99,7 +143,7 @@ impl Solver {
         let (count32, n32) = (count as u32, n as u32);
         unsafe {
             stream
-                .launch_builder(&self.function)
+                .launch_builder(function)
                 .arg(&input)
                 .arg(&count32)
                 .arg(&n32)
@@ -172,6 +216,21 @@ mod tests {
         assert_eq!(answers[0], (7, "4 + 3".to_string()));
         assert_eq!(answers[1].0, 12);
         assert_eq!(answers[2], (5, "5".to_string()));
+    }
+
+    #[test]
+    fn mixes_narrow_and_wide_rounds() {
+        let solver = Solver::new().unwrap();
+        let rounds = [(999, vec![10, 10, 25, 50, 75, 100]), (125, vec![1, 5, 7, 3, 75, 50])];
+        let answers = solver.solve_many(&rounds).unwrap();
+        assert_eq!(answers[0], (999, "(((75 + 25) * 100) - 10) / 10".to_string()));
+        assert_eq!(answers[1], (125, "75 + 50".to_string()));
+    }
+
+    #[test]
+    fn refuses_pools_no_mode_deals_beyond_the_packing() {
+        assert!(solve(999, &[1000, 1000, 1000, 1000, 1000, 1000]).is_err());
+        assert!(solve(999, &[20_000_000]).is_err());
     }
 
     #[test]
