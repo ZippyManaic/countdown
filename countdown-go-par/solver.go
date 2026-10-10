@@ -12,6 +12,9 @@ import (
 // rankMin is the value count below which a subset is insertion sorted rather than ranked in the bitset
 const rankMin = 16
 
+// sparse is the bitset words per value above which a subset is radix sorted rather than ranked
+const sparse = 64
+
 // buildMin is the fewest pairs a size must combine before its subsets are built in parallel
 const buildMin = 2000
 
@@ -372,6 +375,31 @@ func (s *state) build(w *scratch, mask uint, words int) {
 				sorted[k] = sorted[k-1]
 			}
 			sorted[k] = e
+		}
+	} else if int(s.max[mask]/64+1) > sparse*count {
+		// Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+		var counts [3][2048]uint32
+		for _, e := range candidates {
+			v := e.value()
+			seen[v>>6] = 0
+			counts[0][v&2047]++
+			counts[1][v>>11&2047]++
+			counts[2][v>>22]++
+		}
+		from, to := candidates, sorted
+		for pass := range 3 {
+			sum := uint32(0)
+			for d, c := range counts[pass] {
+				counts[pass][d] = sum
+				sum += c
+			}
+			shift := 11 * pass
+			for _, e := range from {
+				d := e.value() >> shift & 2047
+				to[counts[pass][d]] = e
+				counts[pass][d]++
+			}
+			from, to = to, from
 		}
 	} else {
 		// Place each value at its rank in the bitset which needs no comparisons

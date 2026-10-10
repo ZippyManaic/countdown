@@ -5,6 +5,8 @@ public final class Solver {
 
     // Sort subsets with fewer values than this by insertion rather than by rank in the bitset
     private static final int RANK_MIN = 16;
+    // Radix sort a subset when its bitset has more than this many words per value
+    private static final int SPARSE = 64;
     private static final long OP_ADD = '+';
     private static final long OP_SUB = '-';
     private static final long OP_MUL = '*';
@@ -181,6 +183,42 @@ public final class Solver {
                 }
                 arena[at] = head;
                 arena[at + 1] = operands;
+            }
+        } else if ((s.max[mask] >>> 6) + 1 > (long) SPARSE * count) {
+            // Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+            final int[] counts = new int[3 * 2048];
+            for (int t = 0; t < out; t += 2) {
+                final int v = (int) tmp[t];
+                seen[v >>> 6] = 0;
+                counts[v & 2047]++;
+                counts[2048 + (v >>> 11 & 2047)]++;
+                counts[4096 + (v >>> 22)]++;
+            }
+            long[] from = tmp;
+            long[] to = arena;
+            int fromBase = 0;
+            int toBase = base;
+            for (int pass = 0; pass < 3; pass++) {
+                final int c0 = 2048 * pass;
+                final int shift = 11 * pass;
+                int sum = 0;
+                for (int d = c0; d < c0 + 2048; d++) {
+                    final int c = counts[d];
+                    counts[d] = sum;
+                    sum += c;
+                }
+                for (int t = fromBase; t < fromBase + out; t += 2) {
+                    final long head = from[t];
+                    final int at = toBase + 2 * counts[c0 + ((int) head >>> shift & 2047)]++;
+                    to[at] = head;
+                    to[at + 1] = from[t + 1];
+                }
+                final long[] a = from;
+                from = to;
+                to = a;
+                final int b = fromBase;
+                fromBase = toBase;
+                toBase = b;
             }
         } else {
             // Place each value at its rank in the bitset which needs no comparisons

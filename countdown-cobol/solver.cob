@@ -63,6 +63,8 @@ LOCAL-STORAGE SECTION.
 01 cand-cap                 BINARY-LONG UNSIGNED.
 01 cand-count               BINARY-LONG UNSIGNED.
 01 need                     BINARY-LONG UNSIGNED.
+*> Pass the table size to calloc as the 64-bit size it expects
+01 need-bytes               BINARY-DOUBLE UNSIGNED.
 01 l-count                  BINARY-LONG UNSIGNED.
 01 r-count                  BINARY-LONG UNSIGNED.
 01 s-count                  BINARY-LONG UNSIGNED.
@@ -278,7 +280,7 @@ main-line.
         END-IF
     END-PERFORM
     IF stamp-ptr NOT = NULL
-        FREE stamp-ptr
+        CALL "free" USING BY VALUE stamp-ptr
     END-IF
     FREE cand-ptr
     FREE aux-ptr
@@ -421,10 +423,16 @@ reserve-stamps.
     ADD 1 TO need
     IF need > stamp-size
         IF stamp-ptr NOT = NULL
-            FREE stamp-ptr
+            CALL "free" USING BY VALUE stamp-ptr
         END-IF
         *> Replace rather than copy since stamps from smaller subsets never match a new mask
-        ALLOCATE need CHARACTERS INITIALIZED RETURNING stamp-ptr
+        *> Use calloc since large zeroed blocks come straight from the system and cost only the pages touched
+        MOVE need TO need-bytes
+        CALL "calloc" USING BY VALUE need-bytes BY VALUE 1 RETURNING stamp-ptr
+        IF stamp-ptr = NULL
+            DISPLAY "calloc failed" UPON SYSERR
+            STOP RUN RETURNING 2
+        END-IF
         MOVE need TO stamp-size stamp-count
         SET ADDRESS OF stamp-table TO stamp-ptr
     END-IF.

@@ -1352,20 +1352,21 @@ Solver & Standard & Cats & Nasty-cats & Result in both modes \\ \midrule
 Rust + CUDA & 0.000442 & 0.000626 & 0.000475 & all identical \\
 PyTorch & 0.0156 & 0.0229 & 0.0158 & all identical \\
 PyTorch with transformer & 0.0354 & 0.0441 & 0.0211 & equally good ties only \\
-ISPC & 0.0115 & 0.116 & 0.0153 & all identical \\
-C & 0.0208 & 0.055 & 0.0212 & all identical \\
+ISPC & 0.0115 & 0.067 & 0.0151 & all identical \\
+x86-64 assembly & 0.0218 & 0.044 & 0.0220 & all identical \\
+C & 0.0208 & 0.055 & 0.0209 & all identical \\
 Erlang & 0.0575 & 0.103 & 0.0641 & all identical \\
 Elixir & 0.0576 & 0.106 & 0.0669 & all identical \\
 Rust & 0.0451 & 0.0967 & 0.0454 & all identical \\
-Go & 0.0330 & 0.206 & 0.0380 & all identical \\
-Java & 0.0391 & 0.251 & 0.0467 & all identical \\
-Haskell & 0.0360 & 0.565 & 0.0487 & all identical \\
+Go & 0.0330 & 0.112 & 0.0353 & all identical \\
+Java & 0.0391 & 0.145 & 0.0440 & all identical \\
+Haskell & 0.0360 & 0.332 & 0.0409 & all identical \\
 Ruby & 0.494 & 1.06 & 0.494 & all identical \\
 Python & 7.23 & 7.33 & 6.83 & equally good ties only \\
 Lookup table & 0.00069 & 4.68 & 6.74 & ties from its Python fallback \\ \bottomrule
 \end{tabular}
 \caption{Solve time in milliseconds per round on the standard, cats and nasty-cats benchmark sets. The
-cats and nasty-cats times are from a single run and so are rougher than those of
+cats and nasty-cats times are the best of three runs for the solvers changed for cats and of one run for the others, and so are rougher than those of
 Table~\ref{tab:perf}.}
 \label{tab:catsbench}
 \end{table}
@@ -1376,7 +1377,7 @@ large numbers: C took $0.018$\,ms with one large number, $0.059$\,ms with three 
 Like many of the compiled ports, C marks the values each subset has made in a bitset sized by that
 subset's largest possible value (Section~\ref{sec:cpu}, ``Duplicates by bitset''), and with four large numbers
 that bitset reaches 11.7\,MB. Scanning it for ranks and clearing it cost more than the search did. Erlang and Elixir sort each
-subset's values instead and slow down by only $1.8$ times. C now avoids most of the cost: it radix sorts any subset whose bitset has more than 64 words per value and clears only the words that subset touched. That took four-large rounds from $0.44$ to $0.16$\,ms and the cats set from $0.114$ to $0.055$\,ms, with no change on the standard set; Table~\ref{tab:catsbench} shows the new figure. Half of what remains is zeroing the bitset once per solve. The nasty cards' largest value is a quarter of the standard cards', and most compiled
+subset's values instead and slow down by only $1.8$ times. C now avoids most of the cost: it radix sorts any subset whose bitset has more than 64 words per value and clears only the words that subset touched. That took four-large rounds from $0.44$ to $0.16$\,ms and the cats set from $0.114$ to $0.055$\,ms, with no change on the standard set; Half of what remains is zeroing the bitset once per solve. The same path was ported to the 22 other solvers with a full-range rank pass, and most of them halved their cats time with no change on the standard set; Table~\ref{tab:catsbench} shows the new figures. Hand-written assembly gained most and is now the fastest single-core solver on cats, at $0.044$\,ms. The nasty cards' largest value is a quarter of the standard cards', and most compiled
 solvers run nasty-cats rounds within $35\%$ of their standard time. Rust was the exception, at first taking $0.126$\,ms on nasty-cats rounds, $88\%$ of it in \texttt{memset}. It allocated a bitset sized for the whole pool on every solve. With four standard cards that is about 150\,MB, and glibc maps that much straight from the operating system as lazily zeroed pages. With four nasty cards it is 7--30\,MB, below glibc's mapping threshold, so it came from the heap and was cleared in full. Growing the bitset by subset size, as C does, brought Rust to $0.045$\,ms on nasty-cats, $0.097$ on cats and $0.045$ on the standard set. A solver for every mode would choose
 between the bitset and sorting by the size of the bound.
 

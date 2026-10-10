@@ -6,6 +6,8 @@ data class Result(val value: Int, val expr: String)
 
 // Sort subsets with fewer values than this by insertion rather than by rank in the bitset
 private const val RANK_MIN = 16
+// Radix sort a subset when its bitset has more than this many words per value
+private const val SPARSE = 64
 private const val OP_ADD = '+'.code.toLong()
 private const val OP_SUB = '-'.code.toLong()
 private const val OP_MUL = '*'.code.toLong()
@@ -165,6 +167,48 @@ private fun build(s: State, mask: Int) {
             }
             arena[at] = head
             arena[at + 1] = operands
+        }
+    } else if ((s.max[mask] ushr 6) + 1 > SPARSE.toLong() * count) {
+        // Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+        val counts = IntArray(3 * 2048)
+        var t = 0
+        while (t < out) {
+            val v = tmp[t].toInt()
+            seen[v ushr 6] = 0
+            counts[v and 2047]++
+            counts[2048 + (v ushr 11 and 2047)]++
+            counts[4096 + (v ushr 22)]++
+            t += 2
+        }
+        var from = tmp
+        var to = arena
+        var fromBase = 0
+        var toBase = base
+        for (pass in 0 until 3) {
+            val c0 = 2048 * pass
+            val shift = 11 * pass
+            var sum = 0
+            for (d in c0 until c0 + 2048) {
+                val c = counts[d]
+                counts[d] = sum
+                sum += c
+            }
+            var i = fromBase
+            while (i < fromBase + out) {
+                val head = from[i]
+                val d = c0 + (head.toInt() ushr shift and 2047)
+                val at = toBase + 2 * counts[d]
+                counts[d]++
+                to[at] = head
+                to[at + 1] = from[i + 1]
+                i += 2
+            }
+            val a = from
+            from = to
+            to = a
+            val b = fromBase
+            fromBase = toBase
+            toBase = b
         }
     } else {
         // Place each value at its rank in the bitset which needs no comparisons

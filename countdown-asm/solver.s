@@ -11,6 +11,8 @@
     .set TMP_CAP, 1 << 22
     .set INSERTION_MAX, 48
     .set RANK_MIN, 16
+    # Radix sort a subset when its bitset has more than this many words per value
+    .set SPARSE, 64
 
     .set E_VALUE, 0
     .set E_OP, 4
@@ -39,6 +41,8 @@ tmp:        .space 16 * TMP_CAP
 # Hold one bit per value which covers the largest product any dealt pool can reach
 seen:       .space 1 << 24
 hist:       .space 4 * 1024
+# Hold the three 11-bit digit histograms for radix sorting sparse subsets
+counts:     .space 4 * 3 * 2048
 # Hold the count of values below each bitset word for ranking
 rank:       .space 4 * (1 << 21)
 mask_off:   .space 4 * 64
@@ -641,7 +645,7 @@ build:
     sub r15, qword ptr [rsp + 80]
     shr r15, 4
     cmp r15d, RANK_MIN
-    jae .Lb_rank
+    jae .Lb_large
     # Clear only the words this subset touched so the bitset is ready for the next one
     mov rax, qword ptr [rsp + 80]
 1:  cmp rax, rdi
@@ -655,6 +659,72 @@ build:
     mov esi, r15d
     call sort_entries
     jmp .Lb_record
+
+    # Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+.Lb_large:
+    mov eax, dword ptr [rsp + 88]
+    shr eax, 6
+    inc eax
+    imul rdx, r15, SPARSE
+    cmp rax, rdx
+    jbe .Lb_rank
+    lea rdi, [rip + counts]
+    xor eax, eax
+    mov ecx, 3 * 2048
+    rep stosd
+    # Clear each value's word and count its three digits
+    lea r11, [rip + counts]
+    mov rax, qword ptr [rsp + 80]
+    mov r8, r15
+1:  mov edx, dword ptr [rax]
+    mov ecx, edx
+    shr ecx, 6
+    mov qword ptr [rsi + rcx * 8], 0
+    mov ecx, edx
+    and ecx, 2047
+    inc dword ptr [r11 + rcx * 4]
+    mov ecx, edx
+    shr ecx, 11
+    and ecx, 2047
+    inc dword ptr [r11 + rcx * 4 + 8192]
+    shr edx, 22
+    inc dword ptr [r11 + rdx * 4 + 16384]
+    add rax, 16
+    dec r8
+    jnz 1b
+    # Scatter by each digit in turn ping-ponging between the arena and tmp so the result lands in tmp
+    mov r13, qword ptr [rsp + 80]
+    lea r14, [rip + tmp]
+    mov r9, r11
+    xor ecx, ecx
+.Lb_pass:
+    xor eax, eax
+    xor r8d, r8d
+2:  mov edx, dword ptr [r9 + r8 * 4]
+    mov dword ptr [r9 + r8 * 4], eax
+    add eax, edx
+    inc r8d
+    cmp r8d, 2048
+    jb 2b
+    mov rax, r13
+    mov r8, r15
+3:  movdqu xmm0, xmmword ptr [rax]
+    movd edx, xmm0
+    shr edx, cl
+    and edx, 2047
+    mov r10d, dword ptr [r9 + rdx * 4]
+    inc dword ptr [r9 + rdx * 4]
+    shl r10, 4
+    movdqu xmmword ptr [r14 + r10], xmm0
+    add rax, 16
+    dec r8
+    jnz 3b
+    xchg r13, r14
+    add r9, 8192
+    add ecx, 11
+    cmp ecx, 33
+    jb .Lb_pass
+    jmp .Lb_copy
 
     # Sort by rank in the bitset since its words up to the largest value number fewer than the values
 .Lb_rank:
@@ -692,6 +762,7 @@ build:
     lea ecx, [r14 + 1]
     xor eax, eax
     rep stosq
+.Lb_copy:
     lea rsi, [rip + tmp]
     mov rdi, qword ptr [rsp + 80]
     mov rcx, r15

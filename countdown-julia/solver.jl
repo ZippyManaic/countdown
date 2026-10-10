@@ -6,6 +6,8 @@ module Solver
 export solve
 
 const OP_CHARS = (UInt8('+'), UInt8('-'), UInt8('*'), UInt8('/'))
+# List and radix sort a subset's values when its bitset has more than this many words per value it could make
+const SPARSE = 64
 
 # Hold the working memory of one solve with subsets indexed by their masks
 mutable struct State
@@ -21,6 +23,8 @@ mutable struct State
     most::Vector{UInt64}
     # Hold one bit per value seen in the subset being built
     seen::Vector{UInt64}
+    # Collect a sparse subset's new values here before they are sorted into the arena
+    tmp::Vector{UInt32}
     # Hold the right half's values with their reciprocals for the split being built
     rv::Vector{UInt32}
     ri::Vector{Float64}
@@ -74,6 +78,30 @@ end
     return nothing
 end
 
+# Mark a value as seen and append it to tmp advancing past it only if it is new
+@inline function emit!(seen::Vector{UInt64}, tmp::Vector{UInt32}, k::Int, v::UInt32)
+    @inbounds begin
+        i = (v >> 6) + 1
+        w = seen[i]
+        seen[i] = w | (one(UInt64) << (v & 0x3f))
+        tmp[k + 1] = v
+        return k + 1 - Int((w >> (v & 0x3f)) & one(UInt64))
+    end
+end
+
+# Append every new legal value from x and y to tmp where x is at least y and inv is 1/y and return the new count
+@inline function ops!(seen::Vector{UInt64}, tmp::Vector{UInt32}, k::Int, x::UInt32, y::UInt32, inv::Float64)
+    k = emit!(seen, tmp, k, x + y)
+    x != y && (k = emit!(seen, tmp, k, x - y))
+    if y != 0x1
+        k = emit!(seen, tmp, k, x * y)
+        q = quotient(x, inv)
+        # Emit zero for an inexact division since zero is already marked and never appended
+        k = emit!(seen, tmp, k, pick(q * y == x, q, zero(UInt32)))
+    end
+    return k
+end
+
 # Fill the right half's values and reciprocals for a split
 @inline function load_rights!(s::State, right::Int)
     rv, ri, vals = s.rv, s.ri, s.vals
@@ -104,6 +132,60 @@ function pairs!(s::State, left::Int, right::Int)
             ops!(seen, rv[j], a, ia)
             j += 1
         end
+    end
+    return nothing
+end
+
+# Append every new combination of each left value with each right value to tmp and return the new count
+function pairs!(s::State, left::Int, right::Int, k::Int)
+    seen, tmp, rv, ri, vals = s.seen, s.tmp, s.rv, s.ri, s.vals
+    nr = load_rights!(s, right)
+    ol, nl = s.off[left], s.len[left]
+    @inbounds for i in 1:nl
+        a = vals[ol + i]
+        j = 1
+        while j <= nr && rv[j] <= a
+            k = ops!(seen, tmp, k, a, rv[j], ri[j])
+            j += 1
+        end
+        ia = 1.0 / Float64(a)
+        while j <= nr
+            k = ops!(seen, tmp, k, rv[j], a, ia)
+            j += 1
+        end
+    end
+    return k
+end
+
+# Radix sort a sparse subset's listed values into the arena in three 11-bit passes and clear the words they touched
+function radix!(s::State, count::Int)
+    seen, tmp, vals, top = s.seen, s.tmp, s.vals, s.top
+    counts = zeros(UInt32, 2048, 3)
+    @inbounds for i in 1:count
+        v = tmp[i]
+        seen[(v >> 6) + 1] = 0
+        counts[(v & 0x7ff) + 1, 1] += 1
+        counts[((v >> 11) & 0x7ff) + 1, 2] += 1
+        counts[(v >> 22) + 1, 3] += 1
+    end
+    # Pass from tmp to the arena and back so the third pass lands in the arena
+    from, from_at, to, to_at = tmp, 0, vals, top
+    @inbounds for pass in 1:3
+        sum = zero(UInt32)
+        for d in 1:2048
+            c = counts[d, pass]
+            counts[d, pass] = sum
+            sum += c
+        end
+        shift = 11 * (pass - 1)
+        for i in 1:count
+            v = from[from_at + i]
+            d = ((v >> shift) & 0x7ff) + 1
+            at = counts[d, pass]
+            counts[d, pass] = at + one(UInt32)
+            to[to_at + Int(at) + 1] = v
+        end
+        from, from_at, to, to_at = to, to_at, from, from_at
     end
     return nothing
 end
@@ -150,18 +232,41 @@ end
 # Build a subset's sorted values by marking every result in the bitset and listing the marked bits in order
 function build!(s::State, mask::Int)
     seen = s.seen
-    left = (mask - 1) & mask
+    words = Int(s.most[mask] >> 6) + 1
     # Reserve room for every pair's results since no pair makes more than four values
     room = 0
+    left = (mask - 1) & mask
     while left != 0
         right = mask ⊻ left
-        if left < right
-            room += 4 * s.len[left] * s.len[right]
-            pairs!(s, left, right)
-        end
+        left < right && (room += 4 * s.len[left] * s.len[right])
         left = (left - 1) & mask
     end
-    words = Int(s.most[mask] >> 6) + 1
+    if words > SPARSE * room
+        # List the values of a subset too sparse to scan so the cost follows the values rather than the range
+        length(s.tmp) < room + 1 && (s.tmp = Vector{UInt32}(undef, max(2 * length(s.tmp), room + 1)))
+        # Mark zero as seen so inexact divisions never become values
+        @inbounds seen[1] |= one(UInt64)
+        count = 0
+        left = (mask - 1) & mask
+        while left != 0
+            right = mask ⊻ left
+            left < right && (count = pairs!(s, left, right, count))
+            left = (left - 1) & mask
+        end
+        length(s.vals) < s.top + count && resize!(s.vals, max(2 * length(s.vals), s.top + count))
+        radix!(s, count)
+        @inbounds seen[1] &= ~one(UInt64)
+        s.off[mask] = s.top
+        s.len[mask] = count
+        s.top += count
+        return nothing
+    end
+    left = (mask - 1) & mask
+    while left != 0
+        right = mask ⊻ left
+        left < right && pairs!(s, left, right)
+        left = (left - 1) & mask
+    end
     room = min(room, Int(s.most[mask]))
     length(s.vals) < s.top + room && resize!(s.vals, max(2 * length(s.vals), s.top + room))
     vals = s.vals
@@ -328,7 +433,7 @@ function solve(target::Integer, pool::AbstractVector{<:Integer})
     full = (1 << n) - 1
     t = UInt32(target)
     s = State(t, n, full, Vector{UInt32}(undef, 256), n, zeros(Int, 64), zeros(Int, 64), zeros(UInt64, 64),
-              zeros(UInt64, 1), Vector{UInt32}(undef, 64), Vector{Float64}(undef, 64),
+              zeros(UInt64, 1), Vector{UInt32}(undef, 0), Vector{UInt32}(undef, 64), Vector{Float64}(undef, 64),
               Vector{UInt32}(undef, 6), Vector{UInt8}(undef, 6))
 
     # Work out each subset's largest value since subtracting and dividing never exceed the larger operand

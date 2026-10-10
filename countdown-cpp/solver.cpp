@@ -8,12 +8,15 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <utility>
 
 namespace countdown {
 namespace {
 
 // Sort subsets with fewer values than this by insertion rather than by rank in the bitset
 constexpr std::size_t rank_min = 16;
+// Radix sort a subset when its bitset has more than this many words per value
+constexpr std::size_t sparse = 64;
 
 // Record a reachable value with how it was made from the larger and smaller of two values in disjoint subsets
 struct Entry {
@@ -288,6 +291,28 @@ void build(State &s, unsigned mask)
             for (; k > 0 && sorted[k - 1].value() > e.value(); k--)
                 sorted[k] = sorted[k - 1];
             sorted[k] = e;
+        }
+    } else if (s.max[mask] / 64 + 1 > sparse * count) {
+        // Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+        std::uint32_t counts[3][2048] = {};
+        for (std::size_t i = 0; i < count; i++) {
+            std::uint32_t v = candidates[i].value();
+            seen[v >> 6] = 0;
+            counts[0][v & 2047]++;
+            counts[1][v >> 11 & 2047]++;
+            counts[2][v >> 22]++;
+        }
+        Entry *from = s.tmp.data(), *to = sorted;
+        for (int pass = 0; pass < 3; pass++) {
+            std::uint32_t sum = 0;
+            for (int d = 0; d < 2048; d++) {
+                std::uint32_t c = counts[pass][d];
+                counts[pass][d] = sum;
+                sum += c;
+            }
+            for (std::size_t i = 0; i < count; i++)
+                to[counts[pass][from[i].value() >> (11 * pass) & 2047]++] = from[i];
+            std::swap(from, to);
         }
     } else {
         // Place each value at its rank in the bitset which needs no comparisons

@@ -11,6 +11,8 @@ public static unsafe class Solver
 {
     // Sort subsets with fewer values than this by insertion rather than by rank in the bitset
     private const int RankMin = 16;
+    // Radix sort a subset when its bitset has more than this many words per value
+    private const int Sparse = 64;
     private const ulong OpAdd = '+';
     private const ulong OpSub = '-';
     private const ulong OpMul = '*';
@@ -178,6 +180,37 @@ public static unsafe class Solver
                 var k = i;
                 for (; k > 0 && sorted[k - 1].Value > e.Value; k--) sorted[k] = sorted[k - 1];
                 sorted[k] = e;
+            }
+        }
+        else if ((nint)(s->Max[mask] >> 6) + 1 > Sparse * count)
+        {
+            // Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+            var counts = stackalloc uint[3 * 2048];
+            new Span<uint>(counts, 3 * 2048).Clear();
+            for (nint i = 0; i < count; i++)
+            {
+                var v = (uint)tmp[i].Head;
+                seen[v >> 6] = 0;
+                counts[v & 2047]++;
+                counts[2048 + (v >> 11 & 2047)]++;
+                counts[4096 + (v >> 22)]++;
+            }
+            Entry* from = tmp, to = sorted;
+            for (var pass = 0; pass < 3; pass++)
+            {
+                var c = counts + 2048 * pass;
+                var shift = 11 * pass;
+                uint sum = 0;
+                for (var d = 0; d < 2048; d++)
+                {
+                    var k = c[d];
+                    c[d] = sum;
+                    sum += k;
+                }
+                for (nint i = 0; i < count; i++) to[c[(uint)from[i].Head >> shift & 2047]++] = from[i];
+                var t = from;
+                from = to;
+                to = t;
             }
         }
         else

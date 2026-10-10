@@ -13,6 +13,10 @@ import Data.Word (Word64)
 rankMin :: Int
 rankMin = 16
 
+-- | Radix sort a subset when its bitset has more than this many words per value
+sparse :: Int
+sparse = 64
+
 -- | Run an action for every index from a up to but not including b
 loop :: Int -> Int -> (Int -> ST s ()) -> ST s ()
 loop a b act = go a
@@ -132,22 +136,53 @@ build work !top !mask = do
                     else writePrimArray vals (top + k) v
         shift i
     else do
-      -- Place each value at its rank in the bitset which needs no comparisons
       biggest <- readPrimArray (maxes work) mask
       let !nwords = biggest `unsafeShiftR` 6 + 1
-          rank = ranks work
-          counts !w !below = when (w < nwords) $ do
-            writePrimArray rank w below
+      if nwords > sparse * count
+        then do
+          -- Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+          counts <- newPrimArray (3 * 2048)
+          setPrimArray counts 0 (3 * 2048) (0 :: Int)
+          let bump d = readPrimArray counts d >>= writePrimArray counts d . (+ 1)
+          loop 0 count $ \i -> do
+            v <- readPrimArray out0 i
+            writePrimArray bits (v `unsafeShiftR` 6) 0
+            bump (v .&. 2047)
+            bump (2048 + (v `unsafeShiftR` 11) .&. 2047)
+            bump (4096 + v `unsafeShiftR` 22)
+          -- Pass from tmp to the arena and back so the third pass lands in the arena
+          let pass !p from fromAt to toAt = do
+                let !c = 2048 * p
+                    !shift = 11 * p
+                    sums !d !total = when (d < c + 2048) $ do
+                      n <- readPrimArray counts d
+                      writePrimArray counts d total
+                      sums (d + 1) (total + n)
+                sums c 0
+                loop 0 count $ \i -> do
+                  v <- readPrimArray from (fromAt + i)
+                  let !d = c + (v `unsafeShiftR` shift) .&. 2047
+                  at <- readPrimArray counts d
+                  writePrimArray counts d (at + 1)
+                  writePrimArray to (toAt + at) v
+          pass 0 out0 0 vals top
+          pass 1 vals top out0 0
+          pass 2 out0 0 vals top
+        else do
+          -- Place each value at its rank in the bitset which needs no comparisons
+          let rank = ranks work
+              counts !w !below = when (w < nwords) $ do
+                writePrimArray rank w below
+                word <- readPrimArray bits w
+                counts (w + 1) (below + popCount word)
+          counts 0 0
+          loop 0 count $ \i -> do
+            v <- readPrimArray out0 i
+            let !w = v `unsafeShiftR` 6
             word <- readPrimArray bits w
-            counts (w + 1) (below + popCount word)
-      counts 0 0
-      loop 0 count $ \i -> do
-        v <- readPrimArray out0 i
-        let !w = v `unsafeShiftR` 6
-        word <- readPrimArray bits w
-        r <- readPrimArray rank w
-        writePrimArray vals (top + r + popCount (word .&. ((1 `unsafeShiftL` (v .&. 63)) - 1))) v
-      setPrimArray bits 0 nwords 0
+            r <- readPrimArray rank w
+            writePrimArray vals (top + r + popCount (word .&. ((1 `unsafeShiftL` (v .&. 63)) - 1))) v
+          setPrimArray bits 0 nwords 0
   writePrimArray (offs work) mask top
   writePrimArray (lens work) mask count
   return $! top + count

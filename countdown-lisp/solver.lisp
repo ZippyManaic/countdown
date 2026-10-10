@@ -24,6 +24,9 @@
 ;; Sort subsets with fewer values than this by insertion rather than by rank in the bitset
 (defconstant +rank-min+ 16)
 
+;; Radix sort a subset when its bitset has more than this many words per value
+(defconstant +sparse+ 64)
+
 ;; Pack an origin as larger value shifted by eight then the larger operand's mask shifted by two then the operator
 (declaim (inline origin))
 (defun origin (larger larger-mask op)
@@ -189,7 +192,8 @@
            (to (state-tmp-orgs s)))
       (declare (type index top) (type u32s vals tv) (type u64s orgs to))
       (setf (state-vals s) vals (state-orgs s) orgs)
-      (if (< count +rank-min+)
+      (cond
+        ((< count +rank-min+)
           ;; Clear only the words this subset touched and insertion sort the few values
           (dotimes (i count)
             (let ((v (aref tv i)) (o (aref to i)) (k i))
@@ -199,7 +203,40 @@
                     do (setf (aref vals (+ top k)) (aref vals (+ top k -1))
                              (aref orgs (+ top k)) (aref orgs (+ top k -1)))
                        (decf k))
-              (setf (aref vals (+ top k)) v (aref orgs (+ top k)) o)))
+              (setf (aref vals (+ top k)) v (aref orgs (+ top k)) o))))
+        ((> (1+ (ash bound -6)) (* +sparse+ count))
+          ;; Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+          (let ((counts (make-array (* 3 2048) :element-type 'u32 :initial-element 0)))
+            (declare (type u32s counts))
+            (dotimes (i count)
+              (let ((v (aref tv i)))
+                (declare (type u32 v))
+                (setf (aref seen (ash v -6)) 0)
+                (incf (aref counts (logand v 2047)))
+                (incf (aref counts (+ 2048 (logand (ash v -11) 2047))))
+                (incf (aref counts (+ 4096 (ash v -22))))))
+            ;; Pass from tmp to the arena and back so the third pass lands in the arena
+            (flet ((pass (p from-vals from-orgs from-at to-vals to-orgs to-at)
+                     (declare (type (integer 0 2) p) (type u32s from-vals to-vals) (type u64s from-orgs to-orgs) (type index from-at to-at))
+                     (let ((c (* 2048 p)) (shift (* -11 p)) (sum 0))
+                       (declare (type index c sum))
+                       (loop for d of-type index from c below (+ c 2048)
+                             do (let ((n (aref counts d)))
+                                  (setf (aref counts d) sum)
+                                  (incf sum n)))
+                       (dotimes (i count)
+                         (let* ((v (aref from-vals (+ from-at i)))
+                                (d (+ c (logand (ash v shift) 2047)))
+                                (at (+ to-at (aref counts d))))
+                           (declare (type u32 v) (type index d at))
+                           (setf (aref counts d) (1+ (aref counts d))
+                                 (aref to-vals at) v
+                                 (aref to-orgs at) (aref from-orgs (+ from-at i))))))))
+              (declare (inline pass))
+              (pass 0 tv to 0 vals orgs top)
+              (pass 1 vals orgs top tv to 0)
+              (pass 2 tv to 0 vals orgs top))))
+        (t
           ;; Place each value at its rank in the bitset which needs no comparisons
           (let ((words (1+ (ash bound -6))) (below 0) (rank (state-rank s)))
             (declare (type index words below) (type u32s rank))
@@ -212,7 +249,7 @@
                      (at (+ top (aref rank (ash v -6)) (logcount lower))))
                 (declare (type u32 v) (type u64 lower) (type index at))
                 (setf (aref vals at) v (aref orgs at) (aref to i))))
-            (fill seen 0 :end words)))
+            (fill seen 0 :end words))))
       (setf (aref (state-off s) mask) top
             (aref (state-len s) mask) count
             (state-top s) (+ top count)))))

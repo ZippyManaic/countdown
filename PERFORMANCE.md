@@ -105,50 +105,50 @@ In cats mode the player chooses from none to four large numbers from 25, 50, 75 
 - **Reference answers:** `ref_cats10k.tsv` and `ref_nasty10k.tsv` come from the C solver. The Rust version gives identical answers on all 20,000 rounds. Every answer uses only pool numbers and evaluates to its value, and its distance from the target matches the exhaustive checker in `solvability/`. 716 cats rounds and 454 nasty-cats rounds have no exact solution.
 - **Running:** `bench/run.sh -n 1 --set cats` or `--set nasty`. `run.sh` now records a solver that crashes or refuses as "failed" and moves on. It also stops any solver after 20 minutes.
 
-Times below are from one run of each solver (`-n 1`), so they are rougher than the main table.
+Times below are the best of three runs (`-n 3`) for the solvers re-timed after the sparse radix-sort change and from one run (`-n 1`) for the rest, so the single-run rows are rougher than the main table.
 
 | Solver | Standard, ms | Cats, ms | Cats ÷ standard | Nasty-cats, ms | Cats result | Nasty-cats result |
 |---|---|---|---|---|---|---|
 | Rust + CUDA | 0.000442 | 0.000617 | 1.4x | 0.000471 | all identical | all identical |
 | PyTorch on the GPU | 0.0157 | 0.0229 | 1.5x | 0.0159 | all identical | all identical |
+| x86-64 assembly | 0.0218 | 0.0438 | 2.0x | 0.022 | all identical | all identical |
 | PyTorch with transformer proposals | 0.0354 | 0.0441 | 1.2x | 0.0212 | 431 ties | 8 ties |
-| C (Clang) | 0.0208 | 0.0550 | 2.6x | 0.0212 | all identical | all identical |
+| C (Clang) | 0.0208 | 0.0548 | 2.6x | 0.0209 | all identical | all identical |
+| C++ (Clang) | 0.0213 | 0.0562 | 2.6x | 0.0212 | all identical | all identical |
+| Zig (ReleaseFast) | 0.0203 | 0.0571 | 2.8x | 0.0216 | all identical | all identical |
 | `elixir-par` (parallel) | – | 0.0599 | – | 0.0462 | all identical | all identical |
+| Fortran (gfortran) | 0.0247 | 0.0615 | 2.5x | 0.0252 | all identical | all identical |
+| FreeBASIC (GCC back end) | 0.0215 | 0.062 | 2.9x | 0.0244 | all identical | all identical |
 | `erlang-par` (parallel) | – | 0.0632 | – | 0.0500 | all identical | all identical |
-| WebAssembly (C in Node 24) | 0.0229 | 0.0632 | 2.8x | 0.0258 | all identical | all identical |
+| WebAssembly (C in Node 24) | 0.0229 | 0.0636 | 2.8x | 0.0259 | all identical | all identical |
+| Ada (GNAT) | 0.0260 | 0.0652 | 2.5x | 0.027 | all identical | all identical |
+| ISPC (AVX2, four 64-bit lanes)† | 0.0115 | 0.0674 | 5.9x | 0.0151 | all identical | all identical |
+| C# (.NET 10) | 0.0274 | 0.0715 | 2.6x | 0.0295 | all identical | all identical |
+| Swift | 0.0274 | 0.0772 | 2.8x | 0.0304 | all identical | all identical |
+| F# (.NET 10) | 0.0287 | 0.0774 | 2.7x | 0.0321 | all identical | all identical |
+| Pascal (Free Pascal) | 0.0352 | 0.0846 | 2.4x | 0.0357 | all identical | all identical |
 | `rust-par` (parallel) | – | 0.0937 | – | 0.0265 | all identical | all identical |
 | `rust-par1` (parallel) | – | 0.0949 | – | 0.0447 | all identical | all identical |
 | Rust | 0.0451 | 0.0967 | 2.1x | 0.0454 | all identical | all identical |
+| `c-par` (parallel) | – | 0.0988 | – | 0.0182 | all identical | all identical |
 | Erlang (BEAM)* | 0.0575 | 0.1033 | 1.8x | 0.0641 | all identical | all identical |
 | Elixir (BEAM)* | 0.0576 | 0.106 | 1.8x | 0.0669 | all identical | all identical |
-| ISPC (AVX2, four 64-bit lanes)† | 0.0115 | 0.1162 | 10.1x | 0.0153 | all identical | all identical |
-| C++ (Clang) | 0.0213 | 0.1188 | 5.6x | 0.0238 | all identical | all identical |
-| x86-64 assembly | 0.0218 | 0.1188 | 5.4x | 0.0254 | all identical | all identical |
-| Zig (ReleaseFast) | 0.0203 | 0.1213 | 6.0x | 0.0252 | all identical | all identical |
-| `julia-par` (parallel) | – | 0.1304 | – | 0.0215 | all identical | all identical |
-| Fortran (gfortran) | 0.0247 | 0.1309 | 5.3x | 0.0286 | all identical | all identical |
-| FreeBASIC (GCC back end) | 0.0215 | 0.1319 | 6.1x | 0.0276 | all identical | all identical |
-| Ada (GNAT) | 0.0260 | 0.1355 | 5.2x | 0.0302 | all identical | all identical |
-| C# (.NET 10) | 0.0274 | 0.1357 | 5.0x | 0.0319 | all identical | all identical |
-| F# (.NET 10) | 0.0287 | 0.1597 | 5.6x | 0.0357 | all identical | all identical |
+| Go | 0.0330 | 0.1115 | 3.4x | 0.0353 | all identical | all identical |
+| `julia-par` (parallel) | – | 0.1179 | – | 0.021 | all identical | all identical |
+| Java (OpenJDK 25) | 0.0391 | 0.1453 | 3.7x | 0.044 | all identical | all identical |
+| Kotlin (JVM) | 0.0373 | 0.1458 | 3.9x | 0.0438 | all identical | all identical |
+| Julia 1.13 | 0.0208 | 0.1612 | 7.8x | 0.0281 | all identical | all identical |
 | OCaml | 0.0537 | 0.1642 | 3.1x | 0.0571 | all identical | all identical |
-| Pascal (Free Pascal) | 0.0352 | 0.1816 | 5.2x | 0.0405 | all identical | all identical |
-| `c-par` (parallel) | – | 0.1826 | – | 0.0208 | all identical | all identical |
-| Julia 1.13 | 0.0208 | 0.1928 | 9.3x | 0.0287 | all identical | all identical |
-| Go | 0.0330 | 0.2059 | 6.2x | 0.038 | all identical | all identical |
-| Swift | 0.0274 | 0.2231 | 8.1x | 0.0386 | all identical | all identical |
-| Java (OpenJDK 25) | 0.0391 | 0.251 | 6.4x | 0.0467 | all identical | all identical |
+| `go-par` (parallel) | – | 0.2137 | – | 0.0527 | all identical | all identical |
+| Common Lisp (SBCL) | 0.0472 | 0.2326 | 4.9x | 0.0577 | all identical | all identical |
 | LuaJIT | 0.186 | 0.264 | 1.4x | 0.1636 | all identical | all identical |
-| Kotlin (JVM) | 0.0373 | 0.3033 | 8.1x | 0.0474 | all identical | all identical |
-| `go-par` (parallel) | – | 0.3183 | – | 0.0638 | all identical | all identical |
-| `java-par` (parallel) | – | 0.371 | – | 0.0448 | all identical | all identical |
-| Common Lisp (SBCL) | 0.0472 | 0.4013 | 8.5x | 0.0636 | all identical | all identical |
+| `java-par` (parallel) | – | 0.269 | – | 0.0389 | all identical | all identical |
+| Haskell (GHC) | 0.0360 | 0.3318 | 9.2x | 0.0409 | all identical | all identical |
+| JavaScript (Node 24) | 0.0848 | 0.3409 | 4.0x | 0.0907 | all identical | all identical |
+| COBOL (GnuCOBOL) | 0.173 | 0.3556 | 2.1x | 0.1672 | all identical | all identical |
 | Ruby with RJIT | 0.291 | 0.4709 | 1.6x | 0.278 | all identical | all identical |
-| Haskell (GHC) | 0.0360 | 0.5649 | 15.7x | 0.0487 | all identical | all identical |
-| JavaScript (Node 24) | 0.0848 | 0.6399 | 7.5x | 0.1028 | all identical | all identical |
 | Lua 5.4 | 0.550 | 0.9259 | 1.7x | 0.5081 | all identical | all identical |
 | Ruby 3.3 | 0.494 | 1.061 | 2.1x | 0.4938 | all identical | all identical |
-| COBOL (GnuCOBOL) | 0.173 | 1.742 | 10.1x | 0.1757 | all identical | all identical |
 | Forth (`gforth-fast`) | 0.318 | 1.876 | 5.9x | 0.3216 | all identical | all identical |
 | Forth (`gforth`) | 0.399 | 2.069 | 5.2x | 0.4019 | all identical | all identical |
 | Lookup table | 0.00069 | 4.677 | – | 6.74 | 1431 ties | 232 ties |
@@ -161,7 +161,7 @@ Times below are from one run of each solver (`-n 1`), so they are rougher than t
 - **Rust + CUDA is the fastest solver on both sets.** Subsets up to two smaller than the pool stay below 2^24 in every mode (at most 9,375,000), so only the global-memory table of subsets one smaller than the pool needs more than 24 bits, up to 93,750,000. Rounds that need it (2,287 cats and 1,012 nasty-cats rounds) go to a second instantiation of the kernel whose global keys are 64 bits wide; shared memory and occupancy are unchanged. It slows by 1.4x on cats and by 7% on nasty-cats, which was not broken down further. It also matches C on every distinct cats and nasty-cats pool with three targets each (39,729 rounds per mode). The times are the best of three runs with `-n 3`; a re-run with the GPU otherwise idle gave 0.000444, 0.000626 and 0.000475 ms.
 - **PyTorch is second only to CUDA on cats and loses nothing on nasty-cats.** Its keys now give each value 27 bits, enough for the largest bound any cats round reaches (93,750,000), at no cost on the standard set. It slows by 1.5x on cats, like the sorting and hashing CPU solvers, because sorting each level's values does not care how large they are. The transformer version gives no wrong answers but stays about twice as slow as the solver alone (0.044 against 0.023 ms on cats), with more ties than on the standard set, since the model was trained only on standard pools. The model has no tokens for 12, 37, 62 and 87, so rounds with a nasty card skip it and go straight to the exact search; its 8 nasty-cats ties come from rounds with no large numbers. A re-run with the GPU otherwise idle gave the same times within 1%.
 - **The lookup table falls back to Python.** It only holds pools with one or two standard large numbers. Every other pool goes to the Python solver, so it runs at Python's speed and inherits Python's ties. `run.sh` now times it once on these sets rather than 20 times.
-- **Four large numbers are what make cats slow.** C takes 0.029 ms on rounds with no large numbers, 0.018 with one, 0.019 with two, 0.059 with three and 0.456 with four (5 runs on CPU 2). C, Rust and many of the other ports mark the values a subset has already made in a bitset sized by that subset's largest possible value. With four large numbers that bitset is up to 11.7 MB, and scanning it for ranks and clearing it cost more than the search. C now radix sorts any subset whose bitset has more than 64 words per value and clears only the words its values touched, which took four-large rounds from 0.441 to 0.157 ms and the cats set from 0.114 to 0.055 ms, with the standard set unchanged at 0.0183 (5 runs, same session). Half of what remains on four-large rounds is zeroing the bitset once per solve, which the no-state rule leaves in place. The other bitset ports have not had this change yet.
+- **Four large numbers are what make cats slow.** C takes 0.029 ms on rounds with no large numbers, 0.018 with one, 0.019 with two, 0.059 with three and 0.456 with four (5 runs on CPU 2). C, Rust and many of the other ports mark the values a subset has already made in a bitset sized by that subset's largest possible value. With four large numbers that bitset is up to 11.7 MB, and scanning it for ranks and clearing it cost more than the search. C now radix sorts any subset whose bitset has more than 64 words per value and clears only the words its values touched, which took four-large rounds from 0.441 to 0.157 ms and the cats set from 0.114 to 0.055 ms, with the standard set unchanged at 0.0183 (5 runs, same session). Half of what remains on four-large rounds is zeroing the bitset once per solve, which the no-state rule leaves in place. The same path was then ported to every other solver with the full-range rank pass: C++, parallel C, assembly, ISPC, Zig, Fortran, Go, parallel Go, Ada, Pascal, FreeBASIC, Java, parallel Java, Kotlin, C#, F#, Swift, JavaScript, Julia, parallel Julia, Haskell and Common Lisp. Most halved their cats time with the standard set unchanged, and assembly became the fastest single-core solver on cats at 0.044 ms. ISPC keeps no list of emitted values, so it gained one only for subsets certain to be sparse (cats 0.112 to 0.067, standard unchanged at 0.0115 over alternating runs). Julia only marks bits, so it must decide before building from an upper bound on the count, which catches fewer subsets (about 22% faster on cats). OCaml, parallel Rust, Lua and Ruby never scan the whole range, and needed no change. COBOL and Forth instead zero a byte-per-value table for each subset size; COBOL now gets it from `calloc`, which returns large blocks as fresh zero pages (cats 0.80 to 0.36 ms), and Forth still has this cost.
 - **Sorting and hashing solvers cope best.** Erlang and Elixir sort each subset's values instead of using a bitset. They slow by only 1.8x, against 5.6x for C before its radix-sort path and 10.1x for ISPC. Ruby, Lua and LuaJIT use hash tables and slow by 1.4x to 2.1x.
 - **Rust was slow on nasty-cats because of how glibc zeroes memory.** It took 0.126 ms against C's 0.024, almost all of it on rounds with four large numbers (0.345 ms against 0.038), and `perf` put 88% of that in `memset`. Rust allocated its bitset with `vec![0; n]` on every solve, sized for the whole pool even though only smaller subsets use it. With four standard cards that is about 150 MB, which glibc takes straight from the OS as lazily zeroed pages, so it cost almost nothing. With four nasty cards it is 7–30 MB, under glibc's mmap threshold, which rises to 32 MB after the first large free, so it came from the heap and was cleared in full every time. Rust now grows the bitset by subset size, to the largest bound of the size being built, as C does. Standard rounds take 0.0451 ms (was 0.0501 in the same session), cats 0.0967 (was 0.153, and faster than C's 0.117 until C gained its radix-sort path) and nasty-cats 0.0454 (was 0.126).
 - **Nasty-cats costs little extra.** The nasty cards reach at most 239,493,600, about a quarter of the standard cards' 937,500,000, so the bitsets stay smaller. Most compiled solvers run within 35% of their standard-game time.
@@ -360,6 +360,7 @@ Each round still runs through dozens of barrier-separated phases with little wor
 ## Tried and rejected
 
 - Peeling the edge cases out of C's pair loop: fewer instructions but more mispredicted branches.
+- ISPC variants of the sparse path: emitting values for every large subset and deciding afterwards by the real count, as C does, made the standard set about 15% slower with no cats gain, and putting the emit test inside the pair loop cost 2.3% of cycles on the standard set. Thresholds 32 and 128 matched 64 in ISPC, JavaScript and Julia.
 - Radix sort instead of the bitset rank sort in C, at any sparsity threshold, on the standard set. On cats rounds it wins for sparse subsets: thresholds of 1, 4, 16, 64, 128, 256 and 1024 words per value gave 0.0329, 0.0232, 0.0191, 0.0183, 0.0183, 0.0183 and 0.0187 ms on the standard set and 0.068, 0.062, 0.055, 0.055, 0.058, 0.065 and 0.115 on cats, so C uses 64.
 - Dropping Rust's bitset for a stable sort that keeps the first way found to each value: 0.111 ms standard, 0.189 cats and 0.104 nasty-cats, against 0.0451, 0.0967 and 0.0454 with the bitset grown by subset size, because the duplicates then reach the sort.
 - Clearing the bitset during C's rank pass: the larger rank array cost more than the pass it saved.

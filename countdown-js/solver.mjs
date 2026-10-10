@@ -2,6 +2,8 @@
 
 // Sort subsets with fewer values than this by insertion rather than by rank in the bitset
 const RANK_MIN = 16;
+// Radix sort a subset when its bitset has more than this many 32-bit words per value
+const SPARSE = 64;
 const OP_ADD = 43;
 const OP_SUB = 45;
 const OP_MUL = 42;
@@ -178,6 +180,35 @@ function build(s, mask) {
             arena[at + 1] = tmp[t + 1];
             arena[at + 2] = tmp[t + 2];
             arena[at + 3] = tmp[t + 3];
+        }
+    } else if (Math.floor(s.max[mask] / 32) + 1 > SPARSE * count) {
+        // Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+        const counts = new Uint32Array(3 * 2048);
+        for (let t = 0; t < out; t += STRIDE) {
+            const v = tmp[t];
+            seen[v >>> 5] = 0;
+            counts[v & 2047]++;
+            counts[2048 + ((v >>> 11) & 2047)]++;
+            counts[4096 + (v >>> 22)]++;
+        }
+        // Pass from tmp to the arena and back so the third pass lands in the arena
+        let from = tmp, fromBase = 0, to = arena, toBase = base;
+        for (let pass = 0; pass < 3; pass++) {
+            const c = pass * 2048, shift = 11 * pass;
+            let sum = 0;
+            for (let d = c; d < c + 2048; d++) {
+                const n = counts[d];
+                counts[d] = sum;
+                sum += n;
+            }
+            for (let t = fromBase; t < fromBase + out; t += STRIDE) {
+                const at = toBase + counts[c + ((from[t] >>> shift) & 2047)]++ * STRIDE;
+                to[at] = from[t];
+                to[at + 1] = from[t + 1];
+                to[at + 2] = from[t + 2];
+                to[at + 3] = from[t + 3];
+            }
+            [from, fromBase, to, toBase] = [to, toBase, from, fromBase];
         }
     } else {
         // Place each value at its rank in the bitset which needs no comparisons

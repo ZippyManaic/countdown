@@ -23,6 +23,8 @@ uses
 const
   { Sort subsets with fewer values than this by insertion rather than by rank in the bitset }
   RankMin = 16;
+  { Radix sort a subset when its bitset has more than this many words per value }
+  Sparse = 64;
   OpAdd = Ord('+');
   OpSub = Ord('-');
   OpMul = Ord('*');
@@ -422,8 +424,11 @@ procedure Build(var S: TState; Mask: Cardinal);
 var
   Left, Right, V, W, Words, Below: Cardinal;
   Count, I, K, Pairs, Bound: SizeInt;
-  Output, Sorted: PEntry;
+  Output, Sorted, From, Dest, Swap: PEntry;
   E: TEntry;
+  Counts: array[0..2, 0..2047] of Cardinal;
+  Pass, Digit, Shift: Integer;
+  Sum, C: Cardinal;
 begin
   Count := 0;
   { Mark zero as seen so inexact divisions never become entries }
@@ -464,6 +469,41 @@ begin
       end;
       Sorted[K] := E;
     end
+  else if S.Max[Mask] div 64 + 1 > QWord(Sparse) * QWord(Count) then
+  begin
+    { Radix sort sparse subsets so the cost follows the values found rather than the range they could span }
+    FillChar(Counts, SizeOf(Counts), 0);
+    for I := 0 to Count - 1 do
+    begin
+      V := ValueOf(S.Tmp[I]);
+      S.Seen[V shr 6] := 0;
+      Inc(Counts[0, V and 2047]);
+      Inc(Counts[1, (V shr 11) and 2047]);
+      Inc(Counts[2, V shr 22]);
+    end;
+    From := S.Tmp;
+    Dest := Sorted;
+    for Pass := 0 to 2 do
+    begin
+      Sum := 0;
+      for Digit := 0 to 2047 do
+      begin
+        C := Counts[Pass, Digit];
+        Counts[Pass, Digit] := Sum;
+        Inc(Sum, C);
+      end;
+      Shift := 11 * Pass;
+      for I := 0 to Count - 1 do
+      begin
+        Digit := (ValueOf(From[I]) shr Shift) and 2047;
+        Dest[Counts[Pass, Digit]] := From[I];
+        Inc(Counts[Pass, Digit]);
+      end;
+      Swap := From;
+      From := Dest;
+      Dest := Swap;
+    end;
+  end
   else
   begin
     { Place each value at its rank in the bitset which needs no comparisons }

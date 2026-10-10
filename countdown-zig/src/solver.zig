@@ -6,6 +6,8 @@ const Allocator = std.mem.Allocator;
 
 // Sort subsets with fewer values than this by insertion rather than by rank in the bitset
 const rank_min = 16;
+// Radix sort a subset when its bitset has more than this many words per value
+const sparse = 64;
 
 /// Record a reachable value with how it was made from the larger and smaller of two values in disjoint subsets
 const Entry = extern struct {
@@ -316,6 +318,35 @@ fn build(s: *State, mask: usize) !void {
             var k = i;
             while (k > 0 and sorted[k - 1].value() > e.value()) : (k -= 1) sorted[k] = sorted[k - 1];
             sorted[k] = e;
+        }
+    } else if (s.max[mask] / 64 + 1 > sparse * count) {
+        // Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+        var counts: [3][2048]u32 = @splat(@splat(0));
+        for (candidates) |e| {
+            const v = e.value();
+            seen[v >> 6] = 0;
+            counts[0][v & 2047] += 1;
+            counts[1][v >> 11 & 2047] += 1;
+            counts[2][v >> 22] += 1;
+        }
+        var from = candidates;
+        var to = sorted;
+        for (&counts, 0..) |*digit, pass| {
+            var sum: u32 = 0;
+            for (digit) |*c| {
+                const n = c.*;
+                c.* = sum;
+                sum += n;
+            }
+            const shift: u5 = @intCast(11 * pass);
+            for (from) |e| {
+                const slot = &digit[e.value() >> shift & 2047];
+                to[slot.*] = e;
+                slot.* += 1;
+            }
+            const t = from;
+            from = to;
+            to = t;
         }
     } else {
         // Place each value at its rank in the bitset which needs no comparisons

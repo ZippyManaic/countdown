@@ -8,6 +8,8 @@ package body Solver is
 
    --  Sort subsets with fewer values than this by insertion rather than by rank in the bitset
    Rank_Min : constant := 16;
+   --  Radix sort a subset when its bitset has more than this many words per value
+   Sparse : constant := 64;
 
    Op_Add : constant Unsigned_64 := Character'Pos ('+');
    Op_Sub : constant Unsigned_64 := Character'Pos ('-');
@@ -323,6 +325,46 @@ package body Solver is
                   Arena (Base + K) := E;
                end;
             end loop;
+         elsif S.Max (Mask) / 64 + 1 > Sparse * Unsigned_64 (Count) then
+            --  Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+            declare
+               Counts : array (0 .. 2, 0 .. 2047) of Natural := (others => (others => 0));
+               Sum, C, D : Natural;
+               V : Unsigned_64;
+            begin
+               for I in 0 .. Count - 1 loop
+                  V := Value_Of (Tmp (I));
+                  Seen (Natural (Shift_Right (V, 6))) := 0;
+                  D := Natural (V and 2047);
+                  Counts (0, D) := Counts (0, D) + 1;
+                  D := Natural (Shift_Right (V, 11) and 2047);
+                  Counts (1, D) := Counts (1, D) + 1;
+                  D := Natural (Shift_Right (V, 22));
+                  Counts (2, D) := Counts (2, D) + 1;
+               end loop;
+               for Pass in 0 .. 2 loop
+                  Sum := 0;
+                  for Digit in 0 .. 2047 loop
+                     C := Counts (Pass, Digit);
+                     Counts (Pass, Digit) := Sum;
+                     Sum := Sum + C;
+                  end loop;
+                  --  Scatter from the scratch buffer to the arena and back so the third pass lands in the arena
+                  if Pass = 1 then
+                     for I in 0 .. Count - 1 loop
+                        D := Natural (Shift_Right (Value_Of (Arena (Base + I)), 11) and 2047);
+                        Tmp (Counts (Pass, D)) := Arena (Base + I);
+                        Counts (Pass, D) := Counts (Pass, D) + 1;
+                     end loop;
+                  else
+                     for I in 0 .. Count - 1 loop
+                        D := Natural (Shift_Right (Value_Of (Tmp (I)), 11 * Pass) and 2047);
+                        Arena (Base + Counts (Pass, D)) := Tmp (I);
+                        Counts (Pass, D) := Counts (Pass, D) + 1;
+                     end loop;
+                  end if;
+               end loop;
+            end;
          else
             --  Place each value at its rank in the bitset which needs no comparisons
             declare

@@ -2,6 +2,8 @@
 
 // Sort subsets with fewer values than this by insertion rather than by rank in the bitset
 private let rankMin = 16
+// Radix sort a subset when its bitset has more than this many words per value
+private let sparse = 64
 private let opAdd: UInt64 = 43
 private let opSub: UInt64 = 45
 private let opMul: UInt64 = 42
@@ -204,6 +206,36 @@ private func build(_ s: inout State, _ mask: Int) {
                 k -= 1
             }
             sorted[k] = e
+        }
+    } else if Int(s.max[mask] >> 6) + 1 > sparse * count {
+        // Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+        withUnsafeTemporaryAllocation(of: UInt32.self, capacity: 3 * 2048) { buffer in
+            let counts = buffer.baseAddress!
+            counts.initialize(repeating: 0, count: 3 * 2048)
+            for i in 0..<count {
+                let v = Int(tmp[i].value)
+                seen[v >> 6] = 0
+                counts[v & 2047] &+= 1
+                counts[2048 + (v >> 11 & 2047)] &+= 1
+                counts[4096 + (v >> 22)] &+= 1
+            }
+            var from = tmp, to = sorted
+            for pass in 0..<3 {
+                let c = counts + 2048 * pass
+                let shift = 11 * pass
+                var sum: UInt32 = 0
+                for d in 0..<2048 {
+                    let k = c[d]
+                    c[d] = sum
+                    sum &+= k
+                }
+                for i in 0..<count {
+                    let d = Int(from[i].value) >> shift & 2047
+                    to[Int(c[d])] = from[i]
+                    c[d] &+= 1
+                }
+                swap(&from, &to)
+            }
         }
     } else {
         // Place each value at its rank in the bitset which needs no comparisons

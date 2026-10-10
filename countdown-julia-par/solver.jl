@@ -7,6 +7,8 @@ module ParSolver
 export solve, threads
 
 const OP_CHARS = (UInt8('+'), UInt8('-'), UInt8('*'), UInt8('/'))
+# List and radix sort a subset's values when its bitset has more than this many words per value it could make
+const SPARSE = 64
 
 # Name the kinds of work a job can hand out
 const BUILD = 1
@@ -35,6 +37,8 @@ mutable struct Scratch
     # Point at one bit per value seen in the subset being built allocated outside the garbage collector
     seen::Ptr{UInt64}
     words::Int
+    # Collect a sparse subset's new values here before they are sorted into the arena
+    tmp::Vector{UInt32}
     # Hold the right half's values with their reciprocals for the split being worked on
     rv::Vector{UInt32}
     ri::Vector{Float64}
@@ -42,7 +46,7 @@ mutable struct Scratch
     m::Vector{UInt32}
     op::Vector{UInt8}
 end
-Scratch() = Scratch(Ptr{UInt64}(0), 0, Vector{UInt32}(undef, 64), Vector{Float64}(undef, 64),
+Scratch() = Scratch(Ptr{UInt64}(0), 0, Vector{UInt32}(undef, 0), Vector{UInt32}(undef, 64), Vector{Float64}(undef, 64),
                     Vector{UInt32}(undef, 6), Vector{UInt8}(undef, 6))
 
 # Hold the working memory of one solve with subsets indexed by their masks
@@ -167,6 +171,28 @@ end
     return nothing
 end
 
+# Mark a value as seen and append it to tmp advancing past it only if it is new
+@inline function emit!(seen::Ptr{UInt64}, tmp::Vector{UInt32}, k::Int, v::UInt32)
+    p = seen + 8 * (v >> 6)
+    w = unsafe_load(p)
+    unsafe_store!(p, w | (one(UInt64) << (v & 0x3f)))
+    @inbounds tmp[k + 1] = v
+    return k + 1 - Int((w >> (v & 0x3f)) & one(UInt64))
+end
+
+# Append every new legal value from x and y to tmp where x is at least y and inv is 1/y and return the new count
+@inline function ops!(seen::Ptr{UInt64}, tmp::Vector{UInt32}, k::Int, x::UInt32, y::UInt32, inv::Float64)
+    k = emit!(seen, tmp, k, x + y)
+    x != y && (k = emit!(seen, tmp, k, x - y))
+    if y != 0x1
+        k = emit!(seen, tmp, k, x * y)
+        q = quotient(x, inv)
+        # Emit zero for an inexact division since zero is already marked and never appended
+        k = emit!(seen, tmp, k, pick(q * y == x, q, zero(UInt32)))
+    end
+    return k
+end
+
 # Fill the right half's values and reciprocals for a split
 @inline function load_rights!(sc::Scratch, s::State, right::Int)
     rv, ri, vals = sc.rv, sc.ri, s.vals
@@ -197,6 +223,60 @@ function pairs!(sc::Scratch, s::State, left::Int, right::Int)
             ops!(seen, rv[j], a, ia)
             j += 1
         end
+    end
+    return nothing
+end
+
+# Append every new combination of each left value with each right value to tmp and return the new count
+function pairs!(sc::Scratch, s::State, left::Int, right::Int, k::Int)
+    seen, tmp, rv, ri, vals = sc.seen, sc.tmp, sc.rv, sc.ri, s.vals
+    nr = load_rights!(sc, s, right)
+    ol, nl = s.off[left], s.len[left]
+    @inbounds for i in 1:nl
+        a = vals[ol + i]
+        j = 1
+        while j <= nr && rv[j] <= a
+            k = ops!(seen, tmp, k, a, rv[j], ri[j])
+            j += 1
+        end
+        ia = 1.0 / Float64(a)
+        while j <= nr
+            k = ops!(seen, tmp, k, rv[j], a, ia)
+            j += 1
+        end
+    end
+    return k
+end
+
+# Radix sort a sparse subset's listed values into its arena region in three 11-bit passes and clear the words they touched
+function radix!(sc::Scratch, s::State, mask::Int, count::Int)
+    seen, tmp, vals, top = sc.seen, sc.tmp, s.vals, s.off[mask]
+    counts = zeros(UInt32, 2048, 3)
+    @inbounds for i in 1:count
+        v = tmp[i]
+        unsafe_store!(seen, zero(UInt64), (v >> 6) + 1)
+        counts[(v & 0x7ff) + 1, 1] += 1
+        counts[((v >> 11) & 0x7ff) + 1, 2] += 1
+        counts[(v >> 22) + 1, 3] += 1
+    end
+    # Pass from tmp to the arena and back so the third pass lands in the arena
+    from, from_at, to, to_at = tmp, 0, vals, top
+    @inbounds for pass in 1:3
+        sum = zero(UInt32)
+        for d in 1:2048
+            c = counts[d, pass]
+            counts[d, pass] = sum
+            sum += c
+        end
+        shift = 11 * (pass - 1)
+        for i in 1:count
+            v = from[from_at + i]
+            d = ((v >> shift) & 0x7ff) + 1
+            at = counts[d, pass]
+            counts[d, pass] = at + one(UInt32)
+            to[to_at + Int(at) + 1] = v
+        end
+        from, from_at, to, to_at = to, to_at, from, from_at
     end
     return nothing
 end
@@ -250,13 +330,37 @@ end
 function build!(sc::Scratch, s::State, mask::Int)
     reserve_seen!(sc, s.level_most)
     seen = sc.seen
+    words = Int(s.most[mask] >> 6) + 1
+    room = 0
+    left = (mask - 1) & mask
+    while left != 0
+        right = mask ⊻ left
+        left < right && (room += 4 * s.len[left] * s.len[right])
+        left = (left - 1) & mask
+    end
+    if words > SPARSE * room
+        # List the values of a subset too sparse to scan so the cost follows the values rather than the range
+        length(sc.tmp) < room + 1 && (sc.tmp = Vector{UInt32}(undef, max(2 * length(sc.tmp), room + 1)))
+        # Mark zero as seen so inexact divisions never become values
+        unsafe_store!(seen, unsafe_load(seen) | one(UInt64))
+        count = 0
+        left = (mask - 1) & mask
+        while left != 0
+            right = mask ⊻ left
+            left < right && (count = pairs!(sc, s, left, right, count))
+            left = (left - 1) & mask
+        end
+        radix!(sc, s, mask, count)
+        unsafe_store!(seen, unsafe_load(seen) & ~one(UInt64))
+        s.len[mask] = count
+        return nothing
+    end
     left = (mask - 1) & mask
     while left != 0
         right = mask ⊻ left
         left < right && pairs!(sc, s, left, right)
         left = (left - 1) & mask
     end
-    words = Int(s.most[mask] >> 6) + 1
     vals = s.vals
     k = s.off[mask]
     # Drop the zero that inexact divisions marked

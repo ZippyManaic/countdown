@@ -5,6 +5,8 @@
 
 ' Sort subsets with fewer values than this by insertion rather than by rank in the bitset
 #define RANK_MIN 16
+' Radix sort a subset when its bitset has more than this many words per value
+#define SPARSE 64
 
 #define OP_ADD 43
 #define OP_SUB 45
@@ -275,6 +277,32 @@ Private Sub Build(ByRef s As SolveState, ByVal mask As ULong)
                 k -= 1
             Wend
             sorted[k] = e
+        Next
+    ElseIf CULngInt(s.max_value(mask) \ 64 + 1) > CULngInt(SPARSE) * count Then
+        ' Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+        Dim As ULong counts(0 To 2, 0 To 2047)
+        For i As UInteger = 0 To count - 1
+            Dim As ULong v = s.tmp[i].value
+            seen[v Shr 6] = 0
+            counts(0, v And 2047) += 1
+            counts(1, (v Shr 11) And 2047) += 1
+            counts(2, v Shr 22) += 1
+        Next
+        Dim As Entry Ptr from_ = s.tmp, to_ = sorted
+        For pass As Integer = 0 To 2
+            Dim As ULong sum = 0
+            For d As Integer = 0 To 2047
+                Dim As ULong c = counts(pass, d)
+                counts(pass, d) = sum
+                sum += c
+            Next
+            Dim As Integer shift = 11 * pass
+            For i As UInteger = 0 To count - 1
+                Dim As ULong d = (from_[i].value Shr shift) And 2047
+                to_[counts(pass, d)] = from_[i]
+                counts(pass, d) += 1
+            Next
+            Swap from_, to_
         Next
     Else
         ' Place each value at its rank in the bitset which needs no comparisons

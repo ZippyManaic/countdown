@@ -12,6 +12,9 @@ open Microsoft.FSharp.NativeInterop
 // Sort subsets with fewer values than this by insertion rather than by rank in the bitset
 [<Literal>]
 let private RankMin = 16
+// Radix sort a subset when its bitset has more than this many words per value
+[<Literal>]
+let private Sparse = 64
 [<Literal>]
 let private OpAdd = 43UL
 [<Literal>]
@@ -168,6 +171,39 @@ let private build (s: State) mask =
                 k <- k - 1
             NativePtr.set sorted (2 * k) head
             NativePtr.set sorted (2 * k + 1) operands
+    elif int64 (s.Max[mask] >>> 6) + 1L > int64 Sparse * int64 count then
+        // Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+        let counts = NativePtr.stackalloc<uint32> (3 * 2048)
+        Span<uint32>(NativePtr.toVoidPtr counts, 3 * 2048).Clear()
+        for i in 0 .. count - 1 do
+            let v = uint32 (NativePtr.get tmp (2 * i))
+            NativePtr.set seen (int (v >>> 6)) 0UL
+            let c0 = int (v &&& 2047u)
+            let c1 = 2048 + int ((v >>> 11) &&& 2047u)
+            let c2 = 4096 + int (v >>> 22)
+            NativePtr.set counts c0 (NativePtr.get counts c0 + 1u)
+            NativePtr.set counts c1 (NativePtr.get counts c1 + 1u)
+            NativePtr.set counts c2 (NativePtr.get counts c2 + 1u)
+        let mutable from = tmp
+        let mutable dest = sorted
+        for pass in 0 .. 2 do
+            let c = NativePtr.add counts (2048 * pass)
+            let shift = 11 * pass
+            let mutable sum = 0u
+            for d in 0 .. 2047 do
+                let k = NativePtr.get c d
+                NativePtr.set c d sum
+                sum <- sum + k
+            for i in 0 .. count - 1 do
+                let head = NativePtr.get from (2 * i)
+                let d = int ((uint32 head >>> shift) &&& 2047u)
+                let at = int (NativePtr.get c d)
+                NativePtr.set c d (uint32 at + 1u)
+                NativePtr.set dest (2 * at) head
+                NativePtr.set dest (2 * at + 1) (NativePtr.get from (2 * i + 1))
+            let t = from
+            from <- dest
+            dest <- t
     else
         // Place each value at its rank in the bitset which needs no comparisons
         let words = int (s.Max[mask] >>> 6) + 1

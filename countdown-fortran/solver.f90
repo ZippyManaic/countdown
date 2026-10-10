@@ -8,6 +8,8 @@ module countdown_solver
 
     ! Sort subsets with fewer values than this by insertion rather than by rank in the bitset
     integer, parameter :: rank_min = 16
+    ! Radix sort a subset when its bitset has more than this many words per value
+    integer, parameter :: sparse = 64
     integer(int64), parameter :: low32 = int(z'FFFFFFFF', int64)
 
     ! Record a reachable value with how it was made leaving fields uninitialised so allocating arrays costs no zeroing
@@ -409,6 +411,57 @@ contains
         seen(0:words - 1) = 0
     end subroutine rank_sort
 
+    ! Move each value to the slot its digit's next count gives and advance that count
+    subroutine scatter(from, count, to, counts, shift)
+        type(entry), intent(in) :: from(*)
+        integer, intent(in) :: count, shift
+        type(entry), intent(inout) :: to(*)
+        integer(int32), intent(inout) :: counts(0:2047)
+        integer :: i, d
+
+        do i = 1, count
+            d = int(iand(shiftr(value_of(from(i)), shift), 2047_int64))
+            to(counts(d)) = from(i)
+            counts(d) = counts(d) + 1
+        end do
+    end subroutine scatter
+
+    ! Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+    subroutine radix_sort(items, count, seen, sorted)
+        type(entry), intent(inout) :: items(*)
+        integer, intent(in) :: count
+        integer(int64), intent(inout) :: seen(0:*)
+        type(entry), intent(inout) :: sorted(*)
+        integer(int32) :: counts(0:2047, 0:2), sum, c
+        integer(int64) :: v
+        integer :: i, d, pass
+
+        counts = 0
+        do i = 1, count
+            v = value_of(items(i))
+            seen(shiftr(v, 6)) = 0
+            d = int(iand(v, 2047_int64))
+            counts(d, 0) = counts(d, 0) + 1
+            d = int(iand(shiftr(v, 11), 2047_int64))
+            counts(d, 1) = counts(d, 1) + 1
+            d = int(shiftr(v, 22))
+            counts(d, 2) = counts(d, 2) + 1
+        end do
+        ! Start each digit's slots at one since the arrays count from one
+        do pass = 0, 2
+            sum = 1
+            do d = 0, 2047
+                c = counts(d, pass)
+                counts(d, pass) = sum
+                sum = sum + c
+            end do
+        end do
+        ! Ping-pong between the two buffers so the third pass lands in sorted
+        call scatter(items, count, sorted, counts(:, 0), 0)
+        call scatter(sorted, count, items, counts(:, 1), 11)
+        call scatter(items, count, sorted, counts(:, 2), 22)
+    end subroutine radix_sort
+
     ! Build the sorted reachable values of a subset into the arena keeping only the first way found to make each
     subroutine build(s, mask)
         type(state), intent(inout) :: s
@@ -450,6 +503,8 @@ contains
                 end do
                 s%arena(at) = e
             end do
+        else if (s%max(mask)/64 + 1 > int(sparse, int64)*count) then
+            call radix_sort(s%tmp, count, s%seen, s%arena(s%top + 1:))
         else
             call rank_sort(s%tmp, count, s%seen, s%rank, int(s%max(mask)/64) + 1, s%arena(s%top + 1:))
         end if

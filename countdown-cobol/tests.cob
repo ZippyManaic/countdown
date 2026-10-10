@@ -168,7 +168,8 @@ PROCEDURE DIVISION.
         STOP RUN RETURNING 1
     END-IF
     DISPLAY "all tests passed"
-    STOP RUN.
+    *> Return zero explicitly since a bare STOP RUN returns whatever code the last CALL left
+    STOP RUN RETURNING 0.
 
 *> Deal 2000 rounds in game-mode and check every large count from lo-count to hi-count occurs
 check-mode.
