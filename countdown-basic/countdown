@@ -1,4 +1,19 @@
 #!/bin/bash
 # Deal and solve one round with bwBASIC, which needs the program and solver joined and prints a banner first
 here=$(cd "$(dirname "$0")" && pwd)
-COUNTDOWN_SEED=$RANDOM$RANDOM bwbasic "$here/countdown.bas" < /dev/null | tail -n +5 | sed "\$ {/^\$/d}"
+usage="usage: countdown [standard|cats|nasty] [LARGE]"
+# Reject extra or empty arguments here since bwBASIC sees only the two environment variables
+if [ $# -gt 2 ] || { [ $# -ge 1 ] && [ -z "$1" ]; } || { [ $# -eq 2 ] && [ -z "$2" ]; }; then
+    echo "$usage" >&2
+    exit 2
+fi
+# Set both variables even when empty since bwBASIC returns garbage for an unset one
+out=$(COUNTDOWN_MODE=${1:-} COUNTDOWN_LARGE=${2:-} COUNTDOWN_SEED=$RANDOM$RANDOM bwbasic "$here/countdown.bas" < /dev/null | tail -n +5 | sed "\$ {/^\$/d}")
+case $out in
+    usage:*) echo "$out" >&2; exit 2 ;;
+esac
+printf '%s\n' "$out"
+# Exit with 1 when there is no exact solution since bwBASIC cannot set an exit code
+case $out in
+    *"No exact solution"*) exit 1 ;;
+esac

@@ -4,7 +4,7 @@ ERLCFLAGS ?= +debug_info
 ERLFLAGS = +sbwt very_long +swt very_low +scl false +sbt db
 
 countdown: ebin/solver_par.beam ebin/countdown_par.beam
-	printf '#!/bin/sh\nexec erl -noshell +S "$${COUNTDOWN_THREADS:-8}" $(ERLFLAGS) -mode minimal -pa "%s/ebin" -run countdown_par main\n' "$(CURDIR)" > countdown
+	printf '#!/bin/sh\nexec erl -noshell +S "$${COUNTDOWN_THREADS:-8}" $(ERLFLAGS) -mode minimal -pa "%s/ebin" -run countdown_par main -extra "$$@"\n' "$(CURDIR)" > countdown
 	chmod +x countdown
 
 ebin/%.beam: %.erl

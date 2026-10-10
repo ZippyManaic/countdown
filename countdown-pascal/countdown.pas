@@ -5,51 +5,26 @@ program Countdown;
 
 uses
   { Use the C library's allocator since Free Pascal's returns large blocks to the kernel after every solve }
-  cmem, Solver;
-
-const
-  LargeNumbers: array[0..3] of Cardinal = (25, 50, 75, 100);
-
-{ Shuffle numbers in place with Fisher-Yates }
-procedure Shuffle(var Items: array of Cardinal);
-var
-  I, J: Integer;
-  T: Cardinal;
-begin
-  for I := High(Items) downto 1 do
-  begin
-    J := Random(I + 1);
-    T := Items[I];
-    Items[I] := Items[J];
-    Items[J] := T;
-  end;
-end;
+  cmem, Solver, Dealer;
 
 var
   Target, Value: Cardinal;
   LargeCount, I: Integer;
-  Small: array[0..19] of Cardinal;
-  Large: array[0..3] of Cardinal;
+  Mode: TGameMode;
+  Args: array of string;
   Pool: TPool;
   Expr: string;
 begin
-  Randomize;
-  Target := 100 + Random(900);
-  LargeCount := 1 + Random(2);
-
-  { Hold two cards of each small number to match the game's deck }
-  for I := 0 to 19 do
-    Small[I] := I mod 10 + 1;
-  Shuffle(Small);
-  { Shuffle a copy since each large number appears only once in the game }
-  Large := LargeNumbers;
-  Shuffle(Large);
-
-  SetLength(Pool, 6);
-  for I := 0 to 5 - LargeCount do
-    Pool[I] := Small[I];
-  for I := 0 to LargeCount - 1 do
-    Pool[6 - LargeCount + I] := Large[I];
+  Args := nil;
+  SetLength(Args, ParamCount);
+  for I := 1 to ParamCount do
+    Args[I - 1] := ParamStr(I);
+  if not ParseArgs(Args, Mode, LargeCount) then
+  begin
+    WriteLn(StdErr, Usage);
+    Halt(2);
+  end;
+  Deal(Mode, LargeCount, Target, Pool);
 
   WriteLn('Target: ', Target);
   Write('Pool:  ');

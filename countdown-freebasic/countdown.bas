@@ -1,36 +1,25 @@
 ' Generate a Countdown numbers round and work out whether it can be solved
 
 #include once "solver.bas"
+#include once "deal.bas"
 
-' Shuffle numbers in place with Fisher-Yates
-Sub Shuffle(items() As ULong)
-    For i As Long = UBound(items) To LBound(items) + 1 Step -1
-        Dim As Long j = LBound(items) + Int(Rnd * (i - LBound(items) + 1))
-        Swap items(i), items(j)
-    Next
-End Sub
+Dim As Long arg_count = __FB_ARGC__ - 1
+Dim As String args(0 To 1)
+For i As Long = 0 To IIf(arg_count < 2, arg_count, 2) - 1
+    args(i) = Command(i + 1)
+Next
+Dim As Long mode, large_count
+If Not ParseArgs(args(), arg_count, mode, large_count) Then
+    Open Err For Output As #1
+    Print #1, USAGE
+    Close #1
+    End 2
+End If
 
 Randomize
-Dim As ULong target = 100 + Int(Rnd * 900)
-Dim As Long large_count = 1 + Int(Rnd * 2)
-
-' Hold two cards of each small number to match the game's deck
-Dim As ULong small(0 To 19)
-For i As Long = 0 To 19
-    small(i) = i Mod 10 + 1
-Next
-Shuffle(small())
-' Shuffle a copy since each large number appears only once in the game
-Dim As ULong large(0 To 3) = {25, 50, 75, 100}
-Shuffle(large())
-
+Dim As ULong target
 Dim As ULong pool(0 To 5)
-For i As Long = 0 To 5 - large_count
-    pool(i) = small(i)
-Next
-For i As Long = 0 To large_count - 1
-    pool(6 - large_count + i) = large(i)
-Next
+GenerateRound(mode, large_count, target, pool())
 
 Print "Target: " & target
 Dim As String line_ = "Pool:  "

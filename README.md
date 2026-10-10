@@ -19,6 +19,16 @@ Each `countdown-<language>/` directory holds a solver, a program that deals and 
 
 `countdown.py` at the top level is the original Python version.
 
+Every program takes the same arguments:
+
+```sh
+countdown                 # the standard game: one or two large numbers
+countdown cats            # none to four large numbers from 25, 50, 75 and 100
+countdown nasty 4         # four large numbers from the "nasty" 12, 37, 62 and 87
+```
+
+A number after the mode fixes how many large numbers are dealt: 1 or 2 for `standard`, 0 to 4 for `cats` and `nasty`. The program exits with 0 when it hits the target, 1 when it cannot and 2 when the arguments are invalid. The PyTorch, transformer and CUDA programs exit with 3 for pools too large for their GPU packing. Line-numbered BASIC gets its arguments through its `countdown` wrapper, which passes them on in environment variables.
+
 ## How often is there no solution?
 
 - [`solvability/`](solvability/) solves every possible round, in the standard game and in the cats and nasty-cats modes (0 to 4 large numbers). It counts the unsolvable ones with an independent checker and proves the counts in Lean 4 ([`solvability/RESULTS.md`](solvability/RESULTS.md)).

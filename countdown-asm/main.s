@@ -4,8 +4,6 @@
 
     .set SYS_WRITE, 1
     .set SYS_EXIT_GROUP, 231
-    .set SYS_GETRANDOM, 318
-    .set RANDOM_WORDS, 32
 
     .section .rodata
 s_target:   .asciz "Target: "
@@ -15,66 +13,17 @@ s_closest:  .asciz "No exact solution, closest is "
 s_equals:   .asciz " = "
 s_open:     .asciz " ("
 s_away:     .asciz " away)"
-large_deck: .long 25, 50, 75, 100
+s_usage:    .ascii "usage: countdown [standard|cats|nasty] [LARGE]\n"
+    .set USAGE_LENGTH, . - s_usage
 
     .bss
     .balign 8
-random:     .space 8 * RANDOM_WORDS
-rand_next:  .space 4
 target:     .space 4
-small:      .space 4 * 20
-large:      .space 4 * 4
 pool:       .space 4 * 6
 expr:       .space 256
 out:        .space 1024
 
     .text
-
-# Return in eax a random number below edi refilling the random buffer from the kernel when it runs out
-rand_below:
-    mov ecx, dword ptr [rip + rand_next]
-    test ecx, ecx
-    jnz 1f
-    push rdi
-    mov eax, SYS_GETRANDOM
-    lea rdi, [rip + random]
-    mov esi, 8 * RANDOM_WORDS
-    xor edx, edx
-    syscall
-    pop rdi
-    mov ecx, RANDOM_WORDS
-1:  dec ecx
-    mov dword ptr [rip + rand_next], ecx
-    lea rax, [rip + random]
-    mov rax, qword ptr [rax + rcx * 8]
-    # Accept the tiny modulo bias since 64 random bits dwarf any range used here
-    mov ecx, edi
-    xor edx, edx
-    div rcx
-    mov eax, edx
-    ret
-
-# Shuffle esi numbers at rdi in place with Fisher-Yates
-shuffle:
-    push rbx
-    push r12
-    push r13
-    mov r12, rdi
-    lea ebx, [rsi - 1]
-1:  test ebx, ebx
-    jz 2f
-    lea edi, [rbx + 1]
-    call rand_below
-    mov ecx, dword ptr [r12 + rbx * 4]
-    mov edx, dword ptr [r12 + rax * 4]
-    mov dword ptr [r12 + rbx * 4], edx
-    mov dword ptr [r12 + rax * 4], ecx
-    dec ebx
-    jmp 1b
-2:  pop r13
-    pop r12
-    pop rbx
-    ret
 
 # Copy the zero-terminated string at rsi to rdi and return the end in rax
 put_str:
@@ -90,44 +39,21 @@ put_str:
 
     .globl _start
 _start:
-    mov edi, 900
-    call rand_below
-    add eax, 100
+    # Read the mode and count into the stack from the arguments after the program name
+    mov edi, dword ptr [rsp]
+    dec edi
+    lea rsi, [rsp + 16]
+    sub rsp, 16
+    mov rdx, rsp
+    lea rcx, [rsp + 4]
+    call parse_args
+    test eax, eax
+    jnz usage
+    mov edi, dword ptr [rsp]
+    mov esi, dword ptr [rsp + 4]
+    lea rdx, [rip + pool]
+    call deal_round
     mov dword ptr [rip + target], eax
-    mov edi, 2
-    call rand_below
-    lea r12d, [rax + 1]
-
-    # Hold two cards of each small number to match the game's deck
-    lea rdi, [rip + small]
-    xor ecx, ecx
-1:  mov eax, ecx
-    xor edx, edx
-    mov r8d, 10
-    div r8d
-    inc edx
-    mov dword ptr [rdi + rcx * 4], edx
-    inc ecx
-    cmp ecx, 20
-    jb 1b
-    mov esi, 20
-    call shuffle
-    # Shuffle a copy since each large number appears only once in the game
-    lea rsi, [rip + large_deck]
-    lea rdi, [rip + large]
-    movdqu xmm0, xmmword ptr [rsi]
-    movdqu xmmword ptr [rdi], xmm0
-    mov esi, 4
-    call shuffle
-
-    lea rdi, [rip + pool]
-    lea rsi, [rip + small]
-    mov ecx, 6
-    sub ecx, r12d
-    rep movsd
-    lea rsi, [rip + large]
-    mov ecx, r12d
-    rep movsd
 
     lea rdi, [rip + out]
     lea rsi, [rip + s_target]
@@ -201,6 +127,17 @@ _start:
     mov eax, SYS_WRITE
     syscall
     mov edi, ebx
+    mov eax, SYS_EXIT_GROUP
+    syscall
+
+# Print the usage line to stderr and exit with code 2
+usage:
+    mov edi, 2
+    lea rsi, [rip + s_usage]
+    mov edx, USAGE_LENGTH
+    mov eax, SYS_WRITE
+    syscall
+    mov edi, 2
     mov eax, SYS_EXIT_GROUP
     syscall
 

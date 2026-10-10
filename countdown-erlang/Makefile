@@ -2,7 +2,7 @@ ERLC = erlc
 ERLCFLAGS ?= +debug_info
 
 countdown: ebin/solver.beam ebin/countdown.beam
-	printf '#!/bin/sh\nexec erl -noshell +S 1 -mode minimal -pa "%s/ebin" -run countdown main\n' "$(CURDIR)" > countdown
+	printf '#!/bin/sh\nexec erl -noshell +S 1 -mode minimal -pa "%s/ebin" -run countdown main -extra "$$@"\n' "$(CURDIR)" > countdown
 	chmod +x countdown
 
 ebin/%.beam: %.erl

@@ -1,40 +1,20 @@
 // Generate a Countdown numbers round and work out whether it can be solved
 
 #include <stdio.h>
-#include <stdlib.h>
 
+#include "round.h"
 #include "solver.h"
 
-static const unsigned LARGE_NUMBERS[] = {25, 50, 75, 100};
-
-// Shuffle n numbers in place with Fisher-Yates
-static void shuffle(unsigned *items, unsigned n)
+int main(int argc, char **argv)
 {
-    for (unsigned i = n - 1; i > 0; i--) {
-        unsigned j = arc4random_uniform(i + 1);
-        unsigned t = items[i];
-        items[i] = items[j];
-        items[j] = t;
+    enum mode mode;
+    int large_count;
+    if (parse_args(argc - 1, argv + 1, &mode, &large_count)) {
+        fprintf(stderr, "%s\n", USAGE);
+        return 2;
     }
-}
-
-int main(void)
-{
-    unsigned target = 100 + arc4random_uniform(900);
-    unsigned large_count = 1 + arc4random_uniform(2);
-
-    // Hold two cards of each small number to match the game's deck
-    unsigned small[20];
-    for (unsigned i = 0; i < 20; i++)
-        small[i] = i % 10 + 1;
-    shuffle(small, 20);
-    // Shuffle a copy since each large number appears only once in the game
-    unsigned large[4] = {LARGE_NUMBERS[0], LARGE_NUMBERS[1], LARGE_NUMBERS[2], LARGE_NUMBERS[3]};
-    shuffle(large, 4);
-
     unsigned pool[6];
-    for (unsigned i = 0; i < 6; i++)
-        pool[i] = i < 6 - large_count ? small[i] : large[i - (6 - large_count)];
+    unsigned target = deal_round(mode, large_count, pool);
 
     printf("Target: %u\nPool:  ", target);
     for (unsigned i = 0; i < 6; i++)

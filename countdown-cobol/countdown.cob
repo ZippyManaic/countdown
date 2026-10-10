@@ -5,25 +5,17 @@ PROGRAM-ID. countdown.
 
 DATA DIVISION.
 WORKING-STORAGE SECTION.
-01 large-numbers.
-   05 FILLER                PIC 9(3) VALUE 25.
-   05 FILLER                PIC 9(3) VALUE 50.
-   05 FILLER                PIC 9(3) VALUE 75.
-   05 FILLER                PIC 9(3) VALUE 100.
-01 large-table REDEFINES large-numbers.
-   05 large-number          PIC 9(3) OCCURS 4 TIMES.
 01 target                   PIC 9(9) COMP-5.
 01 pool.
    05 pool-number           PIC 9(9) COMP-5 OCCURS 6 TIMES.
 01 pool-size                PIC 9(9) COMP-5 VALUE 6.
-01 small.
-   05 small-number          PIC 9(9) COMP-5 OCCURS 20 TIMES.
-01 large.
-   05 large-copy            PIC 9(9) COMP-5 OCCURS 4 TIMES.
-01 large-count              PIC 9 COMP-5.
+01 game-mode                PIC 9 COMP-5.
+01 fixed-large              PIC S9 COMP-5.
+01 args-valid               PIC 9 COMP-5.
+01 arg-count                PIC 9(4) COMP-5.
+01 arg-first                PIC X(64) VALUE SPACES.
+01 arg-second               PIC X(64) VALUE SPACES.
 01 i                        PIC 9(4) COMP-5.
-01 j                        PIC 9(4) COMP-5.
-01 swap                     PIC 9(9) COMP-5.
 01 seed                     PIC 9(8).
 01 r                        PIC V9(9).
 01 expr                     PIC X(128).
@@ -35,39 +27,23 @@ WORKING-STORAGE SECTION.
 01 line-pos                 PIC 9(4) COMP-5.
 
 PROCEDURE DIVISION.
+    ACCEPT arg-count FROM ARGUMENT-NUMBER
+    IF arg-count > 0
+        ACCEPT arg-first FROM ARGUMENT-VALUE
+    END-IF
+    IF arg-count > 1
+        ACCEPT arg-second FROM ARGUMENT-VALUE
+    END-IF
+    CALL "parse-args" USING arg-count arg-first arg-second game-mode fixed-large args-valid
+    IF args-valid = 0
+        DISPLAY "usage: countdown [standard|cats|nasty] [LARGE]" UPON SYSERR
+        STOP RUN RETURNING 2
+    END-IF
+
     *> Seed from the clock since FUNCTION RANDOM repeats otherwise
     MOVE FUNCTION CURRENT-DATE(9:8) TO seed
     COMPUTE r = FUNCTION RANDOM(seed)
-    COMPUTE target = 100 + FUNCTION INTEGER(FUNCTION RANDOM * 900)
-    COMPUTE large-count = 1 + FUNCTION INTEGER(FUNCTION RANDOM * 2)
-
-    *> Hold two cards of each small number to match the game's deck
-    PERFORM VARYING i FROM 1 BY 1 UNTIL i > 20
-        COMPUTE small-number(i) = FUNCTION MOD(i - 1, 10) + 1
-    END-PERFORM
-    *> Shuffle with Fisher-Yates
-    PERFORM VARYING i FROM 20 BY -1 UNTIL i < 2
-        COMPUTE j = 1 + FUNCTION INTEGER(FUNCTION RANDOM * i)
-        MOVE small-number(i) TO swap
-        MOVE small-number(j) TO small-number(i)
-        MOVE swap TO small-number(j)
-    END-PERFORM
-    *> Shuffle a copy since each large number appears only once in the game
-    PERFORM VARYING i FROM 1 BY 1 UNTIL i > 4
-        MOVE large-number(i) TO large-copy(i)
-    END-PERFORM
-    PERFORM VARYING i FROM 4 BY -1 UNTIL i < 2
-        COMPUTE j = 1 + FUNCTION INTEGER(FUNCTION RANDOM * i)
-        MOVE large-copy(i) TO swap
-        MOVE large-copy(j) TO large-copy(i)
-        MOVE swap TO large-copy(j)
-    END-PERFORM
-    PERFORM VARYING i FROM 1 BY 1 UNTIL i > 6 - large-count
-        MOVE small-number(i) TO pool-number(i)
-    END-PERFORM
-    PERFORM VARYING i FROM 1 BY 1 UNTIL i > large-count
-        MOVE large-copy(i) TO pool-number(6 - large-count + i)
-    END-PERFORM
+    CALL "generate-round" USING game-mode fixed-large target pool
 
     MOVE target TO shown
     DISPLAY "Target: " FUNCTION TRIM(shown)

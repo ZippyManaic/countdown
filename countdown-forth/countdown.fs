@@ -1,41 +1,30 @@
 \ Generate a Countdown numbers round and work out whether it can be solved
-require random.fs
 require solver.fs
+require deal.fs
 
-create large-numbers 25 , 50 , 75 , 100 ,
-create small 20 cells allot
-create large 4 cells allot
-create round 6 cells allot
-
-\ Shuffle n cells at addr in place with Fisher-Yates
-: shuffle { addr n -- }
-    1 n 1- ?do
-        i 1+ random { k }
-        addr i cells + @ addr k cells + @
-        addr i cells + ! addr k cells + !
-    -1 +loop ;
+create arguments 6 cells allot
 
 : .number ( u -- ) 0 <# #s #> type ;
 
+\ Collect the command-line arguments as pairs in arguments and return how many there were
+: collect-args ( -- n )
+    0 begin next-arg dup while
+        2 pick 3 < if 2 pick 2* cells arguments + 2! else 2drop then
+        1+
+    repeat 2drop ;
+
 : main ( -- )
+    arguments collect-args parse-args { mode fixed }
+    mode 0< if .usage 2 (bye) then
     \ Seed from the clock since the generator starts from a fixed seed
     utime drop seed !
     \ Discard a few outputs since nearby seeds give nearby first outputs
     16 0 do rnd drop loop
-    900 random 100 + { goal }
-    2 random 1+ { large-count }
-    \ Hold two cards of each small number to match the game's deck
-    20 0 do i 10 mod 1+ small i cells + ! loop
-    small 20 shuffle
-    \ Shuffle a copy since each large number appears only once in the game
-    large-numbers large 4 cells move
-    large 4 shuffle
-    small round 6 large-count - cells move
-    large round 6 large-count - cells + large-count cells move
+    mode fixed generate-round { goal }
 
     ." Target: " goal .number cr
-    ." Pool:  " 6 0 do space round i cells + @ .number loop cr
-    goal round 6 solve { value c-addr u }
+    ." Pool:  " 6 0 do space hand i cells + @ .number loop cr
+    goal hand 6 solve { value c-addr u }
     value goal = if
         ." Solved: " c-addr u type ."  = " value .number cr
         bye

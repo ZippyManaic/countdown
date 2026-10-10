@@ -1,10 +1,10 @@
 FBC = fbc
 FBCFLAGS ?= -gen gcc -O 3 -Wc -march=native
 
-countdown: countdown.bas solver.bas
+countdown: countdown.bas deal.bas solver.bas
 	$(FBC) $(FBCFLAGS) countdown.bas -x countdown
 
-test: tests.bas solver.bas
+test: tests.bas deal.bas solver.bas
 	$(FBC) $(FBCFLAGS) tests.bas -x tests
 	./tests
 

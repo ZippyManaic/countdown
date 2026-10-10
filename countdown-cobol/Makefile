@@ -1,11 +1,11 @@
 COBC = cobc
 COBFLAGS ?= -O2 -free
 
-countdown: countdown.cob solver.cob
-	$(COBC) $(COBFLAGS) -x -o $@ countdown.cob solver.cob
+countdown: countdown.cob deal.cob solver.cob
+	$(COBC) $(COBFLAGS) -x -o $@ countdown.cob deal.cob solver.cob
 
-test: tests.cob solver.cob
-	$(COBC) $(COBFLAGS) -x -o run-tests tests.cob solver.cob
+test: tests.cob deal.cob solver.cob
+	$(COBC) $(COBFLAGS) -x -o run-tests tests.cob deal.cob solver.cob
 	./run-tests
 
 clean:
