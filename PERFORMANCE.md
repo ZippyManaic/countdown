@@ -93,6 +93,73 @@ What the sweep shows:
 
 **A race found at 32 threads.** The first full sweep hung in Elixir at 32 threads, using every CPU for three hours. The caller read the current best task once and then waited for every task below it to finish. Meanwhile a worker could lower the best, and another worker would then skip a task at or above the new best without marking it done, so the caller waited for it forever. The caller now re-reads the best on every poll and stops waiting once it reaches it. The window only opens when about 30 workers really run at once, but the Erlang port, which copied the design, deadlocked about once in 15 runs at 4 schedulers before it got the same fix. The parallel Erlang version also blocks in `receive` between phases instead of spinning, so it degrades rather than crawls when there are more schedulers than CPUs.
 
+## Cats and nasty-cats rounds
+
+In cats mode the player chooses from none to four large numbers from 25, 50, 75 and 100. Nasty-cats mode is the same with the large cards 12, 37, 62 and 87, as in two specials in 2010. The paper's "Cats does Countdown" section has the background and how often these rounds have no solution.
+
+- **Rounds:** `bench/data/rounds_cats10k.txt` (seed 11) and `bench/data/rounds_nasty10k.txt` (seed 13), dealt by `bench/deal.py` with the number of large numbers uniform from 0 to 4. Python and bwBASIC use the first 1,000 rounds (`rounds_*1k.txt`).
+- **Reference answers:** `ref_cats10k.tsv` and `ref_nasty10k.tsv` come from the C solver. The Rust version gives identical answers on all 20,000 rounds. Every answer uses only pool numbers and evaluates to its value, and its distance from the target matches the exhaustive checker in `solvability/`. 716 cats rounds and 454 nasty-cats rounds have no exact solution.
+- **Running:** `bench/run.sh -n 1 --set cats` or `--set nasty`. `run.sh` now records a solver that crashes or refuses as "failed" and moves on. It also stops any solver after 20 minutes.
+
+Times below are from one run of each solver (`-n 1`), so they are rougher than the main table.
+
+| Solver | Standard, ms | Cats, ms | Cats ÷ standard | Nasty-cats, ms | Cats result | Nasty-cats result |
+|---|---|---|---|---|---|---|
+| `elixir-par` (parallel) | – | 0.0599 | – | 0.0462 | all identical | all identical |
+| `erlang-par` (parallel) | – | 0.0632 | – | 0.0500 | all identical | all identical |
+| `rust-par` (parallel) | – | 0.0937 | – | 0.0265 | all identical | all identical |
+| `rust-par1` (parallel) | – | 0.0949 | – | 0.0447 | all identical | all identical |
+| Erlang (BEAM)* | 0.0575 | 0.1033 | 1.8x | 0.0641 | all identical | all identical |
+| Elixir (BEAM)* | 0.0576 | 0.106 | 1.8x | 0.0669 | all identical | all identical |
+| ISPC (AVX2, four 64-bit lanes)† | 0.0115 | 0.1162 | 10.1x | 0.0153 | all identical | all identical |
+| C (Clang) | 0.0208 | 0.1174 | 5.6x | 0.0236 | all identical | all identical |
+| C++ (Clang) | 0.0213 | 0.1188 | 5.6x | 0.0238 | all identical | all identical |
+| x86-64 assembly | 0.0218 | 0.1188 | 5.4x | 0.0254 | all identical | all identical |
+| Zig (ReleaseFast) | 0.0203 | 0.1213 | 6.0x | 0.0252 | all identical | all identical |
+| WebAssembly (C in Node 24) | 0.0229 | 0.1285 | 5.6x | 0.0287 | all identical | all identical |
+| `julia-par` (parallel) | – | 0.1304 | – | 0.0215 | all identical | all identical |
+| Fortran (gfortran) | 0.0247 | 0.1309 | 5.3x | 0.0286 | all identical | all identical |
+| FreeBASIC (GCC back end) | 0.0215 | 0.1319 | 6.1x | 0.0276 | all identical | all identical |
+| Ada (GNAT) | 0.0260 | 0.1355 | 5.2x | 0.0302 | all identical | all identical |
+| C# (.NET 10) | 0.0274 | 0.1357 | 5.0x | 0.0319 | all identical | all identical |
+| Rust | 0.0557 | 0.1541 | 2.8x | 0.1236 | all identical | all identical |
+| F# (.NET 10) | 0.0287 | 0.1597 | 5.6x | 0.0357 | all identical | all identical |
+| OCaml | 0.0537 | 0.1642 | 3.1x | 0.0571 | all identical | all identical |
+| Pascal (Free Pascal) | 0.0352 | 0.1816 | 5.2x | 0.0405 | all identical | all identical |
+| `c-par` (parallel) | – | 0.1826 | – | 0.0208 | all identical | all identical |
+| Julia 1.13 | 0.0208 | 0.1928 | 9.3x | 0.0287 | all identical | all identical |
+| Go | 0.0330 | 0.2059 | 6.2x | 0.038 | all identical | all identical |
+| Swift | 0.0274 | 0.2231 | 8.1x | 0.0386 | all identical | all identical |
+| Java (OpenJDK 25) | 0.0391 | 0.251 | 6.4x | 0.0467 | all identical | all identical |
+| LuaJIT | 0.186 | 0.264 | 1.4x | 0.1636 | all identical | all identical |
+| Kotlin (JVM) | 0.0373 | 0.3033 | 8.1x | 0.0474 | all identical | all identical |
+| `go-par` (parallel) | – | 0.3183 | – | 0.0638 | all identical | all identical |
+| `java-par` (parallel) | – | 0.371 | – | 0.0448 | all identical | all identical |
+| Common Lisp (SBCL) | 0.0472 | 0.4013 | 8.5x | 0.0636 | all identical | all identical |
+| Ruby with RJIT | 0.291 | 0.4709 | 1.6x | 0.278 | all identical | all identical |
+| Haskell (GHC) | 0.0360 | 0.5649 | 15.7x | 0.0487 | all identical | all identical |
+| JavaScript (Node 24) | 0.0848 | 0.6399 | 7.5x | 0.1028 | all identical | all identical |
+| Lua 5.4 | 0.550 | 0.9259 | 1.7x | 0.5081 | all identical | all identical |
+| Ruby 3.3 | 0.494 | 1.061 | 2.1x | 0.4938 | all identical | all identical |
+| COBOL (GnuCOBOL) | 0.173 | 1.742 | 10.1x | 0.1757 | all identical | all identical |
+| Forth (`gforth-fast`) | 0.318 | 1.876 | 5.9x | 0.3216 | all identical | all identical |
+| Forth (`gforth`) | 0.399 | 2.069 | 5.2x | 0.4019 | all identical | all identical |
+| Lookup table | 0.00069 | 4.677 | – | 6.74 | 1431 ties | 232 ties |
+| Python | 7.23 | 7.33 | 1.0x | 6.825 | 25 ties | 20 ties |
+| BASIC (bwBASIC, line-numbered) | 306 | 494 | 1.6x | 284 | all identical | all identical |
+| PyTorch on the GPU | 0.0157 | failed | – | failed | refuses | refuses |
+| PyTorch with transformer proposals | 0.0354 | failed | – | failed | refuses | refuses |
+| Rust + CUDA | 0.000466 | failed | – | failed | refuses | refuses |
+
+### Findings
+
+- **No solver gives a wrong answer.** Every CPU solver gives the reference answer on every round in both modes, apart from Python's usual equally good ties. Values reach 937,500,000 with four large numbers, but the bound of Proposition `prop:bound` keeps them below 2^31, so 32-bit values are still enough. For C, `verification/cbmc/` also proves there is no overflow or out-of-bounds access.
+- **The three GPU solvers refuse rather than answer wrongly.** PyTorch, the transformer (which checks its proposals with the PyTorch solver) and Rust + CUDA pack each value into a fixed number of bits sized for the standard game. On a larger pool they stop with an error: "pool numbers too large to pack" or "outside what the kernel can pack". Supporting cats would mean wider packing.
+- **The lookup table falls back to Python.** It only holds pools with one or two standard large numbers. Every other pool goes to the Python solver, so it runs at Python's speed and inherits Python's ties. `run.sh` now times it once on these sets rather than 20 times.
+- **Four large numbers are what make cats slow.** C takes 0.029 ms on rounds with no large numbers, 0.018 with one, 0.019 with two, 0.059 with three and 0.456 with four (5 runs on CPU 2). C, Rust and many of the other ports mark the values a subset has already made in a bitset sized by that subset's largest possible value. With four large numbers that bitset is up to 11.7 MB, and clearing it costs more than the search.
+- **Sorting and hashing solvers cope best.** Erlang and Elixir sort each subset's values instead of using a bitset. They slow by only 1.8x and are the fastest single-core solvers on cats, ahead of C (5.6x) and ISPC (10.1x). Ruby, Lua and LuaJIT use hash tables and slow by 1.4x to 2.1x.
+- **Nasty-cats costs little extra.** The nasty cards reach at most 239,493,600, about a quarter of the standard cards' 937,500,000, so the bitsets stay smaller. Most compiled solvers run within 35% of their standard-game time. Rust is the exception at 2.2x, which has not been investigated.
+
 ## What each solution cost
 
 Measured on 2026-10-10. Each row covers both the straight port and the optimised version, since they were written together.

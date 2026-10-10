@@ -30,6 +30,7 @@ Each `countdown-<language>/` directory holds a solver, a program that deals and 
 ```sh
 bench/run.sh -n 3 c rust go        # build, check against the reference answers and time each solver
 bench/run.sh -n 3 --whole c        # also time the whole program, start-up included
+bench/run.sh -n 1 --set cats c     # run on the cats or nasty-cats set (0 to 4 large numbers)
 bench/scale.sh c-par rust-par      # time the parallel solvers at 1 to 32 threads
 bench/metrics.sh c rust            # clean build time and peak memory
 bench/loc.py                       # lines of code

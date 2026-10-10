@@ -1327,7 +1327,53 @@ large numbers. With four standard cards the pool $10, 10, 25, 50, 75, 100$ reach
 73 pools exceed $2^{27}$. The bound itself, $\prod_i (p_i + 1) - 1$, stays below
 $101 \cdot 76 \cdot 51 \cdot 26 \cdot 11^2 < 2^{31}$, so values still fit in a signed 32-bit integer and the
 reciprocal division test of Lemma~\ref{lem:reciprocal} still applies, but with no room to spare. Every
-solver therefore has to be re-checked on cats rounds, and the C solver gave the right answer on all of them.
+solver therefore has to be re-checked on cats rounds.
+
+\paragraph{Every solver re-checked.}
+Two further benchmark sets of $10{,}000$ rounds each, one per mode, deal $\ell$ uniformly from 0 to 4.
+Their reference answers come from the C solver and agree with the Rust version on every round; each
+answer's distance from the target also matches the exhaustive checker. Table~\ref{tab:catsbench} gives
+the results for a selection of solvers; \texttt{PERFORMANCE.md} lists all of them. Every CPU solver gives
+the reference answer on every round in both modes, apart from Python's usual equally good ties. The three
+GPU solvers pack values into a fixed number of bits chosen for the standard game, and they stop with an
+error on larger pools rather than answer wrongly. The lookup table covers only standard pools and passes
+every other round to the Python solver.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+Solver & Standard & Cats & Nasty-cats & Result in both modes \\ \midrule
+ISPC & 0.0115 & 0.116 & 0.0153 & all identical \\
+C & 0.0208 & 0.117 & 0.0236 & all identical \\
+Erlang & 0.0575 & 0.103 & 0.0641 & all identical \\
+Elixir & 0.0576 & 0.106 & 0.0669 & all identical \\
+Rust & 0.0557 & 0.154 & 0.124 & all identical \\
+Go & 0.0330 & 0.206 & 0.0380 & all identical \\
+Java & 0.0391 & 0.251 & 0.0467 & all identical \\
+Haskell & 0.0360 & 0.565 & 0.0487 & all identical \\
+Ruby & 0.494 & 1.06 & 0.494 & all identical \\
+Python & 7.23 & 7.33 & 6.83 & equally good ties only \\
+Lookup table & 0.00069 & 4.68 & 6.74 & ties from its Python fallback \\
+PyTorch, transformer and CUDA & & --- & --- & refuse: values too large to pack \\ \bottomrule
+\end{tabular}
+\caption{Solve time in milliseconds per round on the standard, cats and nasty-cats benchmark sets. The
+cats and nasty-cats times are from a single run and so are rougher than those of
+Table~\ref{tab:perf}.}
+\label{tab:catsbench}
+\end{table}
+
+\paragraph{Four large numbers are slow for the fastest solvers.}
+Cats rounds take C $5.6$ times as long as standard ones, and the cost is almost all in rounds with four
+large numbers: C takes $0.018$\,ms with one large number, $0.059$\,ms with three and $0.46$\,ms with four.
+Like many of the compiled ports, C marks the values each subset has made in a bitset sized by that
+subset's largest possible value (Section~\ref{sec:cpu}, ``Duplicates by bitset''), and with four large numbers
+that bitset reaches 11.7\,MB, which costs more to clear than the search does. Erlang and Elixir sort each
+subset's values instead, slow down by only $1.8$ times and become the fastest single-core solvers on cats,
+ahead of C and ISPC. The nasty cards' largest value is a quarter of the standard cards', and most compiled
+solvers run nasty-cats rounds within $35\%$ of their standard time. A solver for every mode would choose
+between the bitset and sorting by the size of the bound.
 
 \section{Machine-checked guarantees}\label{sec:checked}
 

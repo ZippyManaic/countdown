@@ -1,7 +1,7 @@
 #!/bin/bash
 # Build every implementation's benchmark, check its answers against the reference and time the solving
 #
-# Usage: bench/run.sh [-n runs] [--whole] [language...]
+# Usage: bench/run.sh [-n runs] [--whole] [--set standard|cats|nasty] [language...]
 # Languages: python torch table ml cuda rust asm c cpp zig go fortran pascal cobol luajit lua forth gforth js ada java csharp swift wasm fsharp kotlin ruby rubyjit lisp haskell ocaml freebasic basic rust-par rust-par1 julia erlang go-par c-par java-par elixir julia-par erlang-par elixir-par ispc
 set -euo pipefail
 
@@ -13,12 +13,14 @@ DATA=$BENCH/data
 RUNS=5
 WHOLE=0
 WHOLE_RUNS=300
+SET=standard
 ALL=(python torch table ml cuda rust asm c cpp zig go fortran pascal cobol luajit lua forth gforth js ada java csharp swift wasm fsharp kotlin ruby rubyjit lisp haskell ocaml freebasic basic rust-par rust-par1 julia erlang go-par c-par java-par elixir julia-par erlang-par elixir-par ispc)
 
 while [ $# -gt 0 ]; do
     case $1 in
         -n) RUNS=$2; shift 2 ;;
         --whole) WHOLE=1; shift ;;
+        --set) SET=$2; shift 2 ;;
         *) break ;;
     esac
 done
@@ -237,10 +239,12 @@ whole_command() {
 time_run() {
     # Repeat the fastest solvers since one pass over the rounds takes only milliseconds
     local reps=1
-    case $lang in table|cuda) reps=20 ;; esac
+    # Repeat the fast GPU and table runs only on the standard set since other sets fall back to slower code
+    case $lang in table|cuda) [ "$SET" = standard ] && reps=20 ;; esac
     local pin=("${PIN[@]}")
     case $lang in *-par) pin=("${PAR_PIN[@]}") ;; esac
-    "${pin[@]}" "${CMD[@]}" "$1" "$2" "$reps" 2>&1 | grep -oE '[0-9]*\.?[0-9]+ ms/round' | tail -1 | cut -d' ' -f1
+    # Stop a solver that hangs after 20 minutes so one failure cannot stall the run
+    "${pin[@]}" timeout 1200 "${CMD[@]}" "$1" "$2" "$reps" 2>&1 | grep -oE '[0-9]*\.?[0-9]+ ms/round' | tail -1 | cut -d' ' -f1
 }
 
 # Stop here when another script sources this one for its build and run commands
@@ -255,15 +259,23 @@ printf "\n"
 for lang in "${LANGS[@]}"; do
     build "$lang"
     # Time Python and bwBASIC once on the smaller set since the full set takes minutes per run
-    rounds=$DATA/rounds10k.txt ref=$DATA/ref10k.tsv runs=$RUNS
-    if [ "$lang" = python ] || [ "$lang" = basic ]; then rounds=$DATA/rounds1k.txt ref=$DATA/ref1k.tsv runs=1; fi
+    # Name the cats and nasty-cats sets after their mode, leaving the standard set's names as they were
+    tag=; [ "$SET" = standard ] || tag=_$SET
+    rounds=$DATA/rounds${tag}10k.txt ref=$DATA/ref${tag}10k.tsv runs=$RUNS
+    if [ "$lang" = python ] || [ "$lang" = basic ]; then rounds=$DATA/rounds${tag}1k.txt ref=$DATA/ref${tag}1k.tsv runs=1; fi
     out=$BUILD/$lang/answers.tsv
     best=
     for _ in $(seq "$runs"); do
         rm -f "$out"
-        t=$(time_run "$rounds" "$out")
+        # Record a solver that crashes or refuses the rounds rather than stopping the whole run
+        t=$(time_run "$rounds" "$out" || true)
+        [ -z "$t" ] && break
         if [ -z "$best" ] || [ "$(echo "$t < $best" | bc -l)" = 1 ]; then best=$t; fi
     done
+    if [ -z "$best" ]; then
+        printf "| %s | failed | no answers (%s rounds) |\n" "$lang" "$(wc -l < "$rounds")"
+        continue
+    fi
     check=$(python3 "$BENCH/check.py" "$rounds" "$ref" "$out" || true)
     printf "| %s | %.4g | %s (%s rounds) |" "$lang" "$best" "$check" "$(wc -l < "$rounds")"
     if [ $WHOLE -eq 1 ]; then
