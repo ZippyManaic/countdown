@@ -20,6 +20,13 @@ variable full
 create by-size 9 max-subsets * cells allot
 create by-size-count 9 cells allot
 
+\ Call C's calloc since large zeroed blocks come straight from the system and cost only the pages touched
+c-library countdown_calloc
+\c #include <stdlib.h>
+c-function calloc calloc n n -- a
+c-function c-free free a -- void
+end-c-library
+
 \ Mark each value with the mask of the subset that last made it so no clearing is needed between subsets
 0 value stamps
 0 value stamp-size
@@ -275,8 +282,8 @@ variable whole-distance
 \ Make the stamp table cover every value up to largest replacing it since old stamps never match a new mask
 : reserve-stamps { largest -- }
     largest 1+ stamp-size > if
-        stamps ?dup if free throw then
-        largest 1+ dup allocate throw dup to stamps swap erase
+        stamps ?dup if c-free then
+        largest 1+ 1 calloc dup 0= -59 and throw to stamps
         largest 1+ to stamp-size
     then ;
 
@@ -362,7 +369,7 @@ variable whole-distance
     0 expr-len !
     best-mask @ best-value @ best-origin @ false render
     full @ 1+ 1 ?do sub-addr i cells + @ ?dup if free throw then loop
-    stamps ?dup if free throw then
+    stamps ?dup if c-free then
     cand-addr @ free throw
     aux-addr @ free throw
     best-value @ expr expr-len @ ;
