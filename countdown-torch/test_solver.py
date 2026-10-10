@@ -72,6 +72,10 @@ class SolverTest(unittest.TestCase):
         self.assertNotEqual(value, 999)
         self.assertEqual(eval(expr), value)
 
+    def test_lone_number(self):
+        self.assertEqual(solve(100, [7]), (7, "7"))
+        self.assertEqual(solve(7, [7]), (7, "7"))
+
     def test_reference_rounds(self):
         with open(os.path.join(DATA, "rounds1k.txt")) as f:
             rounds = [(target, pool) for target, *pool in (map(int, line.split()) for line in f)]

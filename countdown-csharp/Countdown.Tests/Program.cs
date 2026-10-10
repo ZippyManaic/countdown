@@ -12,6 +12,7 @@ void Expect(bool ok, string what)
 Expect(Solver.Solve(125, [1, 5, 7, 3, 75, 50]) == (125, "75 + 50"), "finds simplest solution");
 Expect(Solver.Solve(552, [8, 4, 2, 5, 100, 25]).Value == 552, "solves 552");
 Expect(Math.Abs(Solver.Solve(974, [8, 8, 6, 8, 25, 100]).Value - 974) == 1, "reports closest when unsolvable");
+Expect(Solver.Solve(100, [7]) == (7, "7"), "reports a lone number as closest");
 // Check one dealt round against its mode and return how many large numbers it holds
 int CheckRound(string mode, int target, int[] pool, int[] counts)
 {

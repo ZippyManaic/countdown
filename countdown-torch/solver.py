@@ -393,6 +393,9 @@ def solve_batch(targets, pools, known=None):
     """
     device = targets.device
     count, n = pools.shape
+    # Answer one-number pools directly since the number itself is the only expression and there is no split
+    if n == 1:
+        return [(v, str(v)) for v in pools[:, 0].tolist()]
     # Bound every value below the whole pool so it fits its key since a product of the numbers or two is never beaten
     bound = pools.clamp(min=2).prod(1) // pools.clamp(min=2).min(1).values
     if int(bound.max()) >= VALUE_LIMIT:

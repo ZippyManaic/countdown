@@ -300,7 +300,9 @@ let private closest (s: State) =
     let mutable best = struct (0UL, 0UL)
     let mutable bestDistance = UInt64.MaxValue
     let mutable bestUsed = 99
-    for mask in 1 .. s.Full - 1 do
+    // Include a one-number pool here since the whole-pool pass below needs at least two numbers
+    let last = if s.N > 1 then s.Full - 1 else s.Full
+    for mask in 1 .. last do
         let used = BitOperations.PopCount(uint32 mask)
         for i in s.Off[mask] .. s.Off[mask] + s.Len[mask] - 1 do
             let d = dist (NativePtr.get arena (2 * i) &&& Low)

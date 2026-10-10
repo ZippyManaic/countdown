@@ -12,6 +12,7 @@ let expect ok what =
 expect (Solver.solve 125 [| 1; 5; 7; 3; 75; 50 |] = (125, "75 + 50")) "finds simplest solution"
 expect (fst (Solver.solve 552 [| 8; 4; 2; 5; 100; 25 |]) = 552) "solves 552"
 expect (abs (fst (Solver.solve 974 [| 8; 8; 6; 8; 25; 100 |]) - 974) = 1) "reports closest when unsolvable"
+expect (Solver.solve 100 [| 7 |] = (7, "7")) "reports a lone number as closest"
 expect (Solver.solve 7 [| 7 |] = (7, "7")) "handles a single number"
 expect (Solver.solve 10 [| 3; 4 |] = (12, "4 * 3")) "handles smaller pools"
 for _ in 1 .. 1000 do

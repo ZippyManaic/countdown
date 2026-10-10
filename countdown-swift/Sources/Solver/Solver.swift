@@ -320,7 +320,9 @@ private func closest(_ s: inout State) -> Entry {
     var best = Entry(head: 0, operands: 0)
     var bestDistance = UInt64.max
     var bestUsed = 99
-    for mask in 1..<s.full {
+    // Include a one-number pool here since the whole-pool pass below needs at least two numbers
+    let last = s.n > 1 ? s.full - 1 : s.full
+    for mask in 1...last {
         let used = mask.nonzeroBitCount
         for i in s.off[mask]..<(s.off[mask] + s.len[mask]) {
             let d = distance(arena[i].value)

@@ -65,6 +65,10 @@ class SolverTest(unittest.TestCase):
     def test_target_in_pool(self):
         self.assertEqual(solve(100, [1, 2, 3, 4, 5, 100]), (100, "100"))
 
+    def test_lone_number(self):
+        self.assertEqual(solve(100, [7]), (7, "7"))
+        self.assertEqual(solve(7, [7]), (7, "7"))
+
     def test_reference_rounds(self):
         # Accept a different expression only when it is as good since the model may pick another of the same length
         with open(os.path.join(DATA, "rounds1k.txt")) as f:

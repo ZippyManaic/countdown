@@ -411,7 +411,9 @@ public static unsafe class Solver
         Entry best = default;
         ulong bestDistance = ulong.MaxValue;
         var bestUsed = 99;
-        for (var mask = 1; mask < s->Full; mask++)
+        // Include a one-number pool here since the whole-pool pass below needs at least two numbers
+        var last = n > 1 ? s->Full - 1 : s->Full;
+        for (var mask = 1; mask <= last; mask++)
         {
             var used = BitOperations.PopCount((uint)mask);
             var values = s->Arena + s->Off[mask];

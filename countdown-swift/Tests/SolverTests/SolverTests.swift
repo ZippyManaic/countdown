@@ -14,6 +14,12 @@ final class SolverTests: XCTestCase {
         XCTAssertEqual(abs(solve(target: 974, pool: [8, 8, 6, 8, 25, 100]).value - 974), 1)
     }
 
+    func testReportsLoneNumberAsClosest() {
+        let result = solve(target: 100, pool: [7])
+        XCTAssertEqual(result.value, 7)
+        XCTAssertEqual(result.expr, "7")
+    }
+
     // Deal many rounds in a mode and check each is legal and every allowed large count occurs
     private func checkDeals(_ mode: Mode) {
         var generator = SystemRandomNumberGenerator()
