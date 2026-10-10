@@ -18,8 +18,9 @@ deciding whether a Countdown target can be hit exactly from $\tfrac23$ to $0.666
 $2^{0.666223\, n \log_2 n + O(n)} \operatorname{poly}(B)$. We recomputed every numerical inequality it
 relies on and checked the lemmas we could check without its main source. The arithmetic is right and the
 reductions we examined are sound. The result is nevertheless much narrower than its title suggests. It
-rests on a preprint published five days earlier that we could not inspect. It does not cover the problem
-our solvers solve, which is the closest value with all four operations and a canonical answer. By the
+rests on a preprint published five days earlier that we could not inspect. It addresses the exact-target
+question, which our solvers' closest-value task reaches through repeated exact queries: a bounded factor in
+the game, but not asymptotically. By the
 note's own Proposition~5.1 it is beaten by the ordinary subset recursion whenever the card values are
 bounded, as they are in the game. And for the six numbers of the game it changes the bound by a factor of
 about $1.005$.
@@ -93,14 +94,19 @@ results say what the note uses. The note also states without proof that the prep
 numbers can be simulated exactly on $b$-bit integers. Until both points are confirmed, $0.666223$ is a
 conditional result.
 
-\paragraph{It does not cover the problem the solvers solve.}
+\paragraph{It covers the exact case directly and the closest case by reduction.}
 Our solvers return the value closest to the target, using all four operations, with a fixed canonical
-answer. The note's fast bounds are for the exact-target question only. Its Section~6 says the
-centroid method does not extend to closest values once exact division is allowed, and its Theorem~6.1
-removes division to get a closest-value bound. For the full task the note's bound is its
-Proposition~5.1, the subset recursion over all $2^n - 1$ supports, which is the algorithm the solvers
-already use. Its canonical order also differs from ours: it orders the two children of a node by a
-bit-mask of the cards they use, not by value.
+answer. When an exact answer exists, as in about 98\% of standard rounds, that is exactly the note's
+problem. Its Proposition~4.1 also returns a canonical exact answer, but under its own order, which ranks
+the two children of a node by a bit-mask of the cards they use rather than by value. Matching our order
+would need the same constrained-oracle argument with our ranking key, which the note does not give. When
+no exact answer exists, the closest one follows from exact queries at $t \pm 1$, $t \pm 2$ and so on,
+stopping at the first distance that hits; our Erlang and Elixir solvers already search outward like
+this. In the game the best distance is at most 324, or 918 in cats mode, so this costs at most
+$2 \cdot 918 + 1$ exact queries, a constant factor on the note's bound. The note's Section~6 treats
+closest values separately because, with unbounded targets, the best distance can be exponential in the
+input length, and then the outward search is no longer polynomial. That is an asymptotic distinction,
+not a gap for Countdown.
 
 \paragraph{For the real game the simple method wins.}
 Proposition~5.1 shows that when every card is at most a fixed $M$, which is the case in Countdown
@@ -130,8 +136,8 @@ problem number.
 
 As far as we could check, the note's mathematics is right: every numerical condition holds and the
 reductions we examined are sound. Its result is an asymptotic upper bound for the exact-target problem with
-unbounded card values. It depends on a preprint we could not inspect, and it does not apply to the
-closest-value problem that Countdown solvers solve. For bounded cards the note itself shows that the
+unbounded card values. It depends on a preprint we could not inspect, and it reaches the closest-value
+problem that Countdown solvers solve only through repeated exact queries, a bounded overhead in the game. For bounded cards the note itself shows that the
 subset recursion is asymptotically better, and at six numbers the improvement is about half a percent of
 the leading term. We would mention it in our paper only as a remark on the theory of the exact-target
 problem, and would not quote $0.666223$ until~\cite{av} can be checked.
