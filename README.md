@@ -11,7 +11,7 @@ Each `countdown-<language>/` directory holds a solver, a program that deals and 
 
 | Group | Languages |
 |---|---|
-| Native | C, C++, Rust, Zig, Go, Fortran, Ada, Pascal, Swift, Haskell, OCaml, Common Lisp, FreeBASIC, COBOL, x86-64 assembly |
+| Native | C, C++, ISPC (SIMD lanes), Rust, Zig, Go, Fortran, Ada, Pascal, Swift, Haskell, OCaml, Common Lisp, FreeBASIC, COBOL, x86-64 assembly |
 | Managed and JIT | Java, Kotlin, C#, F#, JavaScript, WebAssembly, Julia, Erlang, Elixir, LuaJIT |
 | Interpreted | Python, Ruby, Lua, Forth, line-numbered BASIC (bwBASIC) |
 | GPU and other | Rust + CUDA, PyTorch, a precomputed lookup table, a transformer that proposes answers |

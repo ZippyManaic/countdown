@@ -13,7 +13,7 @@ SKIP_DIRS = {"target", ".venv", "build", "out", "bin", "obj", "ebin", "zig-out",
              "__pycache__", "node_modules"}
 SOURCE = {".py", ".rs", ".cu", ".s", ".c", ".h", ".cpp", ".hpp", ".zig", ".go", ".f90", ".pas", ".cob",
           ".lua", ".fs", ".mjs", ".adb", ".ads", ".java", ".cs", ".swift", ".kt", ".rb", ".lisp", ".hs",
-          ".ml", ".bas", ".jl", ".erl", ".ex", ".exs"}
+          ".ml", ".bas", ".jl", ".erl", ".ex", ".exs", ".ispc"}
 # Map each run.sh name to its project directory
 PROJECTS = {
     "python": ".", "rust": "countdown-rs", "rust-par": "countdown-rs-par", "luajit": "countdown-lua",
@@ -28,7 +28,7 @@ SOLVER_FILES = {
 GENERATED = {"countdown-basic/countdown.bas"}
 ALL = ("python table torch ml cuda rust asm c cpp zig go fortran pascal cobol lua forth js ada java csharp "
        "swift wasm fsharp kotlin ruby lisp haskell ocaml freebasic basic julia erlang elixir "
-       "c-par rust-par go-par java-par julia-par erlang-par elixir-par").split()
+       "ispc c-par rust-par go-par java-par julia-par erlang-par elixir-par").split()
 
 LINE = {".py": "#", ".rb": "#", ".jl": "#", ".ex": "#", ".exs": "#", ".s": "#", ".lua": "--", ".hs": "--",
         ".adb": "--", ".ads": "--", ".erl": "%", ".f90": "!", ".cob": "*>", ".lisp": ";", ".bas": "'",
@@ -36,7 +36,7 @@ LINE = {".py": "#", ".rb": "#", ".jl": "#", ".ex": "#", ".exs": "#", ".s": "#", 
 BLOCK = {".c": ("/*", "*/"), ".h": ("/*", "*/"), ".cpp": ("/*", "*/"), ".hpp": ("/*", "*/"),
          ".cu": ("/*", "*/"), ".rs": ("/*", "*/"), ".go": ("/*", "*/"), ".java": ("/*", "*/"),
          ".cs": ("/*", "*/"), ".swift": ("/*", "*/"), ".kt": ("/*", "*/"), ".mjs": ("/*", "*/"),
-         ".zig": None, ".s": ("/*", "*/"), ".hs": ("{-", "-}"), ".ml": ("(*", "*)"), ".pas": ("{", "}"),
+         ".ispc": ("/*", "*/"), ".zig": None, ".s": ("/*", "*/"), ".hs": ("{-", "-}"), ".ml": ("(*", "*)"), ".pas": ("{", "}"),
          ".lisp": ("#|", "|#"), ".lua": ("--[[", "]]"), ".jl": ("#=", "=#")}
 
 

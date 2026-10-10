@@ -719,7 +719,7 @@ wall-clock time of each language's own executable dealing and solving one random
 for the two PyTorch versions), so it includes process and runtime start-up.
 
 The twelve newest languages (FreeBASIC, BASIC, WebAssembly, F\#, Haskell, Kotlin, Common Lisp, OCaml, Ruby,
-Julia, Erlang and Elixir) were measured later on 2026-10-09, in sessions in which C measured 0.0182--0.0185\,ms. The four GPU and precomputed rows were measured a day after the original set, in a quieter session in which C
+Julia, Erlang and Elixir) were measured later on 2026-10-09, in sessions in which C measured 0.0182--0.0185\,ms, and ISPC on 2026-10-10, when C measured 0.0183\,ms. The four GPU and precomputed rows were measured a day after the original set, in a quieter session in which C
 measured 0.0184--0.0188\,ms rather than 0.0208\,ms. Comparisons between those rows and the others
 therefore carry roughly 10\% uncertainty. The GPU rows are throughput, with all 10{,}000 rounds submitted as
 one batch, not the latency of a single round.
@@ -735,6 +735,7 @@ Implementation & \multicolumn{1}{c}{Solve} & \multicolumn{1}{c}{Straight port} &
 Rust + CUDA (GPU, batched)          & 0.000466 & 0.0107\rlap{$^a$} & 23$\times$  & 203   & identical \\
 Lookup table (Python)               & 0.00069  & --                & --          & 13.4  & 31\% ties \\
 PyTorch on the GPU (batched)        & 0.0157   & 0.142\rlap{$^a$}  & 9.0$\times$ & 3{,}218 & identical \\
+ISPC (AVX2, four 64-bit lanes)\rlap{$^d$} & 0.0115 & 0.078       & 6.8$\times$ & 0.35  & identical \\
 Zig (ReleaseFast)                   & 0.0203   & 0.083             & 4.1$\times$ & 0.48  & identical \\
 C (Clang)                           & 0.0208   & 0.118             & 5.7$\times$ & 0.39  & identical \\
 Julia 1.13                          & 0.0208   & 0.259             & 12.5$\times$ & 548   & identical \\
@@ -770,7 +771,7 @@ Python                              & 7.23     & 12.0\rlap{$^a$}   & 1.7$\times$
 BASIC (bwBASIC, line-numbered)      & 306      & 1{,}114        & 3.6$\times$ & 282   & identical \\ \bottomrule
 \end{tabular}
 \caption{Solve time per round over the 10{,}000 benchmark rounds (1{,}000 for Python and bwBASIC), the time before optimisation, and the time
-for a whole program run. $^a$First version rather than a straight port of another language. $^b$Re-measured with the current harness (Section~\ref{sec:surprises}); 0.257\,ms was recorded originally. $^c$Defers the four- and five-number subsets, extending Lemma~\ref{lem:defer}, and so does less work than the other CPU versions; Erlang built like the others takes about 0.22\,ms. ``Ties'' are
+for a whole program run. $^a$First version rather than a straight port of another language. $^b$Re-measured with the current harness (Section~\ref{sec:surprises}); 0.257\,ms was recorded originally. $^c$Defers the four- and five-number subsets, extending Lemma~\ref{lem:defer}, and so does less work than the other CPU versions; Erlang built like the others takes about 0.22\,ms. $^d$Measured on 2026-10-10 when C took 0.0183\,ms, so 1.6 times faster than C (Section~\ref{sec:surprises}). ``Ties'' are
 equally good answers that differ in text from $\operatorname{Solve}$; no implementation gives a worse answer.}
 \label{tab:perf}
 \end{table}
@@ -784,7 +785,7 @@ techniques of Sections~\ref{sec:reference} and~\ref{sec:cpu}. The largest single
 (Proposition~\ref{prop:early}) and searching rather than building (Lemma~\ref{lem:partners}), together with a compact bitset store.
 \item \emph{Compilers set the floor.} C, C++, Zig, FreeBASIC and hand-written assembly finish within 8\% of one another,
 because they share one design and differ only in code generation. Garbage-collected and managed languages
-come close when written over flat buffers, and interpreters trail C by between nine times and, for the line-numbered bwBASIC, about fifteen thousand times. WebAssembly in Node comes within 25\% of native C.
+come close when written over flat buffers, and interpreters trail C by between nine times and, for the line-numbered bwBASIC, about fifteen thousand times. WebAssembly in Node comes within 25\% of native C. The one solver below that floor, ISPC, changes the design to suit SIMD lanes (Section~\ref{sec:surprises}).
 \item \emph{Parallelism needs batches.} The CUDA solver is about 40 times faster than C per round, but only
 when thousands of rounds are in flight, one per thread block. The PyTorch solver takes 11\,ms for a single
 round, slower than plain Python, and only passes C at around 10{,}000 rounds per batch. Their whole-program
@@ -834,6 +835,7 @@ partner lookups, because the Rust reference they copy has them.
 \toprule
 Language & \multicolumn{1}{c}{Straight} & \multicolumn{1}{c}{Optimised} & \multicolumn{1}{c}{Gain} & Principal changes \\
  & ms/round & ms/round & & \\ \midrule
+ISPC & 0.078 & 0.0115 & 6.8$\times$ & values only, deduplicated by bit OR; pair loops across four 64-bit lanes; lists read from bitsets; bit-test partner checks \\
 Zig & 0.083 & 0.0203 & 4.1$\times$ & C allocator instead of the default, which returned memory to the kernel on every free; buffers grown by doubling; branch hint for a conditional move in the search \\
 C & 0.118 & 0.0208 & 5.7$\times$ & all of (a)--(f); Clang instead of GCC; binary search adds \texttt{(value <= target) * half}; subsets listed in size order up front \\
 Julia & 0.259 & 0.0208 & 12.5$\times$ & values listed straight from the bitset with \texttt{trailing\_zeros}, so no sort; an \texttt{llvmcall} select marked \texttt{!unpredictable} to force conditional moves \\
@@ -943,7 +945,7 @@ from restructuring for parallelism (Section~\ref{sec:gpu}) rather than from any 
 
 \subsection{Surprises examined}\label{sec:surprises}
 
-Adding Haskell, OCaml, Common Lisp, F\#, Kotlin, Ruby and WebAssembly produced several results that go
+Adding Haskell, OCaml, Common Lisp, F\#, Kotlin, Ruby, WebAssembly, Erlang, Elixir and ISPC produced several results that go
 against the usual reputations of these languages. This subsection gives the evidence for each one and our
 reading of the cause. Times are best of three, pinned to one core. Hardware counters come from
 \texttt{perf stat}. To leave out start-up and input parsing, they difference a run of six passes over the
@@ -1058,6 +1060,25 @@ rounds that miss. Those rounds had taken 38\% of its time. Rewritten to the same
 0.0575\,ms, level with Elixir. Removing each idea from the rewritten version in turn shows that the extra
 deferred level gives the largest gain and the outward search about a quarter. Building none of the
 subsets was the opposite of what PyTorch found, where deferring the four-number subsets as well cost 30\%.
+
+\paragraph{SIMD lanes break the C floor.}
+ISPC compiles a C-like program to run on several SIMD lanes in lockstep, like a GPU thread group inside one
+core. Its solver takes 0.0115\,ms per round against C's 0.0183\,ms in the same session, 1.6 times faster, the
+only CPU solver to beat C. It executes 163{,}000 instructions per round against C's 324{,}000, with 358 branch
+mispredictions against 794. The lanes cannot simply be pointed at Algorithm~\ref{alg:reference}, because the
+first derivation of each value must win. The solver therefore stores values only, so that removing
+duplicates is an order-free bit OR, and finds each origin again for the answer, which is exact by
+Proposition~\ref{prop:sets}. The longer half of each pair loop is spread across the lanes, which compute all four
+results, their legality and the reciprocal division test (Lemma~\ref{lem:reciprocal}) together. Sorted lists
+are read straight out of each subset's bitset, partner checks become single bit tests, and the sets of sizes
+$n - 1$ and $n - 2$ are built but never listed, since by the counting after Lemma~\ref{lem:defer} searches
+only look them up. A scalar C version of the same structure runs at 83{,}000 cycles per round against
+62{,}000 for ISPC and about 95{,}000 for the C solver, so about a quarter of the gain comes from the lanes
+and an eighth from a structure C could adopt. The best gang was the \emph{narrowest}: with four 64-bit lanes,
+eight 32-bit lanes needed 7\% more cycles and sixteen lanes 32--41\% more. Setting a bit is a read-modify-write for each lane
+slot, so idle lanes cost as much as busy ones. C's trick of sending illegal results to the value 0 also turned into
+a chain of dependent updates to one word under SIMD; giving each lane its own spare word saved 19\% of ISPC's cycles
+but only 1--2\% of C's.
 
 \paragraph{What the surprises have in common.}
 Each one has the same explanation underneath: what matters is how many instructions the hot loops execute

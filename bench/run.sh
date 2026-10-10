@@ -2,7 +2,7 @@
 # Build every implementation's benchmark, check its answers against the reference and time the solving
 #
 # Usage: bench/run.sh [-n runs] [--whole] [language...]
-# Languages: python torch table ml cuda rust asm c cpp zig go fortran pascal cobol luajit lua forth gforth js ada java csharp swift wasm fsharp kotlin ruby rubyjit lisp haskell ocaml freebasic basic rust-par rust-par1 julia erlang go-par c-par java-par elixir julia-par erlang-par elixir-par
+# Languages: python torch table ml cuda rust asm c cpp zig go fortran pascal cobol luajit lua forth gforth js ada java csharp swift wasm fsharp kotlin ruby rubyjit lisp haskell ocaml freebasic basic rust-par rust-par1 julia erlang go-par c-par java-par elixir julia-par erlang-par elixir-par ispc
 set -euo pipefail
 
 cd "$(dirname "$0")"
@@ -13,7 +13,7 @@ DATA=$BENCH/data
 RUNS=5
 WHOLE=0
 WHOLE_RUNS=300
-ALL=(python torch table ml cuda rust asm c cpp zig go fortran pascal cobol luajit lua forth gforth js ada java csharp swift wasm fsharp kotlin ruby rubyjit lisp haskell ocaml freebasic basic rust-par rust-par1 julia erlang go-par c-par java-par elixir julia-par erlang-par elixir-par)
+ALL=(python torch table ml cuda rust asm c cpp zig go fortran pascal cobol luajit lua forth gforth js ada java csharp swift wasm fsharp kotlin ruby rubyjit lisp haskell ocaml freebasic basic rust-par rust-par1 julia erlang go-par c-par java-par elixir julia-par erlang-par elixir-par ispc)
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -73,6 +73,11 @@ build() {
             CMD=("$dir/bench") ;;
         c)
             clang "${CFLAGS[@]}" -o "$dir/bench" "$BENCH/harness/c_harness.c" "$ROOT/countdown-c/solver.c"
+            CMD=("$dir/bench") ;;
+        ispc)
+            # Use four 64-bit lanes since removing duplicates costs per lane and the narrowest gang measured fastest
+            ispc -O2 --target=avx2-i64x4 --pic --wno-perf -o "$dir/solver.o" "$ROOT/countdown-ispc/solver.ispc"
+            clang "${CFLAGS[@]}" -o "$dir/bench" "$BENCH/harness/c_harness.c" "$dir/solver.o"
             CMD=("$dir/bench") ;;
         cpp)
             clang "${CFLAGS[@]}" -c -o "$dir/harness.o" "$BENCH/harness/c_harness.c"
@@ -196,7 +201,7 @@ whole_command() {
         table) WHOLE_CMD=(python3 "$ROOT/countdown-table/countdown.py") ;;
         torch) WHOLE_CMD=("$ROOT/countdown-torch/.venv/bin/python" "$ROOT/countdown-torch/countdown.py") ;;
         rust) (cd "$ROOT/countdown-rs" && cargo build --release -q 2>/dev/null); WHOLE_CMD=("$ROOT/countdown-rs/target/release/countdown") ;;
-        asm|c|cpp|fortran|pascal|cobol) make -s -C "$ROOT/countdown-$1" >/dev/null 2>&1; WHOLE_CMD=("$ROOT/countdown-$1/countdown") ;;
+        asm|c|cpp|fortran|pascal|cobol|ispc) make -s -C "$ROOT/countdown-$1" >/dev/null 2>&1; WHOLE_CMD=("$ROOT/countdown-$1/countdown") ;;
         go) make -s -C "$ROOT/countdown-go" >/dev/null; WHOLE_CMD=("$ROOT/countdown-go/countdown") ;;
         zig) (cd "$ROOT/countdown-zig" && zig build -Doptimize=ReleaseFast); WHOLE_CMD=("$ROOT/countdown-zig/zig-out/bin/countdown") ;;
         luajit) WHOLE_CMD=(luajit "$ROOT/countdown-lua/countdown.lua") ;;

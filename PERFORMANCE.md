@@ -13,6 +13,7 @@ Solve time is the best of three runs over 10,000 fixed rounds, measured inside e
 | Rust + CUDA (GPU, batched) | 0.000466 | 0.0107 (first kernel) | 23x | 203 |
 | Lookup table (Python, precomputed) | 0.00069 | – | – | 13.4 |
 | PyTorch on the GPU (Python, batched) | 0.0157 | 0.142 (first version) | 9.0x | 3,218 |
+| ISPC (AVX2, four 64-bit lanes)† | 0.0115 | 0.078 | 6.8x | 0.35 |
 | Zig (ReleaseFast) | 0.0203 | 0.083 | 4.1x | 0.48 |
 | C (Clang) | 0.0208 | 0.118 | 5.7x | 0.39 |
 | Julia 1.13 | 0.0208 | 0.259 | 12.5x | 548 |
@@ -52,6 +53,8 @@ Solve time is the best of three runs over 10,000 fixed rounds, measured inside e
 The FreeBASIC, WebAssembly, F#, Haskell, Kotlin, Common Lisp, OCaml, Ruby and BASIC rows were added on 2026-10-09 with `bench/run.sh -n 3 --whole` in a session where C measured 0.0182 ms, so they read about 10% fast against the older rows. bwBASIC is timed once on the 1,000-round set, like Python, because one pass takes five minutes. Ruby's RJIT row is the standard interpreter's code under the experimental JIT, timed after three warm-up passes; its straight port was not timed under RJIT. The WebAssembly straight port is the first C version compiled to WebAssembly.
 
 The CUDA, lookup table, PyTorch and transformer rows were measured on 2026-10-09 in a quieter session, when C measured 0.0184–0.0188 ms, so PyTorch is about 17% faster than C rather than the 23% the table suggests. The PyTorch figures are throughput for all 10,000 rounds solved as one batch, not the time one round takes, and their whole-program times average 10 runs rather than 300 because each takes about three seconds; see their language notes.
+
+†ISPC was added on 2026-10-10 in a session where C measured 0.0183 ms, so it is 1.6 times faster than C rather than the 1.8 times the table suggests.
 
 Every row matches the reference answers exactly except three. Python picks a different but equally good answer on about 1.5% of rounds (same distance from the target and the same count of numbers used), the lookup table on 31% and the transformer version on 8%. The harness check reports these as ties; none of the three has a wrong answer.
 
@@ -96,61 +99,62 @@ Measured on 2026-10-10. Each row covers both the straight port and the optimised
 
 | Solution | Solver lines | Total lines | Clean build, s | Peak memory, MB | Claude output tokens | Claude hours |
 |---|---|---|---|---|---|---|
-| Python | 95 | 95 | – | 13.4 | 20,545 | 0.18 |
-| Lookup table | 97 | 152 | – | 217.1 | 13,196 | 0.11 |
+| Python | 95 | 95 | – | 13.4 | 20,686 | 0.18 |
+| Lookup table | 97 | 152 | – | 217.1 | 13,503 | 0.11 |
 | PyTorch | 427 | 481 | – | 1455.7 | 116,284 | 0.46 |
-| PyTorch with transformer | 291 | 419 | – | 1805.3 | 12,823 | 0.27 |
-| Rust + CUDA | 804 | 885 | 2.57 | 112.9 | 59,627 | 0.13 |
-| Rust | 308 | 308 | 1.28 | 12.0 | 60,269 | 0.22 |
+| PyTorch with transformer | 291 | 419 | – | 1805.3 | 13,450 | 0.27 |
+| Rust + CUDA | 804 | 885 | 2.57 | 112.9 | 60,063 | 0.13 |
+| Rust | 308 | 308 | 1.28 | 12.0 | 60,847 | 0.22 |
 | Assembly | 923 | 1,107 | 0.06 | 4.7 | 101,727 | 0.21 |
-| C | 398 | 461 | 0.32 | 4.8 | 67,720 | 0.20 |
+| C | 398 | 461 | 0.32 | 4.8 | 69,073 | 0.21 |
 | C++ | 372 | 438 | 0.75 | 7.0 | 17,681 | 0.06 |
-| Zig | 364 | 446 | 10.02 | 5.3 | 24,461 | 0.11 |
-| Go | 451 | 488 | 0.19 | 7.3 | 33,046 | 0.11 |
+| Zig | 364 | 446 | 10.02 | 5.3 | 24,489 | 0.11 |
+| Go | 451 | 488 | 0.19 | 7.3 | 33,187 | 0.11 |
 | Fortran | 528 | 603 | 0.38 | 5.8 | 29,583 | 0.08 |
 | Pascal | 598 | 681 | 0.10 | 5.4 | 28,793 | 0.13 |
 | COBOL | 926 | 1,056 | 0.35 | 17.0 | 67,559 | 0.17 |
-| Lua 5.4 / LuaJIT | 385 | 444 | – | 9.8 / 15.5 | 33,889 | 0.12 |
-| Forth (gforth / fast) | 291 | 338 | – | 15.7 / 15.5 | 32,753 | 0.11 |
-| JavaScript | 338 | 389 | – | 124.0 | 23,179 | 0.08 |
+| Lua 5.4 / LuaJIT | 385 | 444 | – | 9.8 / 15.5 | 33,917 | 0.12 |
+| Forth (gforth / fast) | 291 | 338 | – | 15.7 / 15.5 | 32,780 | 0.12 |
+| JavaScript | 338 | 389 | – | 124.0 | 23,207 | 0.08 |
 | Ada | 506 | 592 | 0.56 | 7.7 | 24,689 | 0.06 |
-| Java | 414 | 453 | 0.37 | 194.7 | 20,004 | 0.07 |
-| C# | 395 | 443 | 2.60 | 54.3 | 17,879 | 0.06 |
-| Swift | 378 | 410 | 1.58 | 22.0 | 20,101 | 0.06 |
-| WebAssembly | 415 | 517 | 0.25 | 63.2 | 24,711 | 0.35 |
-| F# | 346 | 390 | 2.61 | 56.9 | 33,668 | 0.24 |
-| Kotlin | 375 | 398 | 7.36 | 193.8 | 24,329 | 0.21 |
-| Ruby / RJIT | 269 | 309 | – | 39.6 / 108.7 | 40,853 | 0.26 |
-| Common Lisp | 333 | 390 | 0.56 | 92.9 | 37,088 | 0.22 |
-| Haskell | 344 | 399 | 2.14 | 24.5 | 36,694 | 0.22 |
-| OCaml | 343 | 389 | 0.25 | 14.9 | 53,674 | 0.27 |
-| FreeBASIC | 413 | 477 | 0.36 | 5.4 | 65,469 | 0.47 |
-| BASIC (bwBASIC) | 143 | 190 | – | 9.7 | 55,377 | 0.48 |
-| Julia | 347 | 397 | – | 309.2 | 65,650 | 0.48 |
-| Erlang | 454 | 478 | 0.34 | 101.8 | 86,251 | 0.88 |
-| Elixir | 306 | 372 | – | 102.9 | 84,789 | 0.70 |
-| C, parallel | 664 | 727 | 0.33 | 12.1 | 68,725 | 0.45 |
-| Rust, parallel | 586 | 628 | 1.66 | 8.2 | 41,161 | 0.36 |
-| Go, parallel | 660 | 697 | 0.16 | 16.0 | 60,409 | 0.45 |
-| Java, parallel | 681 | 720 | 0.43 | 741.9 | 44,754 | 0.46 |
-| Julia, parallel | 596 | 647 | – | 318.5 | 63,682 | 0.68 |
-| Erlang, parallel | 887 | 911 | 0.41 | 106.4 | 159,556 | 2.11 |
-| Elixir, parallel | 552 | 628 | – | 129.7 | 160,739 | 1.88 |
-| General work: paper, notes, benchmarks and discussion | | | | | 434,656 | 7.93 |
-| **Total** | | | | | 2,468,044 | 22.09 |
+| Java | 414 | 453 | 0.37 | 194.7 | 20,486 | 0.08 |
+| C# | 395 | 443 | 2.60 | 54.3 | 17,961 | 0.06 |
+| Swift | 378 | 410 | 1.58 | 22.0 | 20,129 | 0.06 |
+| WebAssembly | 415 | 517 | 0.25 | 63.2 | 24,696 | 0.35 |
+| F# | 346 | 390 | 2.61 | 56.9 | 33,728 | 0.24 |
+| Kotlin | 375 | 398 | 7.36 | 193.8 | 24,314 | 0.21 |
+| Ruby / RJIT | 269 | 309 | – | 39.6 / 108.7 | 40,854 | 0.26 |
+| Common Lisp | 333 | 390 | 0.56 | 92.9 | 37,063 | 0.22 |
+| Haskell | 344 | 399 | 2.14 | 24.5 | 36,752 | 0.22 |
+| OCaml | 343 | 389 | 0.25 | 14.9 | 53,637 | 0.27 |
+| FreeBASIC | 413 | 477 | 0.36 | 5.4 | 65,424 | 0.47 |
+| BASIC (bwBASIC) | 143 | 190 | – | 9.7 | 55,450 | 0.48 |
+| Julia | 347 | 397 | – | 309.2 | 65,606 | 0.48 |
+| Erlang | 454 | 478 | 0.34 | 101.8 | 86,327 | 0.88 |
+| Elixir | 306 | 372 | – | 102.9 | 84,780 | 0.70 |
+| ISPC | 480 | 543 | 0.35 | 5.9 | 257,828 | 1.02 |
+| C, parallel | 664 | 727 | 0.33 | 12.1 | 68,818 | 0.45 |
+| Rust, parallel | 586 | 628 | 1.66 | 8.2 | 41,280 | 0.36 |
+| Go, parallel | 660 | 697 | 0.16 | 16.0 | 60,371 | 0.45 |
+| Java, parallel | 681 | 720 | 0.43 | 741.9 | 45,205 | 0.46 |
+| Julia, parallel | 596 | 647 | – | 318.5 | 63,639 | 0.68 |
+| Erlang, parallel | 887 | 911 | 0.41 | 106.4 | 159,578 | 2.11 |
+| Elixir, parallel | 552 | 628 | – | 129.7 | 160,629 | 1.88 |
+| General work: paper, notes, benchmarks and discussion | | | | | 454,764 | 8.88 |
+| **Total** | | | | | 2,750,838 | 24.09 |
 
 - **Lines** are lines of code without blank lines or comments, from `bench/loc.py`. Solver lines count only the files that implement solve. Total lines add the program, the tests and any other source in the project, but not build files. WebAssembly counts the C solver it compiles. Python is one file that also deals the rounds.
 - **Clean build** is the time `bench/run.sh` takes to build the benchmark binary from an empty build directory, from `bench/metrics.sh`. Toolchain caches stay warm, so the standard libraries are not compiled again. Cargo and Go get fresh caches, so Rust's figures include compiling `rand` and, for CUDA, `cudarc`. Interpreted solvers, and Julia and Elixir, which compile when they start, show –; that cost is in their whole-program time. The PyTorch and lookup-table builds install packages, train a model or compute a 248 MB table, so they are left out.
 - **Peak memory** is the maximum resident set size of one benchmark pass over the 10,000 rounds (1,000 for Python and bwBASIC), from `/usr/bin/time`. It includes the runtime and the rounds, and the parallel versions run 8 threads.
-- **Claude tokens and hours** come from `bench/agent_cost.py`, which reads this project's Claude Code transcripts. Each response is charged to the solutions its tool calls touch, found from project directories, harness files and `run.sh` arguments, and split evenly when there are several. A subagent's responses are charged only to the solutions it was asked to write, even when it read another project to port it. Output tokens are exact for the main conversation. Subagent transcripts record usage before a response finishes streaming, so their output is estimated from the length of what they wrote, at 0.37 tokens per visible character and 0.30 per character of hidden reasoning. That fit explains 98% of the variation in the main conversation's exact counts. Input tokens, mostly cached context re-read on every call, add up to 415 million and are not shown. Hours are the time from each response to the next response or user message, capped at 15 minutes. Subagents worked in parallel, so their hours overlap and add up to more than the elapsed time.
+- **Claude tokens and hours** come from `bench/agent_cost.py`, which reads this project's Claude Code transcripts. Each response is charged to the solutions its tool calls touch, found from project directories, harness files and `run.sh` arguments, and split evenly when there are several. A subagent's responses are charged only to the solutions it was asked to write, even when it read another project to port it. Output tokens are exact for the main conversation. Subagent transcripts record usage before a response finishes streaming, so their output is estimated from the length of what they wrote, at 0.37 tokens per visible character and 0.30 per character of hidden reasoning. That fit explains 98% of the variation in the main conversation's exact counts. Input tokens, mostly cached context re-read on every call, add up to 460 million and are not shown. Hours are the time from each response to the next response or user message, capped at 15 minutes. Subagents worked in parallel, so their hours overlap and add up to more than the elapsed time.
 
 What stands out:
 
 - **Lines of code track the language more than the speed.** Python, at 95 lines including dealing the rounds, and bwBASIC, at 143, are the shortest; assembly and COBOL, at over 900, the longest. The parallel versions are 1.5 to 2 times their single-core sources, mostly for the pool, the phase hand-offs and the shared search.
 - **Most builds take under a second.** The exceptions are Zig at 10 s, Kotlin at 7.4 s and .NET at 2.6 s, each dominated by the compiler rather than the solver.
 - **Ahead-of-time compiled CPU solvers need under 25 MB**, except SBCL's 93 MB heap. The JVM uses about 195 MB, rising to 742 MB for the parallel Java version, while Julia uses 310 MB and the BEAM about 100 MB. PyTorch needs 1.5 to 1.8 GB of host memory.
-- **Debugging costs more than writing.** The two parallel BEAM versions were the most expensive work, at about 160,000 output tokens and two hours each, including finding the waiting race and tuning the schedulers. Next come PyTorch (116,000) and assembly (102,000), the two least conventional designs. Ports of an existing optimised design were cheapest: C++, C#, Java, Swift and the lookup table each took under 21,000 output tokens.
-- **General work was about 18% of the output.** That covers the paper, these notes, benchmark runs across all solutions and discussion.
+- **Debugging and exploring cost more than writing.** ISPC was the most expensive solution, at about 258,000 output tokens, because beating C took about 60 measured variants. The two parallel BEAM versions came next, at about 160,000 output tokens and two hours each, including finding the waiting race and tuning the schedulers. Next come PyTorch (116,000) and assembly (102,000), the two least conventional designs. Ports of an existing optimised design were cheapest: C++, C#, Java, Swift and the lookup table each took under 21,000 output tokens.
+- **General work was about 17% of the output.** That covers the paper, these notes, benchmark runs across all solutions and discussion.
 
 ## How it is measured
 
@@ -276,6 +280,8 @@ Each round still runs through dozens of barrier-separated phases with little wor
 
 **Elixir.** Elixir 1.18 on the same BEAM, written independently of the Erlang version. Storing values only took it from 0.73 to 0.22 ms; deferring the five-number subsets to 0.177; constant split tables and a range check before each binary search to 0.129; deferring the four-number subsets as well, which PyTorch found 30% slower, to 0.084; checking partners in ascending order and stopping at the first hit to 0.074; and searching outward from the target (t ± 1, t ± 2, … up to 8) before building everything for the 2% of rounds that miss, which had taken 38% of the time, to 0.057. The gap to Erlang is design, not language. A map from `maps:from_keys` was 2.5 times slower than `:lists.usort`, and a packed binary for binary search 38% slower than a tuple. The `countdown` wrapper starts `erl` directly because the `elixir` launcher added 60 ms.
 
+**ISPC.** Intel's SPMD Program Compiler 1.31.0, which runs a C-like program on several SIMD lanes in lockstep, like a GPU thread group inside one core. It is the only CPU solver faster than C: 0.0115 ms against 0.0183 in the same session, with 163k instructions per round against C's 324k and 358 branch misses against 794. The design stores values only, so removing duplicates is an order-free bit OR and lanes cannot break the first-derivation rule; origins are found again for the answer. The longer half of each pair loop is spread across the lanes, which compute all four results, legality and the reciprocal division test at once. Each subset's sorted list is read straight out of its bitset, with no sort and no branches, and every subset keeps its bitset so each partner check is one bit test. The n−1 and n−2 levels are built but never listed, since searches only look them up. A scalar C control with the same structure runs at 83k cycles per round against 62k for ISPC and about 95k for the C solver, so the lanes are worth about 25% and the structure about 12%. The narrowest gang won: four 64-bit lanes (60.6k cycles) beat eight 32-bit lanes (64.7k) and 16 lanes (80–86k), because setting bits is a read-modify-write per lane slot, so dead lanes cost as much as live ones. C's trick of writing illegal results to value 0 became one serial chain of updates under SIMD; giving each lane its own spare word saved 19% in ISPC but only 1–2% in C. Compacting legal lanes with `packed_store_active` (117k cycles), merging same-word bits in registers and a gang search of short halves all lost. Two compiler traps: when ISPC could prove a staging buffer did not alias the bitset, LLVM replaced store-and-reload with slower lane extracts and spills, and `shift()` goes through memory while `rotate()` by constants becomes permutes. The straight port, a plain translation with an inlined quicksort, takes 0.078 ms, faster than C's straight port because C's `qsort` calls its comparison through a pointer.
+
 ## Tried and rejected
 
 - Peeling the edge cases out of C's pair loop: fewer instructions but more mispredicted branches.
@@ -294,4 +300,4 @@ Each round still runs through dozens of barrier-separated phases with little wor
 
 ## Toolchains
 
-Clang 21.1.8, GCC 15.2.0, Rust 1.99.0, Zig 0.17.0, Go 1.25.0, gfortran 15.2.0, GNAT 14, Free Pascal 3.2.2, GnuCOBOL 3.2.0, OpenJDK 25.0.4, .NET SDK 10.0.112, Swift 6.1.3, Node 24.12.0, CUDA 12.4 with cudarc 0.19, PyTorch 2.14.1 with CUDA 13.0 and Triton 3.8, LuaJIT 2.1, Lua 5.4.8, Gforth 0.7.3, Python 3.14.4, FreeBASIC 1.10.1, bwBASIC 2.20pl2, GHC 9.10.3, OCaml 5.4.0, SBCL 2.6.0, F# on .NET SDK 10.0.112, Kotlin 2.4.21, Ruby 3.3.8, wasi-libc with wasm-ld 21, Julia 1.13.1, Erlang/OTP 27, Elixir 1.18.3.
+Clang 21.1.8, GCC 15.2.0, Rust 1.99.0, Zig 0.17.0, Go 1.25.0, gfortran 15.2.0, GNAT 14, Free Pascal 3.2.2, GnuCOBOL 3.2.0, OpenJDK 25.0.4, .NET SDK 10.0.112, Swift 6.1.3, Node 24.12.0, CUDA 12.4 with cudarc 0.19, PyTorch 2.14.1 with CUDA 13.0 and Triton 3.8, LuaJIT 2.1, Lua 5.4.8, Gforth 0.7.3, Python 3.14.4, FreeBASIC 1.10.1, bwBASIC 2.20pl2, GHC 9.10.3, OCaml 5.4.0, SBCL 2.6.0, F# on .NET SDK 10.0.112, Kotlin 2.4.21, Ruby 3.3.8, wasi-libc with wasm-ld 21, Julia 1.13.1, Erlang/OTP 27, Elixir 1.18.3, ISPC 1.31.0 (LLVM 23.0.0).

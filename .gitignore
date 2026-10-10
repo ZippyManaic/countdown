@@ -72,3 +72,5 @@ countdown-lisp/countdown
 countdown-ocaml/countdown
 countdown-pascal/countdown
 countdown-pascal/tests
+countdown-ispc/countdown
+countdown-ispc/run-tests
