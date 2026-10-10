@@ -19,12 +19,14 @@ CAKE = os.path.join(HERE, "tools/cake_lpr/cake_lpr")
 LRATCHECK = os.path.join(HERE, "tools/drat-trim/lrat-check")
 MEM = "6G"
 TIMEOUT = 1800
+# Name a systemd slice to hold every job so one cap can limit the memory of the whole run
+SLICE = None
 
 
 def capped(cpu, argv, mem=MEM, timeout=TIMEOUT):
     """Run a command under a memory cap, a timeout and a CPU pin and return its status, output, seconds and peak KB"""
-    cmd = ["systemd-run", "--user", "--scope", "-q", "-p", f"MemoryMax={mem}", "-p", "MemorySwapMax=0",
-           "timeout", str(timeout), "taskset", "-c", str(cpu),
+    cmd = ["systemd-run", "--user", "--scope", "-q", *([f"--slice={SLICE}"] if SLICE else []),
+           "-p", f"MemoryMax={mem}", "-p", "MemorySwapMax=0", "timeout", str(timeout), "taskset", "-c", str(cpu),
            "/usr/bin/time", "-f", "@@TIME %e %M", *argv]
     p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     m = re.search(r"@@TIME ([\d.]+) (\d+)", p.stderr)
@@ -107,7 +109,10 @@ def main():
     ap.add_argument("--cpus", default="24-29")
     ap.add_argument("--lrat-check", action="store_true")
     ap.add_argument("--tmp", default=None)
+    ap.add_argument("--slice", default=None)
     a = ap.parse_args()
+    global SLICE
+    SLICE = a.slice
     lo, hi = map(int, a.cpus.split("-"))
     cpus = list(range(lo, hi + 1))
     jobs = []

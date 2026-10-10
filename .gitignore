@@ -87,3 +87,4 @@ verification/cbmc/native/build/
 countdown-ada/tests
 countdown-haskell/tests
 countdown-ocaml/tests
+solvability/sat/jobs/full_*.tsv
