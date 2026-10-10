@@ -62,7 +62,8 @@ Section~\ref{sec:structure} collects the properties that efficient solvers explo
 Section~\ref{sec:algorithms} gives the algorithms with their correctness proofs and
 Section~\ref{sec:data} reports measurements of the problem and Section~\ref{sec:performance} the
 timings of every implementation. Section~\ref{sec:optimisation} compares each language's straight port with
-its optimised version, and Section~\ref{sec:parallel} shares a single round across CPU threads. Hutton~\cite{hutton} gave an earlier formalisation that
+its optimised version, Section~\ref{sec:parallel} shares a single round across CPU threads and
+Section~\ref{sec:provenance} records how the implementations were written. Hutton~\cite{hutton} gave an earlier formalisation that
 lists every solution. Here the task is to choose exactly one.
 
 \section{Instances}\label{sec:instances}
@@ -1179,6 +1180,31 @@ before it received the same fix.
 Parallelism inside one round of a single game gives at most a factor of two, and only by careful
 engineering. A batch is a different matter: the CUDA solver of Section~\ref{sec:gpu} is about forty times
 faster than one core, because there each round is independent and needs no barriers.
+
+\section{How the implementations were written}\label{sec:provenance}
+
+Every implementation, benchmark script and this paper were written by one large language model, Anthropic's
+Claude Opus~5.5 (model identifier \texttt{claude-opus-5-5}), working in the Claude Code command-line tool
+(versions 2.1.291--2.1.296) between 6 and 10 October 2026. A person set the goals, chose the languages
+and set rules such as no state carried between solves; the model wrote and ran all the code and
+proposed the analyses. The early languages were written in the main conversation. The later
+languages, the parallel versions and the ISPC solver were each handed to a subagent, a separate instance
+of the same model, given a written brief and run in parallel with others on separate cores.
+
+By the repository's \texttt{bench/agent\_cost.py}, the work took about 2.75 million output tokens and
+460 million input tokens, most of them cached context read again on each call. About 17\% of the output
+went on general work such as this paper and the benchmark runs. The rest is charged to individual
+solutions in \texttt{PERFORMANCE.md}. Ports of an existing optimised design were cheapest, under
+21{,}000 output tokens each. Work that needed exploration or debugging cost the most: ISPC took about
+258{,}000 tokens, from about 60 measured variants, and the two parallel BEAM versions about 160{,}000 each.
+
+We record this so that the work can be repeated with later models. A fair comparison would give a new model the same
+benchmark set, reference answers, harnesses and rules, and measure the same quantities: solve time
+pinned to one core, byte-identical answers by \texttt{bench/check.py}, lines of code by
+\texttt{bench/loc.py}, and tokens and time spent. Timings should be re-measured on the same machine, since the
+results here show session-to-session variation of about 10\%. Two parts of this record are themselves
+estimates: subagent transcripts store token usage before a response finishes, so subagent output is estimated from the
+length of what was written, and time is attributed per response with a 15-minute cap.
 
 \begin{thebibliography}{9}
 \bibitem{hutton} G.~Hutton. The countdown problem. \emph{Journal of Functional Programming}, 12(6):609--616, 2002.
