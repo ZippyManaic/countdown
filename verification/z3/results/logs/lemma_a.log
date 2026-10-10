@@ -1,0 +1,5 @@
+validate summary {'samples': 937, 'disagreements': [], 'y_equals_1_edge': [{'x': 2147483647, 'q': 2147483647, 'accepted': True}, {'x': 2147483648, 'q': 2147483648, 'accepted': True}, {'x': 2147483649, 'q': 2147483648, 'accepted': False}], 'wall_time': 11.971755027770996}
+mutation summary {'result': 'sat', 'time': 0.5076432228088379, 'witness': {'k': 1048576, 'y': 998, 'q': 1048575}, 'python_truncated_q': 1048575, 'confirmed': True, 'wall_time': 0.5185940265655518}
+ATTENTION {'kind': 'complete', 'a': 4, 'j': 4, 'xmax': 4294967296, 'result': 'unknown', 'time': 600.0638408660889, 'coverage': 'unsat', 'coverage_time': 2.257732391357422, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 5, 'j': 4, 'xmax': 4294967296, 'result': 'unknown', 'time': 600.1343123912811, 'coverage': 'unsat', 'coverage_time': 2.8264684677124023, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 6, 'j': 4, 'xmax': 4294967296, 'result': 'unknown', 'time': 600.0900008678436, 'coverage': 'unsat', 'coverage_time': 9.55070948600769, 'model': None}

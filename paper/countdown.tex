@@ -2,7 +2,7 @@
 
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{amsmath,amssymb,amsthm}
-\usepackage{booktabs}
+\usepackage{booktabs,array}
 \usepackage{enumitem}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
@@ -177,7 +177,7 @@ Use induction on $|S|$, where the base case is $p_i \le (p_i + 1) - 1$. For $x \
 at most $\max(x + y, x y) \le x y + x + y = (x + 1)(y + 1) - 1$, and the bounds multiply over a split.
 \end{proof}
 
-For a game pool this is below $101 \cdot 76 \cdot 11^2 \cdot 10^2 < 2^{27}$, so every value fits in 32 bits.
+For a game pool this is below $101 \cdot 76 \cdot 11^2 \cdot 10^2 < 2^{27}$, so every value fits in 32 bits; Section~\ref{sec:cats} revisits this for pools with more large numbers.
 Several solvers size a bitset of seen values by this bound.
 
 \begin{proposition}[Restricted rules lose nothing]\label{prop:restriction}
@@ -661,7 +661,7 @@ six-number rounds, for the saving to outweigh the cost of running it.
 The benchmark set \texttt{bench/data/rounds10k.txt} holds $10{,}000$ game-distributed rounds. Its
 reference answers \texttt{ref10k.tsv} are $\operatorname{Solve}(t, p)$ as computed by the Rust solver.
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{lr}
 \toprule
@@ -681,7 +681,7 @@ Closest at $d^* = 4$ & 2 \\ \bottomrule
 \caption{Optimal distance and count over the 10{,}000 benchmark rounds.}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabular}{rrr}
 \toprule
@@ -860,7 +860,7 @@ Rust & 9.7$^a$ & 0.0557 & 174$\times$ & staged search with early exit; values on
 Erlang$^c$ & 0.494 & 0.0575 & 8.6$\times$ & rewritten to Elixir's design, with tuples for binary search and subset tables as constants \\
 Elixir$^c$ & 0.729 & 0.0576 & 12.7$\times$ & values only with \texttt{:lists.usort}; four- and five-number subsets deferred; ordered partner checks; outward search for closest rounds \\
 JavaScript & 0.381 & 0.0848 & 4.5$\times$ & four 32-bit words per entry in a \texttt{Uint32Array}; 32-bit bitset words with a hand-written popcount; no typed-array views in the insertion sort \\
-COBOL & 2.07 & 0.173 & 12$\times$ & every hot operation kept out of GMP decimal arithmetic: shift-and-add multiplication, long division, a byte stamp per value and a byte radix sort \\
+COBOL & 2.07 & 0.173 & 12$\times$ & hot operations kept out of GMP decimal arithmetic: shift-and-add multiplication, long division, byte stamps and a byte radix sort \\
 LuaJIT & 0.61 & 0.186 & 3.3$\times$ & each origin packed into one number; a radix sort written in Lua; hash tables pre-sized \\
 Ruby & 2.22 & 0.494 & 4.5$\times$ & a Hash per subset with \texttt{key?} checks; split pair loops; whole-pool pass unrolled \\
 Forth (fast) & 0.864 & 0.318 & 2.7$\times$ & byte stamp per value; byte radix sort; pointer stepping; hot words compiled in place \\
@@ -869,7 +869,7 @@ Lua 5.4 & 1.10 & 0.550 & 2.0$\times$ & each origin packed into one number; \text
 Python & 12.0$^a$ & 7.23 & 1.7$\times$ & values without origins while searching; origins rebuilt only for the answer \\
 bwBASIC & 1{,}114 & 306 & 3.6$\times$ & one hash table of values without origins; hot subroutines placed first because \texttt{GOTO} searches from the top \\ \midrule
 PyTorch & 0.142$^a$ & 0.0157 & 9.0$\times$ & expressions typeset on the GPU; pair generation fused by \texttt{torch.compile}; shorter half scanned; five-number subsets deferred; illegal results dropped before sorting \\
-Rust + CUDA & 0.0107$^a$ & 0.000466 & 23$\times$ & split tables computed once; each phase flattened across all threads; four-number subsets kept as tables only; values appended as they are found; answer unfolded a level at a time \\ \bottomrule
+Rust + CUDA & 0.0107$^a$ & 0.000466 & 23$\times$ & split tables computed once; phases flattened across threads; four-number subsets as tables only; answer unfolded a level at a time \\ \bottomrule
 \end{tabular}
 \caption{Straight port against optimised version for each language. $^a$First version rather than a
 straight port. $^b$Re-measured (Section~\ref{sec:surprises}). $^c$Defers the four- and five-number subsets, extending Lemma~\ref{lem:defer}, and so does less work than the other CPU versions.}\label{tab:opt}
@@ -1181,6 +1181,243 @@ Parallelism inside one round of a single game gives at most a factor of two, and
 engineering. A batch is a different matter: the CUDA solver of Section~\ref{sec:gpu} is about forty times
 faster than one core, because there each round is independent and needs no barriers.
 
+\section{How often is there no solution?}\label{sec:solvability}
+
+Call an instance \emph{solvable} when its target is reachable, that is when $d^* = 0$. The instance space
+is finite (Proposition~\ref{prop:pools}), so the share of unsolvable rounds is a definite number, and it
+can be found by solving every instance.
+
+\begin{theorem}[Unsolvable rounds]\label{thm:unsolvable}
+Exactly $380{,}523$ of the $8{,}548{,}200$ instances are unsolvable, and $1{,}217$ of the $9{,}498$ pools
+reach every target. Under the game's distribution
+\[
+  \Pr[\text{no exact solution}] = \frac{16{,}970{,}693}{837{,}216{,}000} \approx 0.020270,
+\]
+about one round in 49. Given one large number it is $627{,}787 / 27{,}907{,}200 \approx 0.02250$, and given two
+it is $236{,}059 / 13{,}081{,}500 \approx 0.01805$.
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:recursion} the reachable values of a pool are $\bigcup_S V(S)$, and each $V(S)$ is
+determined by the splits of $S$. A checker written for this purpose, sharing no code with any solver,
+evaluates that recursion literally for all 63 non-empty subsets of each pool in 64-bit arithmetic with
+overflow checks, and lists the targets outside the union. The C solver of Section~\ref{sec:cpu} was run on
+all $8{,}548{,}200$ instances, and the GPU-built lookup table of Section~\ref{sec:approx} holds an answer for
+each. The three sources agree on every instance, both on whether it is solvable and on the best distance
+$d^*$. Summing the deal probability of each pool, $\tfrac12 \prod_i \binom{2}{c_i} / \binom{20}{6-\ell}
+\cdot 1/\binom{4}{\ell}$ for small numbers with multiplicities $c_i$, times its share of missed targets,
+gives the fractions, computed in exact rational arithmetic. The weights sum to $1$.
+\end{proof}
+
+The two halves of the theorem rest on different kinds of evidence. A solvable instance has a short
+\emph{certificate}, an expression that anyone can evaluate, and the checker writes one for each of the
+$8{,}167{,}677$ solvable instances. A separate 100-line evaluator accepts all of them, and also accepts the
+$8{,}167{,}677$ exact answers in the lookup table, a second independent set. An unsolvable instance has no
+such certificate in general: showing that \emph{no} expression reaches the target needs the whole search.
+That half rests on two programs of different design agreeing, which Section~\ref{sec:checked} strengthens
+with machine-checked proofs.
+
+Counted over distinct instances rather than dealt rounds, the share is $380{,}523 / 8{,}548{,}200 \approx 4.45\%$,
+more than twice as high. The hard pools are those with repeated small numbers, and the deck makes them
+unlikely: a pool with two 1s misses $12.7\%$ of targets and none reaches every target. As a check on both
+the dealer and the weights, a million rounds dealt by the Python program missed $20{,}365$ times, a 95\%
+interval of $[0.02009, 0.02064]$ around the exact $0.02027$.
+
+\paragraph{How far off.}
+When there is no exact answer it is almost always close. The best distance is $1$ in $91.8\%$ of unsolvable
+rounds, its mean is $20{,}501{,}954 / 16{,}970{,}693 \approx 1.208$, and the probability of finishing more than
+$10$ away is about $4 \times 10^{-5}$. The worst case is $d^* = 324$, for target $999$ from the pool
+$1, 1, 2, 2, 3, 25$, whose largest value is $675$.
+
+\paragraph{Holes, not range.}
+Unsolvable rounds are almost never out of reach.
+
+\begin{proposition}[Largest value]\label{prop:max}
+The largest reachable value of a pool is $B([n])$, where $B(\{i\}) = p_i$ and $B(S)$ is the maximum over the
+splits $\{L, R\}$ of $S$ of $\max(B(L) B(R),\, B(L) + B(R))$.
+\end{proposition}
+
+\begin{proof}
+Every legal result of $x \ge y \ge 1$ is at most $\max(xy, x + y)$, so induction on $|S|$ bounds every value
+by $B$. Conversely, with $x \ge y$, if $y = 1$ the larger option $x + 1$ is made by addition, and if $y \ge 2$
+then $xy \ge x + y$ and multiplication is legal, so a tree attaining $B$ is legal.
+\end{proof}
+
+Only three game pools have a largest value below $999$: $1, 1, 2, 2, 3, 25$ ($675$), $1, 1, 2, 2, 4, 25$ and
+$1, 1, 2, 3, 3, 25$ (both $900$). They account for $522$ unsolvable instances. The other $380{,}001$ are
+\emph{holes}, targets below the pool's largest value that no expression hits. The cruder bound of
+Proposition~\ref{prop:bound} is at least $3{,}743$ for every game pool and rules out none of them.
+
+\paragraph{Hard and easy targets.}
+Exactly 14 targets are reachable from every pool: 100, 101, 102, 104, 105, 106, 111, 114, 119, 125, 150, 200,
+300 and 450. The miss rate rises steeply with the target, from $0.04\%$ in the 100s to $5.6\%$ in the 900s,
+and the hardest targets are 967, 937, 941, 933 and 947, each missed by about $11.5\%$ of dealt rounds.
+Four of those five are prime, and primes are harder in general.
+
+\begin{proposition}\label{prop:prime}
+If a prime $t$ is reachable, the top operation of every expression for $t$ is $+$, $-$ or $\div$.
+\end{proposition}
+
+\begin{proof}
+A top multiplication combines $x \ge y \ge 2$ (Definition~\ref{def:ops} forbids multiplying by 1), and $xy$
+is composite.
+\end{proof}
+
+Primes miss at $3.23\%$ against $1.80\%$ for composite targets. Taking the final multiplication away from
+composite targets as well raises their rate to $3.14\%$, so the lost route explains most, but not all, of
+the gap. The rest seems to follow the size of the largest prime factor: composite targets whose largest
+prime factor exceeds $50$ miss at $2.8\%$, close to the primes. We state the explanation as a
+conjecture: a target is hard roughly as far as it fails to factor into values that small sub-pools reach
+easily. Multiples of 25 are the easiest targets of all, missed $0.31\%$ of the time.
+
+\section{Cats does Countdown}\label{sec:cats}
+
+The game analysed so far deals one or two large numbers, the rule this project started with. On television,
+in \emph{Countdown} and its comedy spin-off \emph{8 Out of 10 Cats Does Countdown}, the contestant chooses
+any number of large numbers from none to four. Two special matches in 2010 went further. For Episode~S26
+(15 March 2010, Kirk Bevins against Chris Davies) and Episode~S29 (16 August 2010, Charlie Reams against
+Junaid Mubeen) the large cards were swapped for the ``nasty'' numbers 12, 37, 62 and 87~\cite{apterous}.
+We call the full choice of $\ell \in \{0, \dots, 4\}$ large numbers \emph{cats} mode and the same choice with
+the nasty cards \emph{nasty-cats} mode. The solvers need no change: they accept any pool. The new pools are
+$2{,}850$ with no large numbers, $840$ with three and $55$ with four, for $13{,}243$ in all.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{@{}crrrr@{}}
+\toprule
+Large numbers $\ell$ & Pools & Standard cards & Nasty cards & Largest value \\ \midrule
+0 & 2{,}850 & $16.12\%$ & $16.12\%$ & $518{,}400$ \\
+1 & 5{,}808 & $2.25\%$  & $3.15\%$  & $6{,}480{,}000$ \\
+2 & 3{,}690 & $1.80\%$  & $0.78\%$  & $60{,}750{,}000$ \\
+3 & 840     & $5.27\%$  & $0.41\%$  & $337{,}500{,}000$ \\
+4 & 55      & $9.54\%$  & $0.45\%$  & $937{,}500{,}000$ \\ \midrule
+$\ell$ uniform on $0, \dots, 4$ & & $6.99\%$ & $4.18\%$ & \\ \bottomrule
+\end{tabular}
+\caption{Probability of no exact solution given the number of large numbers chosen, with the target
+uniform and the cards dealt at random. The largest value is for the standard cards; with the nasty cards it
+is at most $239{,}493{,}600$. All figures come from the same exhaustive computation as
+Theorem~\ref{thm:unsolvable}, in which the checker and the C solver agree on every new instance.}
+\label{tab:cats}
+\end{table}
+
+Table~\ref{tab:cats} gives the results, each an exact fraction rounded for display.
+
+\paragraph{Six small numbers is the cruellest choice.}
+With no large numbers $16.1\%$ of rounds have no exact solution, eight times the standard game's rate. Here
+the range really does run out: $184$ of the $2{,}850$ pools cannot reach $999$, and the pool
+$1, 1, 2, 2, 3, 3$, whose largest value is $81$, reaches no target at all. The worst miss is $918$ away.
+
+\paragraph{Two large is the safest choice.}
+With the standard cards, one or two large numbers are nearly equally good, and three or four are worse,
+$5.3\%$ and $9.5\%$. Fewer small numbers leave less room to adjust a large product: with four large, the pool
+$1, 1, 25, 50, 75, 100$ misses 575 targets.
+
+\paragraph{The nasty numbers are kinder.}
+A fan wiki claims that the nasty cards make rounds \emph{more} likely to be solvable~\cite{apterous}. That
+holds for two, three and four large numbers, dramatically for four ($0.45\%$ against $9.54\%$), and on every
+average we tried, but it fails for one large number, where the miss rate rises from $2.25\%$ to $3.15\%$.
+The culprit is 12, a weak single large number: the pool $1, 1, 2, 2, 3, 12$ misses 792 targets. We
+conjecture that the standard cards are poor together because 25, 50, 75 and 100 are all multiples of 25,
+so they make fewer distinct combinations, while 12, 37, 62 and 87 share little.
+
+\paragraph{The bounds no longer hold.}
+The remark after Proposition~\ref{prop:bound} that values stay below $2^{27}$ is true only for one or two
+large numbers. With four standard cards the pool $10, 10, 25, 50, 75, 100$ reaches $937{,}500{,}000$, and
+73 pools exceed $2^{27}$. The bound itself, $\prod_i (p_i + 1) - 1$, stays below
+$101 \cdot 76 \cdot 51 \cdot 26 \cdot 11^2 < 2^{31}$, so values still fit in a signed 32-bit integer and the
+reciprocal division test of Lemma~\ref{lem:reciprocal} still applies, but with no room to spare. Every
+solver therefore has to be re-checked on cats rounds, and the C solver gave the right answer on all of them.
+
+\section{Machine-checked guarantees}\label{sec:checked}
+
+Theorem~\ref{thm:unsolvable} and Table~\ref{tab:cats} rest on programs agreeing. This section re-derives
+the key claims with four tools of different kinds: a proof assistant, a SAT solver with proof checking, an
+SMT solver and a bounded model checker of the C source. Table~\ref{tab:checked} lists which tool supports
+which claim and how far each result can be trusted. The scripts, logs and full results are in the
+repository's \texttt{solvability/} and \texttt{verification/} directories.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{4.2cm}>{\raggedright\arraybackslash}p{5.4cm}@{}}
+\toprule
+Claim & Tool & Trusted base and coverage \\ \midrule
+Decision procedure is sound and complete & Lean 4 & Kernel only \\
+Value bound (Proposition~\ref{prop:bound}) & Lean 4 & Kernel only \\
+Worst pool: 653 misses, maximum 675 & Lean 4 \texttt{decide +kernel} & Kernel only \\
+Every count and probability in Theorem~\ref{thm:unsolvable} and Table~\ref{tab:cats} & Lean 4 \texttt{native\_decide} & Kernel plus the Lean compiler, in four named facts \\
+No solution, pilot instances & CaDiCaL with LRAT & Proofs checked by the verified \texttt{cake\_lpr}; the encoder is unverified \\
+No solution, pilot instances & Lean 4 \texttt{bv\_decide} & Kernel plus the Lean compiler; encoding proved complete in the kernel \\
+No solution, pilot instances & Z3, unbounded integers & Z3 trusted; every SAT answer re-evaluated \\
+Largest cats values & Z3 & Z3 trusted \\
+Proposition~\ref{prop:prime}, one-node steps of Propositions~\ref{prop:max} and~\ref{prop:bound} & Z3 & Z3 trusted; trees of up to 3 leaves in full \\
+Reciprocal division (Lemma~\ref{lem:reciprocal}) & CBMC, Z3 and an exhaustive run & Hardware exhaustive for every 32-bit dividend; symbolic proofs of cells only \\
+Binary search, kernels and cats safety of \texttt{solver.c} & CBMC & Bounded, on the solver's own source \\ \bottomrule
+\end{tabular}
+\caption{Which claim is checked by which tool. ``Pilot instances'' are the 653 misses of the worst pool
+$1, 1, 2, 2, 3, 25$, target 967 on all 2{,}058 pools that miss it and the 575 misses of the cats pool
+$1, 1, 25, 50, 75, 100$.}
+\label{tab:checked}
+\end{table}
+
+\paragraph{Lean.}
+A Lean~4 development with no external library defines expressions, their evaluation and legality
+(each dealt card used at most once) and the predicate $\operatorname{Solvable}(p, t)$ directly from the
+rules, with no reference to any algorithm. It then defines the subset recursion of
+Theorem~\ref{thm:recursion} as a program and proves, in the kernel, that a target is in its output exactly
+when it is solvable. Because the program is proved correct for every pool, running it is a proof. Running
+it in the kernel is fast enough for one pool: the worst pool's 653 misses, its maximum of 675 and its
+smallest miss, 179, are checked with no trust beyond the kernel. Running it over all $23{,}636$ pools of the
+three modes needs compiled code, so the counts and probabilities use \texttt{native\_decide}, which adds
+the Lean compiler to the trusted base. The development confines this to four named facts, from which every
+count of Theorem~\ref{thm:unsolvable} and every rate of Table~\ref{tab:cats} follows in the kernel. Its
+per-pool miss lists equal the exhaustive study's for every pool of every mode. A clean build takes about
+95 seconds.
+
+\paragraph{SAT.}
+To give the ``no solution'' half a certificate that a small checker can verify, each unsolvable instance
+is encoded as a bit-vector formula: a straight-line program of at most five steps over the six numbers,
+each step adding, subtracting, multiplying or exactly dividing two unused values, ending at the target.
+The width is the least $w$ with $\prod_i (p_i + 1) \le 2^w$, safe by Proposition~\ref{prop:bound}, and a
+whole miss set can be given as the target, so one unsatisfiability proof covers every miss of a pool.
+CaDiCaL proves each formula unsatisfiable and writes an LRAT proof, which the CakeML-verified checker
+\texttt{cake\_lpr} accepts. A second route proves in Lean that the encoding is complete, so that
+unsatisfiability implies $\neg\operatorname{Solvable}(p, t)$, and discharges each formula with
+\texttt{bv\_decide}, which runs a verified bit-blaster and LRAT checker as compiled code. Both routes agree
+with the exhaustive study on all pilot instances, about 4{,}200 in all, and every satisfiable formula
+decodes to an expression the evaluator accepts. Proofs take about 1 second for the worst pool, 4 seconds
+for target 967 and 19 seconds for the cats pool, whose 26-bit values make multiplication much harder to
+encode. Extrapolated, every standard miss would take about 56 core-hours by either route and the three
+modes together about a core-day, so a full certificate for Theorem~\ref{thm:unsolvable} is within reach.
+
+\paragraph{Z3.}
+Z3 gives a third, unbounded encoding of ``no solution'' in integer arithmetic. It agrees on the worst pool
+(653 unsatisfiable, 247 satisfiable), on target 967 for 100 sampled pools and on the 517 misses of the cats
+pool it reached in the time allowed. It proves that 937{,}500{,}000 and 239{,}493{,}600 are the largest
+cats and nasty-cats values, that no prime target in range is a product $xy$ with $x \ge y \ge 2$
+(Proposition~\ref{prop:prime}), and the one-node inequalities from which Propositions~\ref{prop:max}
+and~\ref{prop:bound} follow by induction; the induction itself is on paper. Z3's unsatisfiability proofs
+cannot be checked independently, so these results trust Z3.
+
+\paragraph{CBMC.}
+The bounded model checker CBMC checks properties of the C solver by including its source unchanged.
+It proves the binary search correct for symbolic sorted lists of up to 32 entries, the result-emitting
+kernel correct for 24 appends, and, for the full ranges of cats and nasty-cats values, that the partner
+search, the exactness check and the bitset indexing cannot overflow or go out of bounds. The solver's
+building of sorted value lists is too heap-heavy for CBMC beyond the smallest case and was instead tested
+exhaustively on $5.4$ million pairs of small lists. Every cats and nasty-cats pool was also solved by a
+build with address, undefined-behaviour and integer sanitisers, with no reports. The solver would only
+break on repeated large numbers, which no mode deals.
+
+\paragraph{The reciprocal test.}
+Lemma~\ref{lem:reciprocal} resisted symbolic proof: CBMC and Z3 both time out on its floating-point
+multiplication over the full range, proving only cells of it. A direct run on the hardware settles it
+instead: for every divisor $2 \le y < 2^{32}$ and every multiple of $y$ below $2^{32}$, $91{,}633{,}733{,}620$
+cases in 33 seconds, the test gives the exact quotient, and a single-precision mutant fails 11.4 billion of
+them. So for $y \ge 2$ the lemma holds for every 32-bit dividend, beyond the $2^{31}$ the proof needs. For
+$y = 1$ the bound is tight, failing first at $x = 2^{31} + 1$, which is why the solvers never divide by 1.
+
 \section{How the implementations were written}\label{sec:provenance}
 
 Every implementation, benchmark script and this paper were written by one large language model, Anthropic's
@@ -1208,6 +1445,7 @@ length of what was written, and time is attributed per response with a 15-minute
 
 \begin{thebibliography}{9}
 \bibitem{hutton} G.~Hutton. The countdown problem. \emph{Journal of Functional Programming}, 12(6):609--616, 2002.
+\bibitem{apterous} The Countdown wiki (Apterous): Episode S26, Episode S29 and ``Nasty''. \url{https://wiki.apterous.org/Episode_S26}, \url{https://wiki.apterous.org/Episode_S29}, \url{https://wiki.apterous.org/Nasty}.
 \bibitem{repo} The Countdown solvers, benchmarks and this paper's source. \url{https://github.com/ZippyManaic/countdown}, 2026.
 \end{thebibliography}
 

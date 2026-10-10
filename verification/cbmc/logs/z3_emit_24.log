@@ -1,0 +1,11 @@
+CBMC version 6.6.0 (cbmc-6.6.0) 64-bit x86_64 linux
+Type-checking emit
+Generating GOTO Program
+Adding CPROVER library (x86_64)
+Removal of function pointers and virtual functions
+Generic Property Instrumentation
+Starting Bounded Model Checking
+Passing problem to SMT2 QF_AUFBV using Z3
+converting SSA
+Command exited with non-zero status 124
+960.10 s 323308 KB

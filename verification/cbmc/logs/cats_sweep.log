@@ -1,0 +1,5 @@
+cats: 13243 pools, 39729 rounds under ASan and UBSan, every expression legal and equal to its value
+cats: 260 rounds against countdown.py, 0 differ in distance or numbers used
+nasty-cats: 13243 pools, 39729 rounds under ASan and UBSan, every expression legal and equal to its value
+nasty-cats: 260 rounds against countdown.py, 0 differ in distance or numbers used
+61.73 s 562748 KB

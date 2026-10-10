@@ -1,0 +1,24 @@
+{
+ "pool": [
+  1,
+  1,
+  2,
+  2,
+  3,
+  25
+ ],
+ "target": 179,
+ "result": "unsat",
+ "time": 6.476448059082031,
+ "proof_chars": 187573690,
+ "rule_counts": {
+  "th-lemma": 115902,
+  "unit-resolution": 556227,
+  "lemma": 50850,
+  "hypothesis": 708711,
+  "rewrite": 10694,
+  "mp": 72650,
+  "asserted": 159
+ },
+ "arith_th_lemmas_with_nla": 0
+}

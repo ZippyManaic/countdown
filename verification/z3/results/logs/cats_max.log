@@ -1,0 +1,2 @@
+{'pool': (10, 10, 25, 50, 75, 100), 'claim': 937500000, 'B': 937500000, 'python_max': 937500000, 'attained': 'sat', 'attained_time': 0.15291810035705566, 'witness': '(((100 * 50) * 75) * ((10 * 10) * 25))', 'witness_ok': True, 'exceeded': 'unsat', 'exceeded_time': 104.4165587425232}
+{'pool': (10, 10, 12, 37, 62, 87), 'claim': 239493600, 'B': 239493600, 'python_max': 239493600, 'attained': 'sat', 'attained_time': 0.2789437770843506, 'witness': '(((62 * 10) * (37 * 12)) * (87 * 10))', 'witness_ok': True, 'exceeded': 'unsat', 'exceeded_time': 141.35332083702087}

@@ -1,0 +1,3 @@
+cats: 13243 pools, largest proper-subset bound 93750000 (pool 1 10 25 50 75 100), largest whole-pool bound 937500000 (pool 10 10 25 50 75 100), truncated 0
+nasty-cats: 13243 pools, largest proper-subset bound 23949360 (pool 1 10 12 37 62 87), largest whole-pool bound 239493600 (pool 10 10 12 37 62 87), truncated 0
+0.08 s 7804 KB

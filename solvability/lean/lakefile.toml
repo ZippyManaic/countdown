@@ -1,0 +1,10 @@
+name = "countdown"
+defaultTargets = ["Countdown"]
+
+[[lean_lib]]
+name = "Countdown"
+precompileModules = true
+
+[[lean_exe]]
+name = "export"
+root = "Export"

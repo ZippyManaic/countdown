@@ -1,6 +1,6 @@
 # Notes for coding agents
 
-This repository holds Countdown numbers-round solvers in many languages. The first version was written by Claude Opus 5.5 in Claude Code (see section 12 of `paper/countdown.pdf`). If you are another model or tool auditing or extending it, please follow these rules so your results compare fairly.
+This repository holds Countdown numbers-round solvers in many languages. The first version was written by Claude Opus 5.5 in Claude Code (see the section "How the implementations were written" in `paper/countdown.pdf`). If you are another model or tool auditing or extending it, please follow these rules so your results compare fairly.
 
 ## Rules
 

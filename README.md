@@ -19,6 +19,12 @@ Each `countdown-<language>/` directory holds a solver, a program that deals and 
 
 `countdown.py` at the top level is the original Python version.
 
+## How often is there no solution?
+
+- [`solvability/`](solvability/) solves every possible round, in the standard game and in the cats and nasty-cats modes (0 to 4 large numbers). It counts the unsolvable ones with an independent checker and proves the counts in Lean 4 ([`solvability/RESULTS.md`](solvability/RESULTS.md)).
+- [`solvability/sat/`](solvability/sat/) is a pilot that proves "no solution" with SAT. CaDiCaL writes LRAT proofs, which the verified checker `cake_lpr` checks, and Lean's `bv_decide` gives a second route.
+- [`verification/`](verification/) cross-checks the paper's lemmas and the C solver with Z3 and CBMC.
+
 ## Benchmarks
 
 ```sh

@@ -1,0 +1,22 @@
+{
+ "samples": 937,
+ "disagreements": [],
+ "y_equals_1_edge": [
+  {
+   "x": 2147483647,
+   "q": 2147483647,
+   "accepted": true
+  },
+  {
+   "x": 2147483648,
+   "q": 2147483648,
+   "accepted": true
+  },
+  {
+   "x": 2147483649,
+   "q": 2147483648,
+   "accepted": false
+  }
+ ],
+ "wall_time": 11.971755027770996
+}

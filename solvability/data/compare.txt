@@ -1,0 +1,5 @@
+checker vs countdown-c: 0 exact/miss disagreements, 0 distance disagreements
+checker vs answers.bin: 0 exact/miss disagreements, 0 distance disagreements
+countdown-c vs answers.bin: 0 exact/miss disagreements, 0 distance disagreements
+countdown-c and answers.bin return the same value on 8,548,200 of 8,548,200 instances
+misses: checker 380,523, countdown-c 380,523, answers.bin 380,523 of 8,548,200

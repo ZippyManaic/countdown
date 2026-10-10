@@ -1,0 +1,17 @@
+ATTENTION {'kind': 'complete', 'a': 6, 'j': 1, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.002787351608276, 'coverage': 'unsat', 'coverage_time': 2.5172178745269775, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 6, 'j': 2, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.00564956665039, 'coverage': 'unsat', 'coverage_time': 2.985342264175415, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 5, 'j': 3, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.006716012954712, 'coverage': 'unsat', 'coverage_time': 2.2787909507751465, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 6, 'j': 3, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.006755352020264, 'coverage': 'unsat', 'coverage_time': 4.140087127685547, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 4, 'j': 4, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.022098064422607, 'coverage': 'unsat', 'coverage_time': 2.2227113246917725, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 5, 'j': 4, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.008235454559326, 'coverage': 'unsat', 'coverage_time': 2.799251079559326, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 6, 'j': 4, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.006644248962402, 'coverage': 'unsat', 'coverage_time': 18.067089080810547, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 3, 'j': 5, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.004236459732056, 'coverage': 'unsat', 'coverage_time': 2.618504047393799, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 4, 'j': 5, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.008954286575317, 'coverage': 'unsat', 'coverage_time': 3.375840902328491, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 5, 'j': 5, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.00732660293579, 'coverage': 'unknown', 'coverage_time': 20.00175642967224, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 6, 'j': 5, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.009786367416382, 'coverage': 'unsat', 'coverage_time': 14.8201425075531, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 2, 'j': 6, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.00806498527527, 'coverage': 'unsat', 'coverage_time': 0.34452223777770996, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 4, 'j': 6, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.010612964630127, 'coverage': 'unsat', 'coverage_time': 10.006682634353638, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 5, 'j': 6, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.00857973098755, 'coverage': 'unsat', 'coverage_time': 11.761856079101562, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 6, 'j': 6, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.006278038024902, 'coverage': 'unsat', 'coverage_time': 14.237459897994995, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 24, 'j': 6, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.00254225730896, 'coverage': 'unsat', 'coverage_time': 0.48882079124450684, 'model': None}
+ATTENTION {'kind': 'complete', 'a': 6, 'j': 8, 'xmax': 4294967296, 'result': 'unknown', 'time': 20.005139112472534, 'coverage': 'unsat', 'coverage_time': 3.0102152824401855, 'model': None}

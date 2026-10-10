@@ -74,3 +74,12 @@ countdown-pascal/countdown
 countdown-pascal/tests
 countdown-ispc/countdown
 countdown-ispc/run-tests
+
+# Solvability study: regenerable data, build output and third-party checkers
+solvability/data/c_values*
+solvability/data/certificates*
+solvability/checker/reach
+solvability/csolve/solve_all
+.lake/
+solvability/sat/tools/
+verification/cbmc/native/build/

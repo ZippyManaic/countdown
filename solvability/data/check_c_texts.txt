@@ -1,0 +1,1 @@
+/home/richard-marsh/work/countdown/solvability/scripts/../data/c_values_cats.txt.gz: 3,370,500 countdown-c answers evaluated, 0 illegal or with the wrong value

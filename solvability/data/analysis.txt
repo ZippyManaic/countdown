@@ -1,0 +1,156 @@
+== Headline ==
+P(no exact) = 16970693/837216000 = 0.020270387809
+P(no exact | 1 large) = 627787/27907200 = 0.022495520869
+P(no exact | 2 large) = 236059/13081500 = 0.018045254749
+uniform over instances: 380,523 of 8,548,200 = 126841/2849400 = 0.044514985611
+  1 large: 255,316 of 5,227,200 instances = 0.048844 over 5808 pools
+  2 large: 125,207 of 3,321,000 instances = 0.037702 over 3690 pools
+
+== Miss counts per pool ==
+misses	pools(1L)	pools(2L)	pools	P(deal such a pool)
+0-0	614	603	1217	0.278006
+1-1	340	228	568	0.095350
+2-5	779	655	1434	0.196015
+6-10	586	418	1004	0.108844
+11-20	712	446	1158	0.105994
+21-50	1217	568	1785	0.108876
+51-100	773	402	1175	0.062948
+101-200	558	269	827	0.035570
+201-400	216	92	308	0.007981
+401-900	13	9	22	0.000416
+pools reaching every target: 1217 (614 one-large, 603 two-large), deal probability 21551/77520 = 0.278005676
+  P(pool reaches everything | 1 large) = 0.246001032
+  P(pool reaches everything | 2 large) = 0.310010320
+  large (25,): 64 of 1452 pools perfect, P(no exact | this large set) = 0.034618
+  large (50,): 92 of 1452 pools perfect, P(no exact | this large set) = 0.025320
+  large (75,): 155 of 1452 pools perfect, P(no exact | this large set) = 0.015459
+  large (100,): 303 of 1452 pools perfect, P(no exact | this large set) = 0.014585
+  large (25, 50): 86 of 615 pools perfect, P(no exact | this large set) = 0.022908
+  large (25, 75): 86 of 615 pools perfect, P(no exact | this large set) = 0.018686
+  large (25, 100): 124 of 615 pools perfect, P(no exact | this large set) = 0.016565
+  large (50, 75): 88 of 615 pools perfect, P(no exact | this large set) = 0.014660
+  large (50, 100): 70 of 615 pools perfect, P(no exact | this large set) = 0.023141
+  large (75, 100): 149 of 615 pools perfect, P(no exact | this large set) = 0.012311
+expected misses per dealt pool = 18.2433 of 900
+
+== Worst pools ==
+pool	misses	max distance	M(p)	P(deal)
+(1, 1, 2, 2, 3, 25)	653	324	675	0.000016125
+(1, 1, 2, 2, 50, 100)	621	22	45000	0.000017200
+(1, 1, 2, 2, 25, 50)	576	25	11250	0.000017200
+(1, 1, 2, 2, 50, 75)	575	25	33750	0.000017200
+(1, 1, 2, 2, 4, 25)	571	99	900	0.000016125
+(1, 9, 9, 10, 10, 100)	569	13	900000	0.000016125
+(1, 1, 9, 10, 10, 100)	546	16	180000	0.000016125
+(1, 1, 2, 3, 3, 25)	535	99	900	0.000016125
+(1, 1, 2, 2, 3, 100)	504	28	2700	0.000016125
+(1, 1, 2, 2, 5, 25)	500	50	1125	0.000016125
+(1, 1, 2, 2, 3, 50)	494	25	1350	0.000016125
+(1, 1, 2, 2, 25, 75)	494	20	16875	0.000017200
+(1, 1, 2, 2, 25, 100)	492	25	22500	0.000017200
+(1, 1, 2, 2, 75, 100)	492	25	67500	0.000017200
+(1, 1, 2, 2, 3, 75)	481	22	2025	0.000016125
+
+== Distance when there is no exact answer ==
+E[distance | no exact] = 20501954/16970693 = 1.208080
+E[distance] over all rounds = 10250977/418608000 = 0.02448825
+d	instances	P(no exact and distance d)	P(d | no exact)
+1	332553	0.018604748	0.917829
+2	30217	0.001156648	0.057061
+3	7693	0.000252235	0.012444
+4	3392	0.000101477	0.005006
+5	1707	0.000047138	0.002325
+6	1026	0.000026611	0.001313
+7	677	0.000016512	0.000815
+8	483	0.000010782	0.000532
+9	378	0.000007973	0.000393
+10	295	0.000006052	0.000299
+11	251	0.000005082	0.000251
+12	213	0.000004337	0.000214
+>12	1638	0.000030793
+P(best answer more than 10 away) = 0.000040212
+max distance 324 at [((1, 1, 2, 2, 3, 25), 999)]
+
+== Targets ==
+hardest: 967 (0.11847, 2058 pools), 937 (0.11606, 1923 pools), 941 (0.11517, 2009 pools), 933 (0.11470, 1943 pools), 947 (0.11186, 1971 pools), 863 (0.11114, 1848 pools), 983 (0.10716, 1797 pools), 977 (0.10652, 1851 pools), 961 (0.10630, 1862 pools), 953 (0.10242, 1868 pools), 857 (0.10237, 1733 pools), 862 (0.09897, 1677 pools), 943 (0.09804, 1790 pools), 982 (0.09784, 1603 pools), 971 (0.09771, 1789 pools)
+easiest: 450 (0.0000000, 0 pools), 300 (0.0000000, 0 pools), 200 (0.0000000, 0 pools), 150 (0.0000000, 0 pools), 125 (0.0000000, 0 pools), 119 (0.0000000, 0 pools), 114 (0.0000000, 0 pools), 111 (0.0000000, 0 pools), 106 (0.0000000, 0 pools), 105 (0.0000000, 0 pools), 104 (0.0000000, 0 pools), 102 (0.0000000, 0 pools), 101 (0.0000000, 0 pools), 100 (0.0000000, 0 pools), 600 (0.0000161, 1 pools)
+targets every pool reaches: 14: [100, 101, 102, 104, 105, 106, 111, 114, 119, 125, 150, 200, 300, 450]
+mean P(no exact | t) by hundred: 100s 0.00044, 200s 0.00256, 300s 0.00569, 400s 0.00853, 500s 0.01457, 600s 0.02169, 700s 0.02970, 800s 0.04278, 900s 0.05646
+P(no exact | t < 550) = 0.005170, P(no exact | t >= 550) = 0.035370
+
+== Value bound ==
+pools where the checker's largest value M(p) equals the max(a*b, a+b) recursion: 9498 of 9498
+smallest paper bound prod(p_i + 1) - 1 over pools: 3743 at (1, 1, 2, 2, 3, 25); pools with paper bound < 999: 0
+smallest M(p): 675; pools with M(p) < 999: [((1, 1, 2, 2, 3, 25), 675), ((1, 1, 2, 2, 4, 25), 900), ((1, 1, 2, 3, 3, 25), 900)]
+misses above M(p) (out of range): 522 instances, probability 0.000009352 (0.0461% of misses); holes below M(p): 380001 instances
+ratio M(p)/999 against misses: mean misses for pools with M(p) in ranges
+  M in [0, 998]: 3 pools, P(no exact | pool in range) = 0.651481
+  M in [999, 9999]: 304 pools, P(no exact | pool in range) = 0.123723
+  M in [10000, 99999]: 2344 pools, P(no exact | pool in range) = 0.030848
+  M in [100000, 999999]: 4114 pools, P(no exact | pool in range) = 0.016999
+  M in [1000000, 1000000000]: 2733 pools, P(no exact | pool in range) = 0.012930
+distinct reachable values against misses
+  |V| in [0, 999]: 50 pools, P(no exact | pool) = 0.325074
+  |V| in [1000, 1999]: 402 pools, P(no exact | pool) = 0.136582
+  |V| in [2000, 3999]: 1971 pools, P(no exact | pool) = 0.052881
+  |V| in [4000, 7999]: 4012 pools, P(no exact | pool) = 0.021808
+  |V| in [8000, 15999]: 2760 pools, P(no exact | pool) = 0.008252
+  |V| in [16000, 1000000]: 303 pools, P(no exact | pool) = 0.000638
+
+== Primes ==
+143 primes, 757 composites in 100..999
+P(no exact | t prime) = 44717/1385670 = 0.032271; P(no exact | t composite) = 0.018003; ratio 1.792
+prime targets reached only through a final multiplication (must be 0): 0
+P(composite target unreachable without a final multiplication) = 0.031382
+P(reachable composite instance needs a final multiplication) = 0.013379
+by hundred: band, primes, P(miss|prime), P(miss|composite), P(no route without final *|composite)
+  100s	21	0.00083	0.00034	0.00055
+  200s	16	0.00525	0.00204	0.00330
+  300s	16	0.01047	0.00478	0.00770
+  400s	17	0.01282	0.00766	0.01304
+  500s	14	0.02505	0.01286	0.02200
+  600s	16	0.03671	0.01883	0.03349
+  700s	14	0.04906	0.02655	0.04604
+  800s	15	0.07767	0.03663	0.06547
+  900s	14	0.09556	0.05010	0.08695
+by largest prime factor: class, targets, mean P(no exact)
+  10-smooth	95	0.00348
+  largest factor 11-50	344	0.01306
+  largest factor > 50	318	0.02769
+  prime	143	0.03227
+hardest 50 targets: 20 prime; 46 with largest prime factor > 50
+
+== Residues ==
+mod 2: 0:0.01498, 1:0.02556
+mod 5: 0:0.00960, 1:0.01930, 2:0.02688, 3:0.02640, 4:0.01917
+mod 10: 0:0.00501, 1:0.02346, 2:0.02012, 3:0.03297, 4:0.01480, 5:0.01418, 6:0.01514, 7:0.03365, 8:0.01983, 9:0.02354
+mod 25: 0:0.00307, 1:0.01083, 2:0.02327, 3:0.02470, 4:0.01962, 5:0.01026, 6:0.02001, 7:0.02642, 8:0.02841, 9:0.02042, 10:0.01161, 11:0.02261, 12:0.03100, 13:0.02936, 14:0.02457, 15:0.01215, 16:0.02226, 17:0.02784, 18:0.02559, 19:0.02034, 20:0.01089, 21:0.02080, 22:0.02589, 23:0.02393, 24:0.01090
+
+== Pool structure ==
+by copies of 1
+  0	6012 pools	P(pool)=0.59211	P(no exact | pool)=0.01215	perfect 1029
+  1	2592 pools	P(pool)=0.36579	P(no exact | pool)=0.02109	perfect 188
+  2	894 pools	P(pool)=0.04211	P(no exact | pool)=0.12730	perfect 0
+by number of large
+  1	5808 pools	P(pool)=0.50000	P(no exact | pool)=0.02250	perfect 614
+  2	3690 pools	P(pool)=0.50000	P(no exact | pool)=0.01805	perfect 603
+by largest small number
+  2	6 pools	P(pool)=0.00010	P(no exact | pool)=0.60185	perfect 0
+  3	42 pools	P(pool)=0.00164	P(no exact | pool)=0.22775	perfect 0
+  4	130 pools	P(pool)=0.00729	P(no exact | pool)=0.09818	perfect 0
+  5	296 pools	P(pool)=0.02077	P(no exact | pool)=0.05675	perfect 7
+  6	570 pools	P(pool)=0.04683	P(no exact | pool)=0.04035	perfect 16
+  7	986 pools	P(pool)=0.09124	P(no exact | pool)=0.01952	perfect 63
+  8	1582 pools	P(pool)=0.16082	P(no exact | pool)=0.01849	perfect 161
+  9	2400 pools	P(pool)=0.26342	P(no exact | pool)=0.01222	perfect 450
+  10	3486 pools	P(pool)=0.40789	P(no exact | pool)=0.01980	perfect 520
+by number of repeated small values
+  0	2268 pools	P(pool)=0.60681	P(no exact | pool)=0.00515	perfect 981
+  1	5520 pools	P(pool)=0.36533	P(no exact | pool)=0.03785	perfect 236
+  2	1710 pools	P(pool)=0.02786	P(no exact | pool)=0.11895	perfect 0
+by sum of small numbers (bands of 10)
+  00s	58 pools	P(pool)=0.00316	P(no exact | pool)=0.20800	perfect 0
+  10s	1890 pools	P(pool)=0.20013	P(no exact | pool)=0.03218	perfect 116
+  20s	4902 pools	P(pool)=0.57300	P(no exact | pool)=0.01644	perfect 728
+  30s	2464 pools	P(pool)=0.21571	P(no exact | pool)=0.01663	perfect 362
+  40s	184 pools	P(pool)=0.00800	P(no exact | pool)=0.02121	perfect 11

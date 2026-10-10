@@ -1,0 +1,57 @@
+lemma {'lemma': 'every legal result is at most max(xy, x+y)', 'result': 'unsat', 'time': 0.009605884552001953}
+lemma {'lemma': 'max(xy, x+y) is itself a legal result', 'result': 'unsat', 'time': 0.005837440490722656}
+lemma {'lemma': 'max(uv, u+v) is monotone in both arguments', 'result': 'unsat', 'time': 0.008901834487915039}
+lemma {'lemma': 'max(xy, x+y) exceeds x so adding a number raises B', 'result': 'unsat', 'time': 0.005985260009765625}
+lemma {'lemma': 'every legal result r has r + 1 <= (x+1)(y+1)', 'result': 'unsat', 'time': 0.007584810256958008}
+lemma {'lemma': 'the product bound is monotone', 'result': 'unsat', 'time': 0.009344816207885742}
+{'n': 1, 'S': (0,), 'tree': '0', 'claim': 'max', 'regime': 'game', 'result': 'unsat', 'time': 7.724761962890625e-05}
+{'n': 1, 'S': (0,), 'tree': '0', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 6.437301635742188e-05}
+{'n': 1, 'S': (0,), 'tree': '0', 'claim': 'bound', 'regime': 'game', 'result': 'unsat', 'time': 7.534027099609375e-05}
+{'n': 1, 'S': (0,), 'tree': '0', 'claim': 'bound', 'regime': 'unbounded', 'result': 'unsat', 'time': 6.437301635742188e-05}
+{'n': 2, 'S': (0,), 'tree': '0', 'claim': 'max', 'regime': 'game', 'result': 'unsat', 'time': 0.4226856231689453}
+{'n': 2, 'S': (0,), 'tree': '0', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.017942428588867188}
+{'n': 2, 'S': (1,), 'tree': '1', 'claim': 'max', 'regime': 'game', 'result': 'unsat', 'time': 0.4451580047607422}
+{'n': 2, 'S': (1,), 'tree': '1', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.017798423767089844}
+{'n': 2, 'S': (0, 1), 'tree': '(0, 1)', 'claim': 'max', 'regime': 'game', 'result': 'unsat', 'time': 11.88244342803955}
+{'n': 2, 'S': (0, 1), 'tree': '(0, 1)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.04169726371765137}
+{'n': 2, 'S': (0, 1), 'tree': '(0, 1)', 'claim': 'bound', 'regime': 'game', 'result': 'unsat', 'time': 12.579272747039795}
+{'n': 2, 'S': (0, 1), 'tree': '(0, 1)', 'claim': 'bound', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.04276895523071289}
+{'n': 3, 'S': (0,), 'tree': '0', 'claim': 'max', 'regime': 'game', 'result': 'unsat', 'time': 1.5647921562194824}
+{'n': 3, 'S': (0,), 'tree': '0', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.04019331932067871}
+{'n': 3, 'S': (1,), 'tree': '1', 'claim': 'max', 'regime': 'game', 'result': 'unsat', 'time': 1.7811858654022217}
+{'n': 3, 'S': (1,), 'tree': '1', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.04791736602783203}
+{'n': 3, 'S': (2,), 'tree': '2', 'claim': 'max', 'regime': 'game', 'result': 'unsat', 'time': 6.927283048629761}
+{'n': 3, 'S': (2,), 'tree': '2', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.06857490539550781}
+{'n': 3, 'S': (0, 1), 'tree': '(0, 1)', 'claim': 'max', 'regime': 'game', 'result': 'unsat', 'time': 35.15809893608093}
+{'n': 3, 'S': (0, 1), 'tree': '(0, 1)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.19699883460998535}
+{'n': 3, 'S': (0, 2), 'tree': '(0, 2)', 'claim': 'max', 'regime': 'game', 'result': 'unsat', 'time': 32.25084447860718}
+{'n': 3, 'S': (0, 2), 'tree': '(0, 2)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.16150116920471191}
+{'n': 3, 'S': (1, 2), 'tree': '(1, 2)', 'claim': 'max', 'regime': 'game', 'result': 'unsat', 'time': 47.08486986160278}
+{'n': 3, 'S': (1, 2), 'tree': '(1, 2)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.27897047996520996}
+{'n': 3, 'S': (0, 1, 2), 'tree': '(0, (1, 2))', 'claim': 'max', 'regime': 'game', 'result': 'unsat', 'time': 178.05133962631226}
+{'n': 3, 'S': (0, 1, 2), 'tree': '(0, (1, 2))', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.646690845489502}
+{'n': 3, 'S': (0, 1, 2), 'tree': '(0, (1, 2))', 'claim': 'bound', 'regime': 'game', 'result': 'unsat', 'time': 116.32609796524048}
+{'n': 3, 'S': (0, 1, 2), 'tree': '(0, (1, 2))', 'claim': 'bound', 'regime': 'unbounded', 'result': 'unsat', 'time': 5.559398174285889}
+{'n': 3, 'S': (0, 1, 2), 'tree': '((0, 1), 2)', 'claim': 'max', 'regime': 'game', 'result': 'unsat', 'time': 112.2198178768158}
+{'n': 3, 'S': (0, 1, 2), 'tree': '((0, 1), 2)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 1.9525306224822998}
+{'n': 3, 'S': (0, 1, 2), 'tree': '((0, 1), 2)', 'claim': 'bound', 'regime': 'game', 'result': 'unsat', 'time': 114.65232014656067}
+{'n': 3, 'S': (0, 1, 2), 'tree': '((0, 1), 2)', 'claim': 'bound', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.1718752384185791}
+{'n': 3, 'S': (0, 1, 2), 'tree': '((0, 2), 1)', 'claim': 'max', 'regime': 'game', 'result': 'unsat', 'time': 109.24423551559448}
+{'n': 3, 'S': (0, 1, 2), 'tree': '((0, 2), 1)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 1.0955893993377686}
+{'n': 3, 'S': (0, 1, 2), 'tree': '((0, 2), 1)', 'claim': 'bound', 'regime': 'game', 'result': 'unsat', 'time': 171.89735627174377}
+{'n': 3, 'S': (0, 1, 2), 'tree': '((0, 2), 1)', 'claim': 'bound', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.12241435050964355}
+{'n': 4, 'S': (0,), 'tree': '0', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.016921520233154297}
+{'n': 4, 'S': (1,), 'tree': '1', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.02013087272644043}
+{'n': 4, 'S': (2,), 'tree': '2', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.016155719757080078}
+{'n': 4, 'S': (3,), 'tree': '3', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 0.01868128776550293}
+{'n': 4, 'S': (0, 1), 'tree': '(0, 1)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 15.414824724197388}
+{'n': 4, 'S': (0, 2), 'tree': '(0, 2)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 12.246501922607422}
+{'n': 4, 'S': (0, 3), 'tree': '(0, 3)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 13.23630976676941}
+{'n': 4, 'S': (1, 2), 'tree': '(1, 2)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 8.36672592163086}
+{'n': 4, 'S': (1, 3), 'tree': '(1, 3)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 15.290925025939941}
+{'n': 4, 'S': (2, 3), 'tree': '(2, 3)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 10.853025913238525}
+{'n': 4, 'S': (0, 1, 2), 'tree': '(0, (1, 2))', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 40.45919156074524}
+{'n': 4, 'S': (0, 1, 2), 'tree': '((0, 1), 2)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 43.235124826431274}
+{'n': 4, 'S': (0, 1, 2), 'tree': '((0, 2), 1)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 39.7318160533905}
+{'n': 4, 'S': (0, 1, 3), 'tree': '(0, (1, 3))', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 35.171210050582886}
+{'n': 4, 'S': (0, 1, 3), 'tree': '((0, 1), 3)', 'claim': 'max', 'regime': 'unbounded', 'result': 'unsat', 'time': 40.848042488098145}

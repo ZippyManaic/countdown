@@ -1,0 +1,12 @@
+{
+ "result": "sat",
+ "time": 0.5076432228088379,
+ "witness": {
+  "k": 1048576,
+  "y": 998,
+  "q": 1048575
+ },
+ "python_truncated_q": 1048575,
+ "confirmed": true,
+ "wall_time": 0.5185940265655518
+}

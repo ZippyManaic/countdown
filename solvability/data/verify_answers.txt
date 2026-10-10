@@ -1,0 +1,2 @@
+answers.bin exact answers: 8,167,677 certificates valid, 0 invalid
+pools covered 9,498 of 9,498; pools whose certificates and misses.tsv do not partition 100..999: 0

@@ -1,0 +1,2 @@
+checker vs countdown-c: 0 exact/miss disagreements, 0 distance disagreements
+misses: checker 666,191, countdown-c 666,191 of 3,370,500

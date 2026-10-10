@@ -1,0 +1,236 @@
+{
+ "worst": {
+  "instances": 900,
+  "sat": {
+   "count": 247,
+   "mean": 0.5333841966713971,
+   "median": 0.23422861099243164,
+   "max": 5.932168960571289,
+   "total": 131.74589657783508
+  },
+  "unsat": {
+   "count": 653,
+   "mean": 2.8920722708767808,
+   "median": 2.4824719429016113,
+   "max": 7.209787130355835,
+   "total": 1888.5231928825378
+  },
+  "disagree_with_table": 0,
+  "table_vs_python": 0,
+  "bad_witnesses": 0
+ },
+ "t967": {
+  "instances": 100,
+  "unsat": {
+   "count": 100,
+   "mean": 32.59718670129776,
+   "median": 29.757135152816772,
+   "max": 90.94524431228638,
+   "total": 3259.718670129776
+  },
+  "disagree_with_table": 0,
+  "table_vs_python": 0,
+  "bad_witnesses": 0
+ },
+ "cats4": {
+  "instances": 827,
+  "sat": {
+   "count": 310,
+   "mean": 2.075691460024926,
+   "median": 0.7939962148666382,
+   "max": 24.85499906539917,
+   "total": 643.464352607727
+  },
+  "unsat": {
+   "count": 517,
+   "mean": 21.67104467340318,
+   "median": 21.373777866363525,
+   "max": 29.952844381332397,
+   "total": 11203.930096149445
+  },
+  "disagree_with_table": 0,
+  "table_vs_python": 0,
+  "bad_witnesses": 0
+ },
+ "prop_prime": {
+  "primes": 143,
+  "unsat": 143,
+  "max_time": 0.33190321922302246,
+  "total_time": 13.923246383666992,
+  "in_pool": [
+   {
+    "t": 101,
+    "final_multiplication": "unsat",
+    "time": 3.4126694202423096,
+    "reachable_at_all": "sat",
+    "time_reach": 0.07975244522094727
+   },
+   {
+    "t": 103,
+    "final_multiplication": "unsat",
+    "time": 3.503542423248291,
+    "reachable_at_all": "sat",
+    "time_reach": 0.12820029258728027
+   },
+   {
+    "t": 107,
+    "final_multiplication": "unsat",
+    "time": 4.334221363067627,
+    "reachable_at_all": "sat",
+    "time_reach": 0.12502789497375488
+   },
+   {
+    "t": 109,
+    "final_multiplication": "unsat",
+    "time": 5.161542654037476,
+    "reachable_at_all": "sat",
+    "time_reach": 0.17519283294677734
+   },
+   {
+    "t": 113,
+    "final_multiplication": "unsat",
+    "time": 5.142201662063599,
+    "reachable_at_all": "sat",
+    "time_reach": 0.1771245002746582
+   }
+  ]
+ },
+ "cats_max": [
+  {
+   "pool": [
+    10,
+    10,
+    25,
+    50,
+    75,
+    100
+   ],
+   "claim": 937500000,
+   "B": 937500000,
+   "python_max": 937500000,
+   "attained": "sat",
+   "attained_time": 0.15291810035705566,
+   "witness": "(((100 * 50) * 75) * ((10 * 10) * 25))",
+   "witness_ok": true,
+   "exceeded": "unsat",
+   "exceeded_time": 104.4165587425232
+  },
+  {
+   "pool": [
+    10,
+    10,
+    12,
+    37,
+    62,
+    87
+   ],
+   "claim": 239493600,
+   "B": 239493600,
+   "python_max": 239493600,
+   "attained": "sat",
+   "attained_time": 0.2789437770843506,
+   "witness": "(((62 * 10) * (37 * 12)) * (87 * 10))",
+   "witness_ok": true,
+   "exceeded": "unsat",
+   "exceeded_time": 141.35332083702087
+  }
+ ],
+ "prop_max_bound": {
+  "lemmas": [
+   {
+    "lemma": "every legal result is at most max(xy, x+y)",
+    "result": "unsat",
+    "time": 0.009605884552001953
+   },
+   {
+    "lemma": "max(xy, x+y) is itself a legal result",
+    "result": "unsat",
+    "time": 0.005837440490722656
+   },
+   {
+    "lemma": "max(uv, u+v) is monotone in both arguments",
+    "result": "unsat",
+    "time": 0.008901834487915039
+   },
+   {
+    "lemma": "max(xy, x+y) exceeds x so adding a number raises B",
+    "result": "unsat",
+    "time": 0.005985260009765625
+   },
+   {
+    "lemma": "every legal result r has r + 1 <= (x+1)(y+1)",
+    "result": "unsat",
+    "time": 0.007584810256958008
+   },
+   {
+    "lemma": "the product bound is monotone",
+    "result": "unsat",
+    "time": 0.009344816207885742
+   }
+  ],
+  "tree_checks": {
+   "max game": {
+    "cases": 13,
+    "unsat": 13,
+    "open": 0,
+    "time": 537.0328316688538,
+    "max_time": 178.05133962631226
+   },
+   "max unbounded": {
+    "cases": 28,
+    "unsat": 28,
+    "open": 0,
+    "time": 279.49205708503723,
+    "max_time": 43.235124826431274
+   },
+   "bound game": {
+    "cases": 5,
+    "unsat": 5,
+    "open": 0,
+    "time": 415.4551224708557,
+    "max_time": 171.89735627174377
+   },
+   "bound unbounded": {
+    "cases": 5,
+    "unsat": 5,
+    "open": 0,
+    "time": 5.896521091461182,
+    "max_time": 5.559398174285889
+   }
+  }
+ },
+ "lemma_reciprocal_validate": {
+  "samples": 937,
+  "disagreements": [],
+  "y_equals_1_edge": [
+   {
+    "x": 2147483647,
+    "q": 2147483647,
+    "accepted": true
+   },
+   {
+    "x": 2147483648,
+    "q": 2147483648,
+    "accepted": true
+   },
+   {
+    "x": 2147483649,
+    "q": 2147483648,
+    "accepted": false
+   }
+  ],
+  "wall_time": 11.971755027770996
+ },
+ "lemma_reciprocal_mutation": {
+  "result": "sat",
+  "time": 0.5076432228088379,
+  "witness": {
+   "k": 1048576,
+   "y": 998,
+   "q": 1048575
+  },
+  "python_truncated_q": 1048575,
+  "confirmed": true,
+  "wall_time": 0.5185940265655518
+ }
+}

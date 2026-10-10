@@ -1,0 +1,1 @@
+/home/richard-marsh/work/countdown/solvability/scripts/../data/c_values_nasty.txt.gz: 9,353,700 countdown-c answers evaluated, 0 illegal or with the wrong value

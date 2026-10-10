@@ -1,0 +1,300 @@
+{"pool": [1, 1, 2, 2, 3, 25], "target": 102, "result": "sat", "time": 0.06819319725036621, "witness": "((((25 * 2) + 3) - 2) * (1 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 105, "result": "sat", "time": 0.09096503257751465, "witness": "(((25 - 1) - 3) * ((2 * 2) + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 108, "result": "sat", "time": 0.027971267700195312, "witness": "((25 + 2) * (3 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 111, "result": "sat", "time": 0.16683459281921387, "witness": "((((25 * (2 + 1)) - 1) * 3) / 2)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 114, "result": "sat", "time": 0.07805657386779785, "witness": "((((25 + (3 + 1)) * 2) - 1) * 2)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 117, "result": "sat", "time": 0.04226493835449219, "witness": "(((25 - 1) * (3 + 2)) - (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 120, "result": "sat", "time": 0.07689762115478516, "witness": "(((25 + 2) + (2 + 1)) * (3 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 123, "result": "sat", "time": 0.17241883277893066, "witness": "((25 * (3 + 2)) - 2)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 126, "result": "sat", "time": 0.0946807861328125, "witness": "(((25 - 3) - 1) * ((2 + 1) * 2))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 129, "result": "sat", "time": 0.11467099189758301, "witness": "((25 * (3 + (1 + 1))) + (2 + 2))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 132, "result": "sat", "time": 0.0542140007019043, "witness": "(((25 - 3) * (2 + 1)) * 2)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 135, "result": "sat", "time": 0.08014917373657227, "witness": "(((25 + 3) - 1) * ((2 * 2) + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 138, "result": "sat", "time": 0.07823848724365234, "witness": "((((25 - (2 + 1)) + 1) * 3) * 2)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 141, "result": "sat", "time": 0.19629931449890137, "witness": "(((25 - 1) * (3 * 2)) - (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 144, "result": "sat", "time": 0.13529515266418457, "witness": "((25 - 1) * (((2 + 2) + 3) - 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 147, "result": "sat", "time": 0.03321218490600586, "witness": "(((((25 + 1) * 2) - 1) - 2) * 3)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 150, "result": "sat", "time": 0.02084636688232422, "witness": "((25 * 2) * 3)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 153, "result": "sat", "time": 0.0622560977935791, "witness": "((((25 * 3) * 2) + 1) + 2)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 156, "result": "sat", "time": 0.019479751586914062, "witness": "((25 + 1) * (3 * 2))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 159, "result": "sat", "time": 0.3099188804626465, "witness": "((((25 + 1) * 2) * (2 + 1)) + 3)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 162, "result": "sat", "time": 0.04307365417480469, "witness": "(((25 + 2) * (1 + 1)) * 3)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 165, "result": "sat", "time": 0.2935152053833008, "witness": "((((25 + 1) * 2) + (2 + 1)) * 3)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 168, "result": "sat", "time": 0.0669708251953125, "witness": "((25 + 3) * ((2 * 2) + (1 + 1)))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 171, "result": "sat", "time": 0.3701164722442627, "witness": "((((25 + 3) * 2) + 1) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 174, "result": "sat", "time": 0.06041836738586426, "witness": "((((25 + 2) + 1) + 1) * (3 * 2))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 177, "result": "sat", "time": 0.986764669418335, "witness": "((25 * ((2 * 2) + 3)) + (1 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 180, "result": "sat", "time": 0.4071633815765381, "witness": "(((25 + 1) * ((3 * 2) + 1)) - 2)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 183, "result": "sat", "time": 0.6871132850646973, "witness": "((((25 - 2) * (3 + 1)) * 2) - 1)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 186, "result": "sat", "time": 3.018298625946045, "witness": "((((25 - 2) * (3 + 1)) + 1) * 2)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 189, "result": "sat", "time": 0.2473917007446289, "witness": "(((25 + 1) + 1) * ((2 * 2) + 3))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 192, "result": "sat", "time": 0.18866443634033203, "witness": "(((25 * 2) - 2) * (3 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 195, "result": "sat", "time": 1.195322036743164, "witness": "((((25 * (3 + 1)) - 2) * 2) - 1)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 198, "result": "sat", "time": 0.1437695026397705, "witness": "((25 * ((3 * 2) + 2)) - (1 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 201, "result": "sat", "time": 0.2937431335449219, "witness": "((25 * (((2 * 2) + 3) + 1)) + 1)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 204, "result": "sat", "time": 0.16690444946289062, "witness": "(((25 * 2) + 1) * (3 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 207, "result": "sat", "time": 0.700793981552124, "witness": "((25 - 2) * (((3 + 1) * 2) + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 210, "result": "sat", "time": 0.08460807800292969, "witness": "((((25 - 2) * 3) + 1) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 213, "result": "unsat", "time": 4.163684368133545, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 216, "result": "sat", "time": 0.3225555419921875, "witness": "(((25 * 3) - (2 + 1)) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 219, "result": "sat", "time": 0.3480048179626465, "witness": "(((25 * 3) - 2) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 222, "result": "sat", "time": 0.05081319808959961, "witness": "((((25 * 3) - 2) + 1) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 225, "result": "sat", "time": 0.11622452735900879, "witness": "(25 * (3 * (2 + 1)))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 228, "result": "sat", "time": 0.19485068321228027, "witness": "((((25 * 3) - 1) + 2) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 231, "result": "sat", "time": 0.06581258773803711, "witness": "(((25 * 3) + 2) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 234, "result": "sat", "time": 0.36640334129333496, "witness": "(((25 - 1) + 2) * ((2 + 1) * 3))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 237, "result": "unsat", "time": 3.9952762126922607, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 240, "result": "sat", "time": 0.2421741485595703, "witness": "(((25 - 1) * (3 + 2)) * 2)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 243, "result": "sat", "time": 0.4794626235961914, "witness": "(((25 + 2) * 3) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 246, "result": "sat", "time": 0.32573938369750977, "witness": "((((25 * 2) - 1) * (3 + 2)) + 1)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 249, "result": "sat", "time": 0.10096335411071777, "witness": "(((25 * 2) * ((3 * 2) - 1)) - 1)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 252, "result": "sat", "time": 0.22313237190246582, "witness": "(((25 * 2) * (3 + 2)) + (1 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 255, "result": "sat", "time": 1.1696743965148926, "witness": "(((25 * 2) + 1) * ((3 * 2) - 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 258, "result": "sat", "time": 0.6480095386505127, "witness": "((((25 + 1) * (3 + 2)) - 1) * 2)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 261, "result": "sat", "time": 1.141099452972412, "witness": "(((25 + 1) * ((3 + 2) * 2)) + 1)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 264, "result": "sat", "time": 0.3139345645904541, "witness": "((25 - 1) * (((2 + 2) * 3) - 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 267, "result": "unsat", "time": 4.786426782608032, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 270, "result": "sat", "time": 0.09771227836608887, "witness": "((((25 + 1) + 1) * 2) * (3 + 2))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 273, "result": "unsat", "time": 3.722212314605713, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 276, "result": "sat", "time": 0.1926896572113037, "witness": "((25 - 2) * ((3 * 2) * (1 + 1)))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 279, "result": "unsat", "time": 4.071336030960083, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 282, "result": "sat", "time": 0.19823813438415527, "witness": "((((25 - 1) * 2) - 1) * (3 * 2))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 285, "result": "sat", "time": 1.4971017837524414, "witness": "((((25 - 1) * (2 * 2)) - 1) * 3)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 288, "result": "sat", "time": 0.16012907028198242, "witness": "(((25 - 1) * 2) * ((3 + 2) + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 291, "result": "sat", "time": 1.969717025756836, "witness": "((((25 - 1) * (2 * 2)) + 1) * 3)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 294, "result": "sat", "time": 0.04465079307556152, "witness": "((((25 * 2) - 1) * 2) * 3)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 297, "result": "sat", "time": 0.1993098258972168, "witness": "((((25 * (3 * 2)) - 1) * 2) - 1)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 300, "result": "sat", "time": 0.01392221450805664, "witness": "(((25 * 2) * 2) * 3)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 303, "result": "sat", "time": 0.13245654106140137, "witness": "((((25 * 2) * 2) + 1) * 3)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 306, "result": "sat", "time": 0.32952117919921875, "witness": "((((25 * (2 * 2)) + 1) + 1) * 3)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 309, "result": "sat", "time": 1.6738402843475342, "witness": "(((((25 + 1) * 2) * 2) - 1) * 3)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 312, "result": "sat", "time": 0.027514219284057617, "witness": "((((25 * 2) + 2) * (1 + 1)) * 3)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 315, "result": "sat", "time": 0.4595060348510742, "witness": "((((25 + 1) * (2 + 2)) + 1) * 3)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 318, "result": "sat", "time": 0.19854474067687988, "witness": "((((25 + 1) * 2) + 1) * (3 * 2))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 321, "result": "unsat", "time": 4.21031641960144, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 324, "result": "sat", "time": 0.22691082954406738, "witness": "((25 + (1 + 1)) * ((2 * 2) * 3))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 327, "result": "unsat", "time": 4.124915599822998, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 330, "result": "unsat", "time": 4.494250059127808, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 333, "result": "unsat", "time": 4.872737169265747, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 336, "result": "sat", "time": 0.2136387825012207, "witness": "(((25 - 1) * ((3 * 2) + 1)) * 2)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 339, "result": "unsat", "time": 4.218366622924805, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 342, "result": "unsat", "time": 3.967869997024536, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 345, "result": "unsat", "time": 5.708156585693359, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 348, "result": "sat", "time": 0.798870325088501, "witness": "(((25 * ((3 * 2) + 1)) - 1) * 2)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 351, "result": "sat", "time": 0.06149554252624512, "witness": "(((25 * 2) * ((3 * 2) + 1)) + 1)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 354, "result": "unsat", "time": 4.114786386489868, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 357, "result": "sat", "time": 2.7440099716186523, "witness": "(((25 * 2) + 1) * ((3 * 2) + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 360, "result": "sat", "time": 0.5309815406799316, "witness": "((25 - 1) * ((3 + 2) * (2 + 1)))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 363, "result": "unsat", "time": 4.017019033432007, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 366, "result": "unsat", "time": 4.1316938400268555, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 369, "result": "unsat", "time": 4.2194859981536865, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 372, "result": "sat", "time": 0.20984339714050293, "witness": "(((25 * (3 + 2)) - 1) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 375, "result": "sat", "time": 0.21345043182373047, "witness": "(25 * (((2 * 2) + 1) * 3))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 378, "result": "sat", "time": 1.0996067523956299, "witness": "(((25 * (3 + 2)) + 1) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 381, "result": "unsat", "time": 3.771759033203125, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 384, "result": "sat", "time": 0.5817427635192871, "witness": "(((25 - 1) * (2 * 2)) * (3 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 387, "result": "unsat", "time": 5.910320520401001, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 390, "result": "sat", "time": 0.367173433303833, "witness": "((25 + 1) * (((2 * 2) + 1) * 3))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 393, "result": "unsat", "time": 6.297618865966797, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 396, "result": "sat", "time": 1.1232855319976807, "witness": "((((25 * 2) * 2) - 1) * (3 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 399, "result": "sat", "time": 0.5193784236907959, "witness": "(((25 * 2) * ((3 + 1) * 2)) - 1)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 402, "result": "sat", "time": 5.0187530517578125, "witness": "((((25 * (3 + 1)) * 2) + 1) * 2)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 405, "result": "unsat", "time": 6.262460231781006, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 408, "result": "sat", "time": 2.081260919570923, "witness": "(((25 * 2) + 1) * ((3 + 1) * 2))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 411, "result": "unsat", "time": 5.477141380310059, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 414, "result": "unsat", "time": 6.346437215805054, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 417, "result": "unsat", "time": 6.271345615386963, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 420, "result": "unsat", "time": 5.0852251052856445, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 423, "result": "unsat", "time": 3.651789665222168, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 426, "result": "unsat", "time": 4.350415468215942, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 429, "result": "unsat", "time": 3.524618625640869, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 432, "result": "sat", "time": 0.07100915908813477, "witness": "((25 - 1) * ((3 * (2 + 1)) * 2))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 435, "result": "unsat", "time": 3.583416700363159, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 438, "result": "unsat", "time": 4.150335073471069, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 441, "result": "sat", "time": 1.247260570526123, "witness": "(((25 * 2) - 1) * ((2 + 1) * 3))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 444, "result": "sat", "time": 0.20644116401672363, "witness": "(((25 * (2 + 1)) - 1) * (3 * 2))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 447, "result": "sat", "time": 0.07603096961975098, "witness": "(((25 * (3 * 2)) - 1) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 450, "result": "sat", "time": 0.10741615295410156, "witness": "(((25 * 2) * 3) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 453, "result": "sat", "time": 0.2709190845489502, "witness": "((((25 * 2) * 3) + 1) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 456, "result": "sat", "time": 0.6317026615142822, "witness": "(((25 * 3) + 1) * ((2 + 1) * 2))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 459, "result": "sat", "time": 0.2436370849609375, "witness": "((((25 * 2) + 1) * 3) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 462, "result": "unsat", "time": 3.4265825748443604, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 465, "result": "unsat", "time": 3.06477427482605, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 468, "result": "sat", "time": 0.2996957302093506, "witness": "(((25 + 1) * (3 * 2)) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 471, "result": "unsat", "time": 3.776073455810547, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 474, "result": "unsat", "time": 3.8390579223632812, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 477, "result": "unsat", "time": 3.431638479232788, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 480, "result": "unsat", "time": 3.797630548477173, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 483, "result": "unsat", "time": 3.670764923095703, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 486, "result": "unsat", "time": 3.7294604778289795, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 489, "result": "unsat", "time": 3.4585981369018555, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 492, "result": "unsat", "time": 3.4469211101531982, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 495, "result": "unsat", "time": 3.4747610092163086, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 498, "result": "unsat", "time": 3.675102472305298, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 501, "result": "unsat", "time": 3.559136152267456, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 504, "result": "unsat", "time": 3.7799360752105713, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 507, "result": "unsat", "time": 3.4419772624969482, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 510, "result": "unsat", "time": 3.6409645080566406, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 513, "result": "unsat", "time": 3.9061388969421387, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 516, "result": "unsat", "time": 3.576838493347168, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 519, "result": "unsat", "time": 3.5565237998962402, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 522, "result": "unsat", "time": 3.905505657196045, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 525, "result": "sat", "time": 0.5406696796417236, "witness": "((25 * (2 + 1)) * ((3 * 2) + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 528, "result": "unsat", "time": 4.396714448928833, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 531, "result": "unsat", "time": 3.8677327632904053, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 534, "result": "unsat", "time": 3.674593448638916, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 537, "result": "unsat", "time": 3.3970539569854736, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 540, "result": "unsat", "time": 3.8892812728881836, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 543, "result": "unsat", "time": 3.242079257965088, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 546, "result": "unsat", "time": 3.5052826404571533, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 549, "result": "unsat", "time": 3.312774181365967, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 552, "result": "unsat", "time": 3.8377082347869873, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 555, "result": "unsat", "time": 3.561995267868042, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 558, "result": "unsat", "time": 3.527796745300293, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 561, "result": "unsat", "time": 3.972475290298462, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 564, "result": "unsat", "time": 3.833373546600342, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 567, "result": "unsat", "time": 3.479367971420288, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 570, "result": "unsat", "time": 3.7878501415252686, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 573, "result": "unsat", "time": 3.7725882530212402, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 576, "result": "unsat", "time": 3.8399531841278076, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 579, "result": "unsat", "time": 2.6032025814056396, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 582, "result": "unsat", "time": 2.7540218830108643, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 585, "result": "unsat", "time": 2.5790188312530518, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 588, "result": "unsat", "time": 2.8196933269500732, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 591, "result": "unsat", "time": 2.6962203979492188, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 594, "result": "unsat", "time": 2.8348004817962646, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 597, "result": "unsat", "time": 2.4401087760925293, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 600, "result": "sat", "time": 0.016611576080322266, "witness": "((((25 * 3) * (1 + 1)) * 2) * 2)", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 603, "result": "unsat", "time": 2.298380136489868, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 606, "result": "unsat", "time": 2.6419196128845215, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 609, "result": "unsat", "time": 2.363457202911377, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 612, "result": "unsat", "time": 3.1582489013671875, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 615, "result": "unsat", "time": 2.539891481399536, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 618, "result": "unsat", "time": 2.6427111625671387, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 621, "result": "unsat", "time": 2.5015909671783447, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 624, "result": "unsat", "time": 2.7338297367095947, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 627, "result": "unsat", "time": 2.5212631225585938, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 630, "result": "unsat", "time": 2.6348230838775635, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 633, "result": "unsat", "time": 2.4150898456573486, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 636, "result": "unsat", "time": 2.2911481857299805, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 639, "result": "unsat", "time": 2.2816359996795654, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 642, "result": "unsat", "time": 2.426673173904419, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 645, "result": "unsat", "time": 2.6613669395446777, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 648, "result": "unsat", "time": 2.5677435398101807, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 651, "result": "unsat", "time": 2.4721949100494385, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 654, "result": "unsat", "time": 2.36983060836792, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 657, "result": "unsat", "time": 2.2760586738586426, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 660, "result": "unsat", "time": 2.364445686340332, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 663, "result": "unsat", "time": 2.44474458694458, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 666, "result": "unsat", "time": 2.2751152515411377, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 669, "result": "unsat", "time": 2.455399990081787, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 672, "result": "unsat", "time": 2.47483491897583, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 675, "result": "sat", "time": 0.1988661289215088, "witness": "(((25 * 3) * (2 + 1)) * (2 + 1))", "witness_ok": true, "expected_solvable": true, "python_solvable": true}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 678, "result": "unsat", "time": 2.4393322467803955, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 681, "result": "unsat", "time": 2.4016520977020264, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 684, "result": "unsat", "time": 2.390185832977295, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 687, "result": "unsat", "time": 2.025193691253662, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 690, "result": "unsat", "time": 2.414106607437134, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 693, "result": "unsat", "time": 2.456655502319336, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 696, "result": "unsat", "time": 2.3944904804229736, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 699, "result": "unsat", "time": 2.4037022590637207, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 702, "result": "unsat", "time": 2.2600181102752686, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 705, "result": "unsat", "time": 2.367480754852295, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 708, "result": "unsat", "time": 2.626248359680176, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 711, "result": "unsat", "time": 2.218770742416382, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 714, "result": "unsat", "time": 2.278632402420044, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 717, "result": "unsat", "time": 2.1255998611450195, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 720, "result": "unsat", "time": 2.4858415126800537, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 723, "result": "unsat", "time": 2.354379653930664, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 726, "result": "unsat", "time": 2.4862332344055176, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 729, "result": "unsat", "time": 2.2891457080841064, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 732, "result": "unsat", "time": 2.5464534759521484, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 735, "result": "unsat", "time": 2.2088160514831543, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 738, "result": "unsat", "time": 2.5035324096679688, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 741, "result": "unsat", "time": 2.2491421699523926, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 744, "result": "unsat", "time": 2.573317050933838, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 747, "result": "unsat", "time": 2.231205940246582, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 750, "result": "unsat", "time": 2.4320497512817383, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 753, "result": "unsat", "time": 2.185899257659912, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 756, "result": "unsat", "time": 2.38735294342041, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 759, "result": "unsat", "time": 2.111405611038208, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 762, "result": "unsat", "time": 2.473444938659668, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 765, "result": "unsat", "time": 2.0127904415130615, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 768, "result": "unsat", "time": 2.5464603900909424, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 771, "result": "unsat", "time": 2.4608757495880127, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 774, "result": "unsat", "time": 2.566347122192383, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 777, "result": "unsat", "time": 2.594754219055176, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 780, "result": "unsat", "time": 2.6967363357543945, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 783, "result": "unsat", "time": 2.1560211181640625, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 786, "result": "unsat", "time": 2.4818711280822754, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 789, "result": "unsat", "time": 2.0082170963287354, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 792, "result": "unsat", "time": 2.4747886657714844, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 795, "result": "unsat", "time": 2.2696776390075684, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 798, "result": "unsat", "time": 2.2526185512542725, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 801, "result": "unsat", "time": 2.2505099773406982, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 804, "result": "unsat", "time": 2.390207529067993, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 807, "result": "unsat", "time": 2.0641582012176514, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 810, "result": "unsat", "time": 2.5504651069641113, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 813, "result": "unsat", "time": 2.2169346809387207, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 816, "result": "unsat", "time": 2.1627588272094727, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 819, "result": "unsat", "time": 2.3682055473327637, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 822, "result": "unsat", "time": 2.620110034942627, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 825, "result": "unsat", "time": 2.294764995574951, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 828, "result": "unsat", "time": 2.3809688091278076, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 831, "result": "unsat", "time": 2.174124240875244, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 834, "result": "unsat", "time": 2.220264196395874, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 837, "result": "unsat", "time": 2.451970100402832, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 840, "result": "unsat", "time": 2.6386094093322754, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 843, "result": "unsat", "time": 2.333676338195801, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 846, "result": "unsat", "time": 2.562751054763794, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 849, "result": "unsat", "time": 2.2233402729034424, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 852, "result": "unsat", "time": 2.4993979930877686, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 855, "result": "unsat", "time": 2.1183414459228516, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 858, "result": "unsat", "time": 2.337296962738037, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 861, "result": "unsat", "time": 2.2436537742614746, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 864, "result": "unsat", "time": 2.3036813735961914, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 867, "result": "unsat", "time": 2.3731534481048584, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 870, "result": "unsat", "time": 2.770721197128296, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 873, "result": "unsat", "time": 2.2203962802886963, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 876, "result": "unsat", "time": 2.631742000579834, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 879, "result": "unsat", "time": 2.1527578830718994, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 882, "result": "unsat", "time": 2.2900567054748535, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 885, "result": "unsat", "time": 2.157925605773926, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 888, "result": "unsat", "time": 2.9040586948394775, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 891, "result": "unsat", "time": 2.125535249710083, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 894, "result": "unsat", "time": 2.3959476947784424, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 897, "result": "unsat", "time": 2.0480051040649414, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 900, "result": "unsat", "time": 2.4255101680755615, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 903, "result": "unsat", "time": 2.2198073863983154, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 906, "result": "unsat", "time": 2.4028732776641846, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 909, "result": "unsat", "time": 2.2754342555999756, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 912, "result": "unsat", "time": 2.4587807655334473, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 915, "result": "unsat", "time": 1.9881978034973145, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 918, "result": "unsat", "time": 2.45357084274292, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 921, "result": "unsat", "time": 2.4485268592834473, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 924, "result": "unsat", "time": 2.4697484970092773, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 927, "result": "unsat", "time": 2.4640989303588867, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 930, "result": "unsat", "time": 2.5314722061157227, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 933, "result": "unsat", "time": 2.204345703125, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 936, "result": "unsat", "time": 2.3179361820220947, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 939, "result": "unsat", "time": 1.9994826316833496, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 942, "result": "unsat", "time": 2.816039562225342, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 945, "result": "unsat", "time": 2.155578374862671, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 948, "result": "unsat", "time": 2.4635093212127686, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 951, "result": "unsat", "time": 2.4848127365112305, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 954, "result": "unsat", "time": 2.57772159576416, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 957, "result": "unsat", "time": 2.1145195960998535, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 960, "result": "unsat", "time": 2.4346399307250977, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 963, "result": "unsat", "time": 2.1335599422454834, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 966, "result": "unsat", "time": 2.3824031352996826, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 969, "result": "unsat", "time": 1.966756820678711, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 972, "result": "unsat", "time": 2.2147552967071533, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 975, "result": "unsat", "time": 2.0601136684417725, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 978, "result": "unsat", "time": 2.307924270629883, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 981, "result": "unsat", "time": 2.166917324066162, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 984, "result": "unsat", "time": 2.4404513835906982, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 987, "result": "unsat", "time": 2.2930543422698975, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 990, "result": "unsat", "time": 2.8391146659851074, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 993, "result": "unsat", "time": 2.073113203048706, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 996, "result": "unsat", "time": 2.4754745960235596, "expected_solvable": false, "python_solvable": false}
+{"pool": [1, 1, 2, 2, 3, 25], "target": 999, "result": "unsat", "time": 2.252224922180176, "expected_solvable": false, "python_solvable": false}

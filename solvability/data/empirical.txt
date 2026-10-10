@@ -1,0 +1,7 @@
+dealt 1,000,000 rounds with countdown.generate_round under random.seed(20261010)
+no exact answer: 20,365 = 0.020365, 95% Wilson interval [0.020090, 0.020644]
+exact value 0.020270 inside the interval, z = +0.67
+  1 large: 11,229 of 500,061 = 0.022455, interval [0.022048, 0.022870], exact 0.022496
+  2 large: 9,136 of 499,939 = 0.018274, interval [0.017907, 0.018649], exact 0.018045
+bench/data/rounds10k.txt: 224 misses by ref10k.tsv, 224 by the checker tables, 0 disagreements (status or distance); rate 0.0224, interval [0.0197, 0.0255]
+  z against the exact value = +1.51

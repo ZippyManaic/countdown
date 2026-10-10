@@ -1,0 +1,1380 @@
+CBMC version 6.6.0 (cbmc-6.6.0) 64-bit x86_64 linux
+Type-checking cats_ops
+Generating GOTO Program
+Adding CPROVER library (x86_64)
+Removal of function pointers and virtual functions
+Generic Property Instrumentation
+Starting Bounded Model Checking
+Passing problem to propositional reduction
+converting SSA
+Running propositional reduction
+Writing temporary CNF
+Invoking SAT solver
+Solver returned code: 20
+result:UNSATISFIABLE
+
+** Results:
+harness/../../../countdown-c/solver.c function build
+[build.pointer_dereference.1] line 242 dereference failure: pointer NULL in s->seen: SUCCESS
+[build.pointer_dereference.2] line 242 dereference failure: pointer invalid in s->seen: SUCCESS
+[build.pointer_dereference.3] line 242 dereference failure: deallocated dynamic object in s->seen: SUCCESS
+[build.pointer_dereference.4] line 242 dereference failure: dead object in s->seen: SUCCESS
+[build.pointer_dereference.5] line 242 dereference failure: pointer outside object bounds in s->seen: SUCCESS
+[build.pointer_dereference.6] line 242 dereference failure: invalid integer address in s->seen: SUCCESS
+[build.pointer_dereference.7] line 245 dereference failure: pointer NULL in seen[(signed long int)0]: SUCCESS
+[build.pointer_dereference.8] line 245 dereference failure: pointer invalid in seen[(signed long int)0]: SUCCESS
+[build.pointer_dereference.9] line 245 dereference failure: deallocated dynamic object in seen[(signed long int)0]: SUCCESS
+[build.pointer_dereference.10] line 245 dereference failure: dead object in seen[(signed long int)0]: SUCCESS
+[build.pointer_dereference.11] line 245 dereference failure: pointer outside object bounds in seen[(signed long int)0]: SUCCESS
+[build.pointer_dereference.12] line 245 dereference failure: invalid integer address in seen[(signed long int)0]: SUCCESS
+[build.overflow.1] line 246 arithmetic overflow on unsigned - in mask - (unsigned int)1: SUCCESS
+[build.overflow.29] line 246 arithmetic overflow on unsigned - in left - (unsigned int)1: SUCCESS
+[build.array_bounds.1] line 252 array.len dynamic object upper bound in s->len[(signed long int)left]: SUCCESS
+[build.array_bounds.2] line 252 array.len dynamic object upper bound in s->len[(signed long int)right]: SUCCESS
+[build.overflow.2] line 252 arithmetic overflow on unsigned * in (unsigned long int)4 * (size_t)s->len[(signed long int)left]: SUCCESS
+[build.overflow.3] line 252 arithmetic overflow on unsigned * in (unsigned long int)4 * (size_t)s->len[(signed long int)left] * (unsigned long int)s->len[(signed long int)right]: SUCCESS
+[build.pointer_dereference.13] line 252 dereference failure: pointer NULL in s->len: SUCCESS
+[build.pointer_dereference.14] line 252 dereference failure: pointer invalid in s->len: SUCCESS
+[build.pointer_dereference.15] line 252 dereference failure: deallocated dynamic object in s->len: SUCCESS
+[build.pointer_dereference.16] line 252 dereference failure: dead object in s->len: SUCCESS
+[build.pointer_dereference.17] line 252 dereference failure: pointer outside object bounds in s->len: SUCCESS
+[build.pointer_dereference.18] line 252 dereference failure: invalid integer address in s->len: SUCCESS
+[build.array_bounds.3] line 253 array.max dynamic object upper bound in s->max[(signed long int)mask]: SUCCESS
+[build.pointer_dereference.19] line 253 dereference failure: pointer NULL in s->max: SUCCESS
+[build.pointer_dereference.20] line 253 dereference failure: pointer invalid in s->max: SUCCESS
+[build.pointer_dereference.21] line 253 dereference failure: deallocated dynamic object in s->max: SUCCESS
+[build.pointer_dereference.22] line 253 dereference failure: dead object in s->max: SUCCESS
+[build.pointer_dereference.23] line 253 dereference failure: pointer outside object bounds in s->max: SUCCESS
+[build.pointer_dereference.24] line 253 dereference failure: invalid integer address in s->max: SUCCESS
+[build.overflow.4] line 254 arithmetic overflow on unsigned + in count + (pairs < bound ? pairs : bound): SUCCESS
+[build.overflow.5] line 254 arithmetic overflow on unsigned + in count + (pairs < bound ? pairs : bound) + (unsigned long int)1: SUCCESS
+[build.pointer_dereference.25] line 254 dereference failure: pointer NULL in s->tmp: SUCCESS
+[build.pointer_dereference.26] line 254 dereference failure: pointer invalid in s->tmp: SUCCESS
+[build.pointer_dereference.27] line 254 dereference failure: deallocated dynamic object in s->tmp: SUCCESS
+[build.pointer_dereference.28] line 254 dereference failure: dead object in s->tmp: SUCCESS
+[build.pointer_dereference.29] line 254 dereference failure: pointer outside object bounds in s->tmp: SUCCESS
+[build.pointer_dereference.30] line 254 dereference failure: invalid integer address in s->tmp: SUCCESS
+[build.pointer_dereference.31] line 254 dereference failure: pointer NULL in s->tmp: SUCCESS
+[build.pointer_dereference.32] line 254 dereference failure: pointer invalid in s->tmp: SUCCESS
+[build.pointer_dereference.33] line 254 dereference failure: deallocated dynamic object in s->tmp: SUCCESS
+[build.pointer_dereference.34] line 254 dereference failure: dead object in s->tmp: SUCCESS
+[build.pointer_dereference.35] line 254 dereference failure: pointer outside object bounds in s->tmp: SUCCESS
+[build.pointer_dereference.36] line 254 dereference failure: invalid integer address in s->tmp: SUCCESS
+[build.overflow.6] line 255 arithmetic overflow on unsigned to signed type conversion in (signed long int)count: SUCCESS
+[build.pointer_dereference.37] line 255 dereference failure: pointer NULL in s->tmp: SUCCESS
+[build.pointer_dereference.38] line 255 dereference failure: pointer invalid in s->tmp: SUCCESS
+[build.pointer_dereference.39] line 255 dereference failure: deallocated dynamic object in s->tmp: SUCCESS
+[build.pointer_dereference.40] line 255 dereference failure: dead object in s->tmp: SUCCESS
+[build.pointer_dereference.41] line 255 dereference failure: pointer outside object bounds in s->tmp: SUCCESS
+[build.pointer_dereference.42] line 255 dereference failure: invalid integer address in s->tmp: SUCCESS
+[build.array_bounds.4] line 256 array.off dynamic object upper bound in s->off[(signed long int)left]: SUCCESS
+[build.array_bounds.5] line 256 array.len dynamic object upper bound in s->len[(signed long int)left]: SUCCESS
+[build.array_bounds.6] line 256 array.len dynamic object upper bound in s->len[(signed long int)right]: SUCCESS
+[build.array_bounds.7] line 256 array.off dynamic object upper bound in s->off[(signed long int)right]: SUCCESS
+[build.overflow.7] line 256 arithmetic overflow on unsigned + in j + 1u: SUCCESS
+[build.overflow.8] line 256 arithmetic overflow on unsigned + in x_ + y_: SUCCESS
+[build.overflow.9] line 256 arithmetic overflow on unsigned to signed type conversion in (signed long int)(~word_ >> (v_ & (unsigned int)63) & (unsigned long int)1): SUCCESS
+[build.overflow.10] line 256 arithmetic overflow on unsigned - in x_ - y_: SUCCESS
+[build.overflow.11] line 256 arithmetic overflow on unsigned to signed type conversion in (signed long int)(~word_ >> (v_ & (unsigned int)63) & (unsigned long int)1): SUCCESS
+[build.overflow.12] line 256 arithmetic overflow on unsigned * in x_ * y_: SUCCESS
+[build.overflow.13] line 256 arithmetic overflow on unsigned to signed type conversion in (signed long int)(~word_ >> (v_ & (unsigned int)63) & (unsigned long int)1): SUCCESS
+[build.overflow.14] line 256 arithmetic overflow on unsigned * in q_ * y_: SUCCESS
+[build.overflow.15] line 256 arithmetic overflow on unsigned to signed type conversion in (signed long int)(~word_ >> (v_ & (unsigned int)63) & (unsigned long int)1): SUCCESS
+[build.overflow.16] line 256 arithmetic overflow on unsigned + in j + 1u: SUCCESS
+[build.overflow.17] line 256 arithmetic overflow on unsigned + in x_ + y_: SUCCESS
+[build.overflow.18] line 256 arithmetic overflow on unsigned to signed type conversion in (signed long int)(~word_ >> (v_ & (unsigned int)63) & (unsigned long int)1): SUCCESS
+[build.overflow.19] line 256 arithmetic overflow on unsigned - in x_ - y_: SUCCESS
+[build.overflow.20] line 256 arithmetic overflow on unsigned to signed type conversion in (signed long int)(~word_ >> (v_ & (unsigned int)63) & (unsigned long int)1): SUCCESS
+[build.overflow.21] line 256 arithmetic overflow on unsigned * in x_ * y_: SUCCESS
+[build.overflow.22] line 256 arithmetic overflow on unsigned to signed type conversion in (signed long int)(~word_ >> (v_ & (unsigned int)63) & (unsigned long int)1): SUCCESS
+[build.overflow.23] line 256 arithmetic overflow on unsigned * in q_ * y_: SUCCESS
+[build.overflow.24] line 256 arithmetic overflow on unsigned to signed type conversion in (signed long int)(~word_ >> (v_ & (unsigned int)63) & (unsigned long int)1): SUCCESS
+[build.overflow.25] line 256 arithmetic overflow on unsigned + in j + 1u: SUCCESS
+[build.overflow.26] line 256 arithmetic overflow on unsigned + in i + 1u: SUCCESS
+[build.pointer_dereference.43] line 256 dereference failure: pointer NULL in s->arena: SUCCESS
+[build.pointer_dereference.44] line 256 dereference failure: pointer invalid in s->arena: SUCCESS
+[build.pointer_dereference.45] line 256 dereference failure: deallocated dynamic object in s->arena: SUCCESS
+[build.pointer_dereference.46] line 256 dereference failure: dead object in s->arena: SUCCESS
+[build.pointer_dereference.47] line 256 dereference failure: pointer outside object bounds in s->arena: SUCCESS
+[build.pointer_dereference.48] line 256 dereference failure: invalid integer address in s->arena: SUCCESS
+[build.pointer_dereference.49] line 256 dereference failure: pointer NULL in s->off: SUCCESS
+[build.pointer_dereference.50] line 256 dereference failure: pointer invalid in s->off: SUCCESS
+[build.pointer_dereference.51] line 256 dereference failure: deallocated dynamic object in s->off: SUCCESS
+[build.pointer_dereference.52] line 256 dereference failure: dead object in s->off: SUCCESS
+[build.pointer_dereference.53] line 256 dereference failure: pointer outside object bounds in s->off: SUCCESS
+[build.pointer_dereference.54] line 256 dereference failure: invalid integer address in s->off: SUCCESS
+[build.pointer_dereference.55] line 256 dereference failure: pointer NULL in s->len: SUCCESS
+[build.pointer_dereference.56] line 256 dereference failure: pointer invalid in s->len: SUCCESS
+[build.pointer_dereference.57] line 256 dereference failure: deallocated dynamic object in s->len: SUCCESS
+[build.pointer_dereference.58] line 256 dereference failure: dead object in s->len: SUCCESS
+[build.pointer_dereference.59] line 256 dereference failure: pointer outside object bounds in s->len: SUCCESS
+[build.pointer_dereference.60] line 256 dereference failure: invalid integer address in s->len: SUCCESS
+[build.pointer_dereference.61] line 256 dereference failure: pointer NULL in s->right_values: SUCCESS
+[build.pointer_dereference.62] line 256 dereference failure: pointer invalid in s->right_values: SUCCESS
+[build.pointer_dereference.63] line 256 dereference failure: deallocated dynamic object in s->right_values: SUCCESS
+[build.pointer_dereference.64] line 256 dereference failure: dead object in s->right_values: SUCCESS
+[build.pointer_dereference.65] line 256 dereference failure: pointer outside object bounds in s->right_values: SUCCESS
+[build.pointer_dereference.66] line 256 dereference failure: invalid integer address in s->right_values: SUCCESS
+[build.pointer_dereference.67] line 256 dereference failure: pointer NULL in s->right_inv: SUCCESS
+[build.pointer_dereference.68] line 256 dereference failure: pointer invalid in s->right_inv: SUCCESS
+[build.pointer_dereference.69] line 256 dereference failure: deallocated dynamic object in s->right_inv: SUCCESS
+[build.pointer_dereference.70] line 256 dereference failure: dead object in s->right_inv: SUCCESS
+[build.pointer_dereference.71] line 256 dereference failure: pointer outside object bounds in s->right_inv: SUCCESS
+[build.pointer_dereference.72] line 256 dereference failure: invalid integer address in s->right_inv: SUCCESS
+[build.pointer_dereference.73] line 256 dereference failure: pointer NULL in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.74] line 256 dereference failure: pointer invalid in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.75] line 256 dereference failure: deallocated dynamic object in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.76] line 256 dereference failure: dead object in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.77] line 256 dereference failure: pointer outside object bounds in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.78] line 256 dereference failure: invalid integer address in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.79] line 256 dereference failure: pointer NULL in (rights_ + (signed long int)j)->value: SUCCESS
+[build.pointer_dereference.80] line 256 dereference failure: pointer invalid in (rights_ + (signed long int)j)->value: SUCCESS
+[build.pointer_dereference.81] line 256 dereference failure: deallocated dynamic object in (rights_ + (signed long int)j)->value: SUCCESS
+[build.pointer_dereference.82] line 256 dereference failure: dead object in (rights_ + (signed long int)j)->value: SUCCESS
+[build.pointer_dereference.83] line 256 dereference failure: pointer outside object bounds in (rights_ + (signed long int)j)->value: SUCCESS
+[build.pointer_dereference.84] line 256 dereference failure: invalid integer address in (rights_ + (signed long int)j)->value: SUCCESS
+[build.pointer_dereference.85] line 256 dereference failure: pointer NULL in ri_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.86] line 256 dereference failure: pointer invalid in ri_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.87] line 256 dereference failure: deallocated dynamic object in ri_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.88] line 256 dereference failure: dead object in ri_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.89] line 256 dereference failure: pointer outside object bounds in ri_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.90] line 256 dereference failure: invalid integer address in ri_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.91] line 256 dereference failure: pointer NULL in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.92] line 256 dereference failure: pointer invalid in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.93] line 256 dereference failure: deallocated dynamic object in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.94] line 256 dereference failure: dead object in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.95] line 256 dereference failure: pointer outside object bounds in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.96] line 256 dereference failure: invalid integer address in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.97] line 256 dereference failure: pointer NULL in (lefts_ + (signed long int)i)->value: SUCCESS
+[build.pointer_dereference.98] line 256 dereference failure: pointer invalid in (lefts_ + (signed long int)i)->value: SUCCESS
+[build.pointer_dereference.99] line 256 dereference failure: deallocated dynamic object in (lefts_ + (signed long int)i)->value: SUCCESS
+[build.pointer_dereference.100] line 256 dereference failure: dead object in (lefts_ + (signed long int)i)->value: SUCCESS
+[build.pointer_dereference.101] line 256 dereference failure: pointer outside object bounds in (lefts_ + (signed long int)i)->value: SUCCESS
+[build.pointer_dereference.102] line 256 dereference failure: invalid integer address in (lefts_ + (signed long int)i)->value: SUCCESS
+[build.pointer_dereference.103] line 256 dereference failure: pointer NULL in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.104] line 256 dereference failure: pointer invalid in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.105] line 256 dereference failure: deallocated dynamic object in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.106] line 256 dereference failure: dead object in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.107] line 256 dereference failure: pointer outside object bounds in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.108] line 256 dereference failure: invalid integer address in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.109] line 256 dereference failure: pointer NULL in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.110] line 256 dereference failure: pointer invalid in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.111] line 256 dereference failure: deallocated dynamic object in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.112] line 256 dereference failure: dead object in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.113] line 256 dereference failure: pointer outside object bounds in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.114] line 256 dereference failure: invalid integer address in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.115] line 256 dereference failure: pointer NULL in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.116] line 256 dereference failure: pointer invalid in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.117] line 256 dereference failure: deallocated dynamic object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.118] line 256 dereference failure: dead object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.119] line 256 dereference failure: pointer outside object bounds in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.120] line 256 dereference failure: invalid integer address in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.121] line 256 dereference failure: pointer NULL in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.122] line 256 dereference failure: pointer invalid in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.123] line 256 dereference failure: deallocated dynamic object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.124] line 256 dereference failure: dead object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.125] line 256 dereference failure: pointer outside object bounds in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.126] line 256 dereference failure: invalid integer address in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.127] line 256 dereference failure: pointer NULL in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.128] line 256 dereference failure: pointer invalid in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.129] line 256 dereference failure: deallocated dynamic object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.130] line 256 dereference failure: dead object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.131] line 256 dereference failure: pointer outside object bounds in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.132] line 256 dereference failure: invalid integer address in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.133] line 256 dereference failure: pointer NULL in ri_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.134] line 256 dereference failure: pointer invalid in ri_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.135] line 256 dereference failure: deallocated dynamic object in ri_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.136] line 256 dereference failure: dead object in ri_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.137] line 256 dereference failure: pointer outside object bounds in ri_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.138] line 256 dereference failure: invalid integer address in ri_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.139] line 256 dereference failure: pointer NULL in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.140] line 256 dereference failure: pointer invalid in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.141] line 256 dereference failure: deallocated dynamic object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.142] line 256 dereference failure: dead object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.143] line 256 dereference failure: pointer outside object bounds in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.144] line 256 dereference failure: invalid integer address in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.145] line 256 dereference failure: pointer NULL in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.146] line 256 dereference failure: pointer invalid in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.147] line 256 dereference failure: deallocated dynamic object in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.148] line 256 dereference failure: dead object in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.149] line 256 dereference failure: pointer outside object bounds in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.150] line 256 dereference failure: invalid integer address in rv_[(signed long int)j]: SUCCESS
+[build.pointer_dereference.151] line 256 dereference failure: pointer NULL in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.152] line 256 dereference failure: pointer invalid in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.153] line 256 dereference failure: deallocated dynamic object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.154] line 256 dereference failure: dead object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.155] line 256 dereference failure: pointer outside object bounds in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.156] line 256 dereference failure: invalid integer address in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.157] line 256 dereference failure: pointer NULL in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.158] line 256 dereference failure: pointer invalid in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.159] line 256 dereference failure: deallocated dynamic object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.160] line 256 dereference failure: dead object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.161] line 256 dereference failure: pointer outside object bounds in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.162] line 256 dereference failure: invalid integer address in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.163] line 256 dereference failure: pointer NULL in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.164] line 256 dereference failure: pointer invalid in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.165] line 256 dereference failure: deallocated dynamic object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.166] line 256 dereference failure: dead object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.167] line 256 dereference failure: pointer outside object bounds in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.168] line 256 dereference failure: invalid integer address in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.169] line 256 dereference failure: pointer NULL in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.170] line 256 dereference failure: pointer invalid in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.171] line 256 dereference failure: deallocated dynamic object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.172] line 256 dereference failure: dead object in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.173] line 256 dereference failure: pointer outside object bounds in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.pointer_dereference.174] line 256 dereference failure: invalid integer address in seen[(signed long int)(v_ >> 6)]: SUCCESS
+[build.undefined-shift.1] line 256 shift distance too large in 1ull << (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.2] line 256 shift distance too large in ~word_ >> (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.3] line 256 shift distance too large in 1ull << (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.4] line 256 shift distance too large in ~word_ >> (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.5] line 256 shift distance too large in 1ull << (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.6] line 256 shift distance too large in ~word_ >> (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.7] line 256 shift distance too large in 1ull << (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.8] line 256 shift distance too large in ~word_ >> (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.9] line 256 shift distance too large in 1ull << (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.10] line 256 shift distance too large in ~word_ >> (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.11] line 256 shift distance too large in 1ull << (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.12] line 256 shift distance too large in ~word_ >> (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.13] line 256 shift distance too large in 1ull << (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.14] line 256 shift distance too large in ~word_ >> (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.15] line 256 shift distance too large in 1ull << (v_ & (unsigned int)63): SUCCESS
+[build.undefined-shift.16] line 256 shift distance too large in ~word_ >> (v_ & (unsigned int)63): SUCCESS
+[build.overflow.27] line 257 arithmetic overflow on signed - in out - s->tmp: SUCCESS
+[build.overflow.28] line 257 arithmetic overflow on signed to unsigned type conversion in (size_t)(out - s->tmp): SUCCESS
+[build.pointer.1] line 257 same object violation in out - s->tmp: SUCCESS
+[build.pointer_arithmetic.1] line 257 pointer relation: pointer NULL in out: SUCCESS
+[build.pointer_arithmetic.2] line 257 pointer relation: pointer invalid in out: SUCCESS
+[build.pointer_arithmetic.3] line 257 pointer relation: deallocated dynamic object in out: SUCCESS
+[build.pointer_arithmetic.4] line 257 pointer relation: dead object in out: SUCCESS
+[build.pointer_arithmetic.5] line 257 pointer relation: pointer outside object bounds in out: SUCCESS
+[build.pointer_arithmetic.6] line 257 pointer relation: invalid integer address in out: SUCCESS
+[build.pointer_arithmetic.7] line 257 pointer relation: pointer NULL in s->tmp: SUCCESS
+[build.pointer_arithmetic.8] line 257 pointer relation: pointer invalid in s->tmp: SUCCESS
+[build.pointer_arithmetic.9] line 257 pointer relation: deallocated dynamic object in s->tmp: SUCCESS
+[build.pointer_arithmetic.10] line 257 pointer relation: dead object in s->tmp: SUCCESS
+[build.pointer_arithmetic.11] line 257 pointer relation: pointer outside object bounds in s->tmp: SUCCESS
+[build.pointer_arithmetic.12] line 257 pointer relation: invalid integer address in s->tmp: SUCCESS
+[build.pointer_dereference.175] line 257 dereference failure: pointer NULL in s->tmp: SUCCESS
+[build.pointer_dereference.176] line 257 dereference failure: pointer invalid in s->tmp: SUCCESS
+[build.pointer_dereference.177] line 257 dereference failure: deallocated dynamic object in s->tmp: SUCCESS
+[build.pointer_dereference.178] line 257 dereference failure: dead object in s->tmp: SUCCESS
+[build.pointer_dereference.179] line 257 dereference failure: pointer outside object bounds in s->tmp: SUCCESS
+[build.pointer_dereference.180] line 257 dereference failure: invalid integer address in s->tmp: SUCCESS
+[build.pointer_dereference.181] line 259 dereference failure: pointer NULL in seen[(signed long int)0]: SUCCESS
+[build.pointer_dereference.182] line 259 dereference failure: pointer invalid in seen[(signed long int)0]: SUCCESS
+[build.pointer_dereference.183] line 259 dereference failure: deallocated dynamic object in seen[(signed long int)0]: SUCCESS
+[build.pointer_dereference.184] line 259 dereference failure: dead object in seen[(signed long int)0]: SUCCESS
+[build.pointer_dereference.185] line 259 dereference failure: pointer outside object bounds in seen[(signed long int)0]: SUCCESS
+[build.pointer_dereference.186] line 259 dereference failure: invalid integer address in seen[(signed long int)0]: SUCCESS
+[build.overflow.30] line 261 arithmetic overflow on unsigned + in s->top + count: SUCCESS
+[build.pointer_dereference.187] line 261 dereference failure: pointer NULL in s->arena: SUCCESS
+[build.pointer_dereference.188] line 261 dereference failure: pointer invalid in s->arena: SUCCESS
+[build.pointer_dereference.189] line 261 dereference failure: deallocated dynamic object in s->arena: SUCCESS
+[build.pointer_dereference.190] line 261 dereference failure: dead object in s->arena: SUCCESS
+[build.pointer_dereference.191] line 261 dereference failure: pointer outside object bounds in s->arena: SUCCESS
+[build.pointer_dereference.192] line 261 dereference failure: invalid integer address in s->arena: SUCCESS
+[build.pointer_dereference.193] line 261 dereference failure: pointer NULL in s->top: SUCCESS
+[build.pointer_dereference.194] line 261 dereference failure: pointer invalid in s->top: SUCCESS
+[build.pointer_dereference.195] line 261 dereference failure: deallocated dynamic object in s->top: SUCCESS
+[build.pointer_dereference.196] line 261 dereference failure: dead object in s->top: SUCCESS
+[build.pointer_dereference.197] line 261 dereference failure: pointer outside object bounds in s->top: SUCCESS
+[build.pointer_dereference.198] line 261 dereference failure: invalid integer address in s->top: SUCCESS
+[build.pointer_dereference.199] line 261 dereference failure: pointer NULL in s->arena: SUCCESS
+[build.pointer_dereference.200] line 261 dereference failure: pointer invalid in s->arena: SUCCESS
+[build.pointer_dereference.201] line 261 dereference failure: deallocated dynamic object in s->arena: SUCCESS
+[build.pointer_dereference.202] line 261 dereference failure: dead object in s->arena: SUCCESS
+[build.pointer_dereference.203] line 261 dereference failure: pointer outside object bounds in s->arena: SUCCESS
+[build.pointer_dereference.204] line 261 dereference failure: invalid integer address in s->arena: SUCCESS
+[build.overflow.31] line 262 arithmetic overflow on unsigned to signed type conversion in (signed long int)s->top: SUCCESS
+[build.pointer_dereference.205] line 262 dereference failure: pointer NULL in s->arena: SUCCESS
+[build.pointer_dereference.206] line 262 dereference failure: pointer invalid in s->arena: SUCCESS
+[build.pointer_dereference.207] line 262 dereference failure: deallocated dynamic object in s->arena: SUCCESS
+[build.pointer_dereference.208] line 262 dereference failure: dead object in s->arena: SUCCESS
+[build.pointer_dereference.209] line 262 dereference failure: pointer outside object bounds in s->arena: SUCCESS
+[build.pointer_dereference.210] line 262 dereference failure: invalid integer address in s->arena: SUCCESS
+[build.pointer_dereference.211] line 262 dereference failure: pointer NULL in s->top: SUCCESS
+[build.pointer_dereference.212] line 262 dereference failure: pointer invalid in s->top: SUCCESS
+[build.pointer_dereference.213] line 262 dereference failure: deallocated dynamic object in s->top: SUCCESS
+[build.pointer_dereference.214] line 262 dereference failure: dead object in s->top: SUCCESS
+[build.pointer_dereference.215] line 262 dereference failure: pointer outside object bounds in s->top: SUCCESS
+[build.pointer_dereference.216] line 262 dereference failure: invalid integer address in s->top: SUCCESS
+[build.overflow.40] line 265 arithmetic overflow on unsigned + in i + 1ul: SUCCESS
+[build.overflow.32] line 266 arithmetic overflow on unsigned to signed type conversion in (signed long int)i: SUCCESS
+[build.pointer_dereference.217] line 266 dereference failure: pointer NULL in s->tmp: SUCCESS
+[build.pointer_dereference.218] line 266 dereference failure: pointer invalid in s->tmp: SUCCESS
+[build.pointer_dereference.219] line 266 dereference failure: deallocated dynamic object in s->tmp: SUCCESS
+[build.pointer_dereference.220] line 266 dereference failure: dead object in s->tmp: SUCCESS
+[build.pointer_dereference.221] line 266 dereference failure: pointer outside object bounds in s->tmp: SUCCESS
+[build.pointer_dereference.222] line 266 dereference failure: invalid integer address in s->tmp: SUCCESS
+[build.pointer_dereference.223] line 266 dereference failure: pointer NULL in s->tmp[(signed long int)i]: SUCCESS
+[build.pointer_dereference.224] line 266 dereference failure: pointer invalid in s->tmp[(signed long int)i]: SUCCESS
+[build.pointer_dereference.225] line 266 dereference failure: deallocated dynamic object in s->tmp[(signed long int)i]: SUCCESS
+[build.pointer_dereference.226] line 266 dereference failure: dead object in s->tmp[(signed long int)i]: SUCCESS
+[build.pointer_dereference.227] line 266 dereference failure: pointer outside object bounds in s->tmp[(signed long int)i]: SUCCESS
+[build.pointer_dereference.228] line 266 dereference failure: invalid integer address in s->tmp[(signed long int)i]: SUCCESS
+[build.pointer_dereference.229] line 267 dereference failure: pointer NULL in seen[(signed long int)(e.value >> 6)]: SUCCESS
+[build.pointer_dereference.230] line 267 dereference failure: pointer invalid in seen[(signed long int)(e.value >> 6)]: SUCCESS
+[build.pointer_dereference.231] line 267 dereference failure: deallocated dynamic object in seen[(signed long int)(e.value >> 6)]: SUCCESS
+[build.pointer_dereference.232] line 267 dereference failure: dead object in seen[(signed long int)(e.value >> 6)]: SUCCESS
+[build.pointer_dereference.233] line 267 dereference failure: pointer outside object bounds in seen[(signed long int)(e.value >> 6)]: SUCCESS
+[build.pointer_dereference.234] line 267 dereference failure: invalid integer address in seen[(signed long int)(e.value >> 6)]: SUCCESS
+[build.overflow.33] line 269 arithmetic overflow on unsigned - in k - (unsigned long int)1: SUCCESS
+[build.overflow.34] line 269 arithmetic overflow on unsigned to signed type conversion in (signed long int)(k - (unsigned long int)1): SUCCESS
+[build.overflow.38] line 269 arithmetic overflow on unsigned - in k - 1ul: SUCCESS
+[build.pointer_dereference.235] line 269 dereference failure: pointer NULL in (sorted + (signed long int)(k - (unsigned long int)1))->value: SUCCESS
+[build.pointer_dereference.236] line 269 dereference failure: pointer invalid in (sorted + (signed long int)(k - (unsigned long int)1))->value: SUCCESS
+[build.pointer_dereference.237] line 269 dereference failure: deallocated dynamic object in (sorted + (signed long int)(k - (unsigned long int)1))->value: SUCCESS
+[build.pointer_dereference.238] line 269 dereference failure: dead object in (sorted + (signed long int)(k - (unsigned long int)1))->value: SUCCESS
+[build.pointer_dereference.239] line 269 dereference failure: pointer outside object bounds in (sorted + (signed long int)(k - (unsigned long int)1))->value: SUCCESS
+[build.pointer_dereference.240] line 269 dereference failure: invalid integer address in (sorted + (signed long int)(k - (unsigned long int)1))->value: SUCCESS
+[build.overflow.35] line 270 arithmetic overflow on unsigned to signed type conversion in (signed long int)k: SUCCESS
+[build.overflow.36] line 270 arithmetic overflow on unsigned - in k - (unsigned long int)1: SUCCESS
+[build.overflow.37] line 270 arithmetic overflow on unsigned to signed type conversion in (signed long int)(k - (unsigned long int)1): SUCCESS
+[build.pointer_dereference.241] line 270 dereference failure: pointer NULL in sorted[(signed long int)k]: SUCCESS
+[build.pointer_dereference.242] line 270 dereference failure: pointer invalid in sorted[(signed long int)k]: SUCCESS
+[build.pointer_dereference.243] line 270 dereference failure: deallocated dynamic object in sorted[(signed long int)k]: SUCCESS
+[build.pointer_dereference.244] line 270 dereference failure: dead object in sorted[(signed long int)k]: SUCCESS
+[build.pointer_dereference.245] line 270 dereference failure: pointer outside object bounds in sorted[(signed long int)k]: SUCCESS
+[build.pointer_dereference.246] line 270 dereference failure: invalid integer address in sorted[(signed long int)k]: SUCCESS
+[build.pointer_dereference.247] line 270 dereference failure: pointer NULL in sorted[(signed long int)(k - (unsigned long int)1)]: SUCCESS
+[build.pointer_dereference.248] line 270 dereference failure: pointer invalid in sorted[(signed long int)(k - (unsigned long int)1)]: SUCCESS
+[build.pointer_dereference.249] line 270 dereference failure: deallocated dynamic object in sorted[(signed long int)(k - (unsigned long int)1)]: SUCCESS
+[build.pointer_dereference.250] line 270 dereference failure: dead object in sorted[(signed long int)(k - (unsigned long int)1)]: SUCCESS
+[build.pointer_dereference.251] line 270 dereference failure: pointer outside object bounds in sorted[(signed long int)(k - (unsigned long int)1)]: SUCCESS
+[build.pointer_dereference.252] line 270 dereference failure: invalid integer address in sorted[(signed long int)(k - (unsigned long int)1)]: SUCCESS
+[build.overflow.39] line 271 arithmetic overflow on unsigned to signed type conversion in (signed long int)k: SUCCESS
+[build.pointer_dereference.253] line 271 dereference failure: pointer NULL in sorted[(signed long int)k]: SUCCESS
+[build.pointer_dereference.254] line 271 dereference failure: pointer invalid in sorted[(signed long int)k]: SUCCESS
+[build.pointer_dereference.255] line 271 dereference failure: deallocated dynamic object in sorted[(signed long int)k]: SUCCESS
+[build.pointer_dereference.256] line 271 dereference failure: dead object in sorted[(signed long int)k]: SUCCESS
+[build.pointer_dereference.257] line 271 dereference failure: pointer outside object bounds in sorted[(signed long int)k]: SUCCESS
+[build.pointer_dereference.258] line 271 dereference failure: invalid integer address in sorted[(signed long int)k]: SUCCESS
+[build.array_bounds.8] line 275 array.max dynamic object upper bound in s->max[(signed long int)mask]: SUCCESS
+[build.overflow.41] line 275 arithmetic overflow on unsigned + in s->max[(signed long int)mask] / (unsigned int)64 + (unsigned int)1: SUCCESS
+[build.pointer_dereference.259] line 275 dereference failure: pointer NULL in s->max: SUCCESS
+[build.pointer_dereference.260] line 275 dereference failure: pointer invalid in s->max: SUCCESS
+[build.pointer_dereference.261] line 275 dereference failure: deallocated dynamic object in s->max: SUCCESS
+[build.pointer_dereference.262] line 275 dereference failure: dead object in s->max: SUCCESS
+[build.pointer_dereference.263] line 275 dereference failure: pointer outside object bounds in s->max: SUCCESS
+[build.pointer_dereference.264] line 275 dereference failure: invalid integer address in s->max: SUCCESS
+[build.overflow.44] line 276 arithmetic overflow on unsigned + in w + 1u: SUCCESS
+[build.pointer_dereference.265] line 277 dereference failure: pointer NULL in s->rank: SUCCESS
+[build.pointer_dereference.266] line 277 dereference failure: pointer invalid in s->rank: SUCCESS
+[build.pointer_dereference.267] line 277 dereference failure: deallocated dynamic object in s->rank: SUCCESS
+[build.pointer_dereference.268] line 277 dereference failure: dead object in s->rank: SUCCESS
+[build.pointer_dereference.269] line 277 dereference failure: pointer outside object bounds in s->rank: SUCCESS
+[build.pointer_dereference.270] line 277 dereference failure: invalid integer address in s->rank: SUCCESS
+[build.pointer_dereference.271] line 277 dereference failure: pointer NULL in s->rank[(signed long int)w]: SUCCESS
+[build.pointer_dereference.272] line 277 dereference failure: pointer invalid in s->rank[(signed long int)w]: SUCCESS
+[build.pointer_dereference.273] line 277 dereference failure: deallocated dynamic object in s->rank[(signed long int)w]: SUCCESS
+[build.pointer_dereference.274] line 277 dereference failure: dead object in s->rank[(signed long int)w]: SUCCESS
+[build.pointer_dereference.275] line 277 dereference failure: pointer outside object bounds in s->rank[(signed long int)w]: SUCCESS
+[build.pointer_dereference.276] line 277 dereference failure: invalid integer address in s->rank[(signed long int)w]: SUCCESS
+[build.overflow.42] line 278 arithmetic overflow on signed to unsigned type conversion in (uint32_t)__builtin_popcount(seen[(signed long int)w]): SUCCESS
+[build.overflow.43] line 278 arithmetic overflow on unsigned + in below + (uint32_t)__builtin_popcount(seen[(signed long int)w]): SUCCESS
+[build.pointer_dereference.277] line 278 dereference failure: pointer NULL in seen[(signed long int)w]: SUCCESS
+[build.pointer_dereference.278] line 278 dereference failure: pointer invalid in seen[(signed long int)w]: SUCCESS
+[build.pointer_dereference.279] line 278 dereference failure: deallocated dynamic object in seen[(signed long int)w]: SUCCESS
+[build.pointer_dereference.280] line 278 dereference failure: dead object in seen[(signed long int)w]: SUCCESS
+[build.pointer_dereference.281] line 278 dereference failure: pointer outside object bounds in seen[(signed long int)w]: SUCCESS
+[build.pointer_dereference.282] line 278 dereference failure: invalid integer address in seen[(signed long int)w]: SUCCESS
+[build.overflow.49] line 280 arithmetic overflow on unsigned + in i + 1ul: SUCCESS
+[build.overflow.45] line 281 arithmetic overflow on unsigned to signed type conversion in (signed long int)i: SUCCESS
+[build.pointer_dereference.283] line 281 dereference failure: pointer NULL in s->tmp: SUCCESS
+[build.pointer_dereference.284] line 281 dereference failure: pointer invalid in s->tmp: SUCCESS
+[build.pointer_dereference.285] line 281 dereference failure: deallocated dynamic object in s->tmp: SUCCESS
+[build.pointer_dereference.286] line 281 dereference failure: dead object in s->tmp: SUCCESS
+[build.pointer_dereference.287] line 281 dereference failure: pointer outside object bounds in s->tmp: SUCCESS
+[build.pointer_dereference.288] line 281 dereference failure: invalid integer address in s->tmp: SUCCESS
+[build.pointer_dereference.289] line 281 dereference failure: pointer NULL in (s->tmp + (signed long int)i)->value: SUCCESS
+[build.pointer_dereference.290] line 281 dereference failure: pointer invalid in (s->tmp + (signed long int)i)->value: SUCCESS
+[build.pointer_dereference.291] line 281 dereference failure: deallocated dynamic object in (s->tmp + (signed long int)i)->value: SUCCESS
+[build.pointer_dereference.292] line 281 dereference failure: dead object in (s->tmp + (signed long int)i)->value: SUCCESS
+[build.pointer_dereference.293] line 281 dereference failure: pointer outside object bounds in (s->tmp + (signed long int)i)->value: SUCCESS
+[build.pointer_dereference.294] line 281 dereference failure: invalid integer address in (s->tmp + (signed long int)i)->value: SUCCESS
+[build.pointer_dereference.295] line 282 dereference failure: pointer NULL in seen[(signed long int)(v >> 6)]: SUCCESS
+[build.pointer_dereference.296] line 282 dereference failure: pointer invalid in seen[(signed long int)(v >> 6)]: SUCCESS
+[build.pointer_dereference.297] line 282 dereference failure: deallocated dynamic object in seen[(signed long int)(v >> 6)]: SUCCESS
+[build.pointer_dereference.298] line 282 dereference failure: dead object in seen[(signed long int)(v >> 6)]: SUCCESS
+[build.pointer_dereference.299] line 282 dereference failure: pointer outside object bounds in seen[(signed long int)(v >> 6)]: SUCCESS
+[build.pointer_dereference.300] line 282 dereference failure: invalid integer address in seen[(signed long int)(v >> 6)]: SUCCESS
+[build.overflow.46] line 283 arithmetic overflow on signed to unsigned type conversion in (unsigned int)__builtin_popcount(lower): SUCCESS
+[build.overflow.47] line 283 arithmetic overflow on unsigned + in s->rank[(signed long int)(v >> 6)] + (unsigned int)__builtin_popcount(lower): SUCCESS
+[build.overflow.48] line 283 arithmetic overflow on unsigned to signed type conversion in (signed long int)i: SUCCESS
+[build.pointer_dereference.301] line 283 dereference failure: pointer NULL in s->rank: SUCCESS
+[build.pointer_dereference.302] line 283 dereference failure: pointer invalid in s->rank: SUCCESS
+[build.pointer_dereference.303] line 283 dereference failure: deallocated dynamic object in s->rank: SUCCESS
+[build.pointer_dereference.304] line 283 dereference failure: dead object in s->rank: SUCCESS
+[build.pointer_dereference.305] line 283 dereference failure: pointer outside object bounds in s->rank: SUCCESS
+[build.pointer_dereference.306] line 283 dereference failure: invalid integer address in s->rank: SUCCESS
+[build.pointer_dereference.307] line 283 dereference failure: pointer NULL in s->rank[(signed long int)(v >> 6)]: SUCCESS
+[build.pointer_dereference.308] line 283 dereference failure: pointer invalid in s->rank[(signed long int)(v >> 6)]: SUCCESS
+[build.pointer_dereference.309] line 283 dereference failure: deallocated dynamic object in s->rank[(signed long int)(v >> 6)]: SUCCESS
+[build.pointer_dereference.310] line 283 dereference failure: dead object in s->rank[(signed long int)(v >> 6)]: SUCCESS
+[build.pointer_dereference.311] line 283 dereference failure: pointer outside object bounds in s->rank[(signed long int)(v >> 6)]: SUCCESS
+[build.pointer_dereference.312] line 283 dereference failure: invalid integer address in s->rank[(signed long int)(v >> 6)]: SUCCESS
+[build.pointer_dereference.313] line 283 dereference failure: pointer NULL in sorted[(signed long int)(s->rank[(signed long int)(v >> 6)] + (unsigned int)__builtin_popcount(lower))]: SUCCESS
+[build.pointer_dereference.314] line 283 dereference failure: pointer invalid in sorted[(signed long int)(s->rank[(signed long int)(v >> 6)] + (unsigned int)__builtin_popcount(lower))]: SUCCESS
+[build.pointer_dereference.315] line 283 dereference failure: deallocated dynamic object in sorted[(signed long int)(s->rank[(signed long int)(v >> 6)] + (unsigned int)__builtin_popcount(lower))]: SUCCESS
+[build.pointer_dereference.316] line 283 dereference failure: dead object in sorted[(signed long int)(s->rank[(signed long int)(v >> 6)] + (unsigned int)__builtin_popcount(lower))]: SUCCESS
+[build.pointer_dereference.317] line 283 dereference failure: pointer outside object bounds in sorted[(signed long int)(s->rank[(signed long int)(v >> 6)] + (unsigned int)__builtin_popcount(lower))]: SUCCESS
+[build.pointer_dereference.318] line 283 dereference failure: invalid integer address in sorted[(signed long int)(s->rank[(signed long int)(v >> 6)] + (unsigned int)__builtin_popcount(lower))]: SUCCESS
+[build.pointer_dereference.319] line 283 dereference failure: pointer NULL in s->tmp: SUCCESS
+[build.pointer_dereference.320] line 283 dereference failure: pointer invalid in s->tmp: SUCCESS
+[build.pointer_dereference.321] line 283 dereference failure: deallocated dynamic object in s->tmp: SUCCESS
+[build.pointer_dereference.322] line 283 dereference failure: dead object in s->tmp: SUCCESS
+[build.pointer_dereference.323] line 283 dereference failure: pointer outside object bounds in s->tmp: SUCCESS
+[build.pointer_dereference.324] line 283 dereference failure: invalid integer address in s->tmp: SUCCESS
+[build.pointer_dereference.325] line 283 dereference failure: pointer NULL in s->tmp[(signed long int)i]: SUCCESS
+[build.pointer_dereference.326] line 283 dereference failure: pointer invalid in s->tmp[(signed long int)i]: SUCCESS
+[build.pointer_dereference.327] line 283 dereference failure: deallocated dynamic object in s->tmp[(signed long int)i]: SUCCESS
+[build.pointer_dereference.328] line 283 dereference failure: dead object in s->tmp[(signed long int)i]: SUCCESS
+[build.pointer_dereference.329] line 283 dereference failure: pointer outside object bounds in s->tmp[(signed long int)i]: SUCCESS
+[build.pointer_dereference.330] line 283 dereference failure: invalid integer address in s->tmp[(signed long int)i]: SUCCESS
+[build.overflow.50] line 285 arithmetic overflow on unsigned * in (unsigned long int)words * sizeof(uint64_t) /*8ul*/ : SUCCESS
+[build.array_bounds.9] line 287 array.off dynamic object upper bound in s->off[(signed long int)mask]: SUCCESS
+[build.overflow.51] line 287 arithmetic overflow on unsigned to unsigned type conversion in (uint32_t)s->top: SUCCESS
+[build.pointer_dereference.331] line 287 dereference failure: pointer NULL in s->off: SUCCESS
+[build.pointer_dereference.332] line 287 dereference failure: pointer invalid in s->off: SUCCESS
+[build.pointer_dereference.333] line 287 dereference failure: deallocated dynamic object in s->off: SUCCESS
+[build.pointer_dereference.334] line 287 dereference failure: dead object in s->off: SUCCESS
+[build.pointer_dereference.335] line 287 dereference failure: pointer outside object bounds in s->off: SUCCESS
+[build.pointer_dereference.336] line 287 dereference failure: invalid integer address in s->off: SUCCESS
+[build.pointer_dereference.337] line 287 dereference failure: pointer NULL in s->top: SUCCESS
+[build.pointer_dereference.338] line 287 dereference failure: pointer invalid in s->top: SUCCESS
+[build.pointer_dereference.339] line 287 dereference failure: deallocated dynamic object in s->top: SUCCESS
+[build.pointer_dereference.340] line 287 dereference failure: dead object in s->top: SUCCESS
+[build.pointer_dereference.341] line 287 dereference failure: pointer outside object bounds in s->top: SUCCESS
+[build.pointer_dereference.342] line 287 dereference failure: invalid integer address in s->top: SUCCESS
+[build.array_bounds.10] line 288 array.len dynamic object upper bound in s->len[(signed long int)mask]: SUCCESS
+[build.overflow.52] line 288 arithmetic overflow on unsigned to unsigned type conversion in (uint32_t)count: SUCCESS
+[build.pointer_dereference.343] line 288 dereference failure: pointer NULL in s->len: SUCCESS
+[build.pointer_dereference.344] line 288 dereference failure: pointer invalid in s->len: SUCCESS
+[build.pointer_dereference.345] line 288 dereference failure: deallocated dynamic object in s->len: SUCCESS
+[build.pointer_dereference.346] line 288 dereference failure: dead object in s->len: SUCCESS
+[build.pointer_dereference.347] line 288 dereference failure: pointer outside object bounds in s->len: SUCCESS
+[build.pointer_dereference.348] line 288 dereference failure: invalid integer address in s->len: SUCCESS
+[build.overflow.53] line 289 arithmetic overflow on unsigned + in s->top + count: SUCCESS
+[build.pointer_dereference.349] line 289 dereference failure: pointer NULL in s->top: SUCCESS
+[build.pointer_dereference.350] line 289 dereference failure: pointer invalid in s->top: SUCCESS
+[build.pointer_dereference.351] line 289 dereference failure: deallocated dynamic object in s->top: SUCCESS
+[build.pointer_dereference.352] line 289 dereference failure: dead object in s->top: SUCCESS
+[build.pointer_dereference.353] line 289 dereference failure: pointer outside object bounds in s->top: SUCCESS
+[build.pointer_dereference.354] line 289 dereference failure: invalid integer address in s->top: SUCCESS
+
+harness/../../../countdown-c/solver.c function distance
+[distance.overflow.1] line 329 arithmetic overflow on unsigned - in value - target: SUCCESS
+[distance.overflow.2] line 329 arithmetic overflow on unsigned - in target - value: SUCCESS
+
+harness/../../../countdown-c/solver.c function find_exact
+[find_exact.overflow.1] line 191 arithmetic overflow on unsigned - in mask - (unsigned int)1: SUCCESS
+[find_exact.overflow.8] line 191 arithmetic overflow on unsigned - in left - (unsigned int)1: SUCCESS
+[find_exact.array_bounds.1] line 196 array.off dynamic object upper bound in s->off[(signed long int)left]: SUCCESS
+[find_exact.array_bounds.2] line 196 array.off dynamic object upper bound in s->off[(signed long int)right]: SUCCESS
+[find_exact.pointer_dereference.1] line 196 dereference failure: pointer NULL in s->arena: SUCCESS
+[find_exact.pointer_dereference.2] line 196 dereference failure: pointer invalid in s->arena: SUCCESS
+[find_exact.pointer_dereference.3] line 196 dereference failure: deallocated dynamic object in s->arena: SUCCESS
+[find_exact.pointer_dereference.4] line 196 dereference failure: dead object in s->arena: SUCCESS
+[find_exact.pointer_dereference.5] line 196 dereference failure: pointer outside object bounds in s->arena: SUCCESS
+[find_exact.pointer_dereference.6] line 196 dereference failure: invalid integer address in s->arena: SUCCESS
+[find_exact.pointer_dereference.7] line 196 dereference failure: pointer NULL in s->off: SUCCESS
+[find_exact.pointer_dereference.8] line 196 dereference failure: pointer invalid in s->off: SUCCESS
+[find_exact.pointer_dereference.9] line 196 dereference failure: deallocated dynamic object in s->off: SUCCESS
+[find_exact.pointer_dereference.10] line 196 dereference failure: dead object in s->off: SUCCESS
+[find_exact.pointer_dereference.11] line 196 dereference failure: pointer outside object bounds in s->off: SUCCESS
+[find_exact.pointer_dereference.12] line 196 dereference failure: invalid integer address in s->off: SUCCESS
+[find_exact.array_bounds.3] line 197 array.len dynamic object upper bound in s->len[(signed long int)left]: SUCCESS
+[find_exact.array_bounds.4] line 197 array.len dynamic object upper bound in s->len[(signed long int)right]: SUCCESS
+[find_exact.pointer_dereference.13] line 197 dereference failure: pointer NULL in s->len: SUCCESS
+[find_exact.pointer_dereference.14] line 197 dereference failure: pointer invalid in s->len: SUCCESS
+[find_exact.pointer_dereference.15] line 197 dereference failure: deallocated dynamic object in s->len: SUCCESS
+[find_exact.pointer_dereference.16] line 197 dereference failure: dead object in s->len: SUCCESS
+[find_exact.pointer_dereference.17] line 197 dereference failure: pointer outside object bounds in s->len: SUCCESS
+[find_exact.pointer_dereference.18] line 197 dereference failure: invalid integer address in s->len: SUCCESS
+[find_exact.overflow.3] line 205 arithmetic overflow on unsigned + in i + 1u: SUCCESS
+[find_exact.pointer_dereference.19] line 206 dereference failure: pointer NULL in (lefts + (signed long int)i)->value: SUCCESS
+[find_exact.pointer_dereference.20] line 206 dereference failure: pointer invalid in (lefts + (signed long int)i)->value: SUCCESS
+[find_exact.pointer_dereference.21] line 206 dereference failure: deallocated dynamic object in (lefts + (signed long int)i)->value: SUCCESS
+[find_exact.pointer_dereference.22] line 206 dereference failure: dead object in (lefts + (signed long int)i)->value: SUCCESS
+[find_exact.pointer_dereference.23] line 206 dereference failure: pointer outside object bounds in (lefts + (signed long int)i)->value: SUCCESS
+[find_exact.pointer_dereference.24] line 206 dereference failure: invalid integer address in (lefts + (signed long int)i)->value: SUCCESS
+[find_exact.pointer_dereference.25] line 206 dereference failure: pointer NULL in s->target: SUCCESS
+[find_exact.pointer_dereference.26] line 206 dereference failure: pointer invalid in s->target: SUCCESS
+[find_exact.pointer_dereference.27] line 206 dereference failure: deallocated dynamic object in s->target: SUCCESS
+[find_exact.pointer_dereference.28] line 206 dereference failure: dead object in s->target: SUCCESS
+[find_exact.pointer_dereference.29] line 206 dereference failure: pointer outside object bounds in s->target: SUCCESS
+[find_exact.pointer_dereference.30] line 206 dereference failure: invalid integer address in s->target: SUCCESS
+[find_exact.overflow.2] line 207 arithmetic overflow on signed + in k + 1: SUCCESS
+[find_exact.array_bounds.5] line 208 array 'm' lower bound in m[(signed long int)k]: SUCCESS
+[find_exact.array_bounds.6] line 208 array 'm' upper bound in m[(signed long int)k]: SUCCESS
+[find_exact.array_bounds.7] line 209 array 'm' lower bound in m[(signed long int)k]: SUCCESS
+[find_exact.array_bounds.8] line 209 array 'm' upper bound in m[(signed long int)k]: SUCCESS
+[find_exact.array_bounds.9] line 209 array 'op' lower bound in op[(signed long int)k]: SUCCESS
+[find_exact.array_bounds.10] line 209 array 'op' upper bound in op[(signed long int)k]: SUCCESS
+[find_exact.pointer_dereference.31] line 209 dereference failure: pointer NULL in (lefts + (signed long int)i)->value: SUCCESS
+[find_exact.pointer_dereference.32] line 209 dereference failure: pointer invalid in (lefts + (signed long int)i)->value: SUCCESS
+[find_exact.pointer_dereference.33] line 209 dereference failure: deallocated dynamic object in (lefts + (signed long int)i)->value: SUCCESS
+[find_exact.pointer_dereference.34] line 209 dereference failure: dead object in (lefts + (signed long int)i)->value: SUCCESS
+[find_exact.pointer_dereference.35] line 209 dereference failure: pointer outside object bounds in (lefts + (signed long int)i)->value: SUCCESS
+[find_exact.pointer_dereference.36] line 209 dereference failure: invalid integer address in (lefts + (signed long int)i)->value: SUCCESS
+[find_exact.overflow.5] line 214 arithmetic overflow on unsigned + in j + 1u: SUCCESS
+[find_exact.pointer_dereference.37] line 215 dereference failure: pointer NULL in (rights + (signed long int)j)->value: SUCCESS
+[find_exact.pointer_dereference.38] line 215 dereference failure: pointer invalid in (rights + (signed long int)j)->value: SUCCESS
+[find_exact.pointer_dereference.39] line 215 dereference failure: deallocated dynamic object in (rights + (signed long int)j)->value: SUCCESS
+[find_exact.pointer_dereference.40] line 215 dereference failure: dead object in (rights + (signed long int)j)->value: SUCCESS
+[find_exact.pointer_dereference.41] line 215 dereference failure: pointer outside object bounds in (rights + (signed long int)j)->value: SUCCESS
+[find_exact.pointer_dereference.42] line 215 dereference failure: invalid integer address in (rights + (signed long int)j)->value: SUCCESS
+[find_exact.pointer_dereference.43] line 215 dereference failure: pointer NULL in s->target: SUCCESS
+[find_exact.pointer_dereference.44] line 215 dereference failure: pointer invalid in s->target: SUCCESS
+[find_exact.pointer_dereference.45] line 215 dereference failure: deallocated dynamic object in s->target: SUCCESS
+[find_exact.pointer_dereference.46] line 215 dereference failure: dead object in s->target: SUCCESS
+[find_exact.pointer_dereference.47] line 215 dereference failure: pointer outside object bounds in s->target: SUCCESS
+[find_exact.pointer_dereference.48] line 215 dereference failure: invalid integer address in s->target: SUCCESS
+[find_exact.overflow.4] line 216 arithmetic overflow on signed + in k + 1: SUCCESS
+[find_exact.array_bounds.11] line 217 array 'm' lower bound in m[(signed long int)k]: SUCCESS
+[find_exact.array_bounds.12] line 217 array 'm' upper bound in m[(signed long int)k]: SUCCESS
+[find_exact.array_bounds.13] line 218 array 'm' lower bound in m[(signed long int)k]: SUCCESS
+[find_exact.array_bounds.14] line 218 array 'm' upper bound in m[(signed long int)k]: SUCCESS
+[find_exact.array_bounds.15] line 218 array 'op' lower bound in op[(signed long int)k]: SUCCESS
+[find_exact.array_bounds.16] line 218 array 'op' upper bound in op[(signed long int)k]: SUCCESS
+[find_exact.pointer_dereference.49] line 218 dereference failure: pointer NULL in (rights + (signed long int)j)->value: SUCCESS
+[find_exact.pointer_dereference.50] line 218 dereference failure: pointer invalid in (rights + (signed long int)j)->value: SUCCESS
+[find_exact.pointer_dereference.51] line 218 dereference failure: deallocated dynamic object in (rights + (signed long int)j)->value: SUCCESS
+[find_exact.pointer_dereference.52] line 218 dereference failure: dead object in (rights + (signed long int)j)->value: SUCCESS
+[find_exact.pointer_dereference.53] line 218 dereference failure: pointer outside object bounds in (rights + (signed long int)j)->value: SUCCESS
+[find_exact.pointer_dereference.54] line 218 dereference failure: invalid integer address in (rights + (signed long int)j)->value: SUCCESS
+[find_exact.pointer_dereference.55] line 225 dereference failure: pointer NULL in *hit: SUCCESS
+[find_exact.pointer_dereference.56] line 225 dereference failure: pointer invalid in *hit: SUCCESS
+[find_exact.pointer_dereference.57] line 225 dereference failure: deallocated dynamic object in *hit: SUCCESS
+[find_exact.pointer_dereference.58] line 225 dereference failure: dead object in *hit: SUCCESS
+[find_exact.pointer_dereference.59] line 225 dereference failure: pointer outside object bounds in *hit: SUCCESS
+[find_exact.pointer_dereference.60] line 225 dereference failure: invalid integer address in *hit: SUCCESS
+[find_exact.pointer_dereference.61] line 226 dereference failure: pointer NULL in s->target: SUCCESS
+[find_exact.pointer_dereference.62] line 226 dereference failure: pointer invalid in s->target: SUCCESS
+[find_exact.pointer_dereference.63] line 226 dereference failure: deallocated dynamic object in s->target: SUCCESS
+[find_exact.pointer_dereference.64] line 226 dereference failure: dead object in s->target: SUCCESS
+[find_exact.pointer_dereference.65] line 226 dereference failure: pointer outside object bounds in s->target: SUCCESS
+[find_exact.pointer_dereference.66] line 226 dereference failure: invalid integer address in s->target: SUCCESS
+[find_exact.overflow.6] line 230 arithmetic overflow on unsigned to unsigned type conversion in (uint8_t)(a_larger != FALSE ? left : right): SUCCESS
+[find_exact.overflow.7] line 231 arithmetic overflow on unsigned to unsigned type conversion in (uint8_t)(a_larger != FALSE ? right : left): SUCCESS
+
+harness/../../../countdown-c/solver.c function grow
+[grow.pointer_dereference.1] line 55 dereference failure: pointer NULL in *cap: SUCCESS
+[grow.pointer_dereference.2] line 55 dereference failure: pointer invalid in *cap: SUCCESS
+[grow.pointer_dereference.3] line 55 dereference failure: deallocated dynamic object in *cap: SUCCESS
+[grow.pointer_dereference.4] line 55 dereference failure: dead object in *cap: SUCCESS
+[grow.pointer_dereference.5] line 55 dereference failure: pointer outside object bounds in *cap: SUCCESS
+[grow.pointer_dereference.6] line 55 dereference failure: invalid integer address in *cap: SUCCESS
+[grow.pointer_dereference.7] line 57 dereference failure: pointer NULL in *cap: SUCCESS
+[grow.pointer_dereference.8] line 57 dereference failure: pointer invalid in *cap: SUCCESS
+[grow.pointer_dereference.9] line 57 dereference failure: deallocated dynamic object in *cap: SUCCESS
+[grow.pointer_dereference.10] line 57 dereference failure: dead object in *cap: SUCCESS
+[grow.pointer_dereference.11] line 57 dereference failure: pointer outside object bounds in *cap: SUCCESS
+[grow.pointer_dereference.12] line 57 dereference failure: invalid integer address in *cap: SUCCESS
+[grow.overflow.1] line 58 arithmetic overflow on unsigned * in *cap * (unsigned long int)2: SUCCESS
+[grow.pointer_dereference.13] line 58 dereference failure: pointer NULL in *cap: SUCCESS
+[grow.pointer_dereference.14] line 58 dereference failure: pointer invalid in *cap: SUCCESS
+[grow.pointer_dereference.15] line 58 dereference failure: deallocated dynamic object in *cap: SUCCESS
+[grow.pointer_dereference.16] line 58 dereference failure: dead object in *cap: SUCCESS
+[grow.pointer_dereference.17] line 58 dereference failure: pointer outside object bounds in *cap: SUCCESS
+[grow.pointer_dereference.18] line 58 dereference failure: invalid integer address in *cap: SUCCESS
+[grow.overflow.2] line 59 arithmetic overflow on unsigned * in *cap * size: SUCCESS
+[grow.pointer_dereference.19] line 59 dereference failure: pointer NULL in *cap: SUCCESS
+[grow.pointer_dereference.20] line 59 dereference failure: pointer invalid in *cap: SUCCESS
+[grow.pointer_dereference.21] line 59 dereference failure: deallocated dynamic object in *cap: SUCCESS
+[grow.pointer_dereference.22] line 59 dereference failure: dead object in *cap: SUCCESS
+[grow.pointer_dereference.23] line 59 dereference failure: pointer outside object bounds in *cap: SUCCESS
+[grow.pointer_dereference.24] line 59 dereference failure: invalid integer address in *cap: SUCCESS
+
+harness/../../../countdown-c/solver.c function lookup
+[lookup.overflow.1] line 157 arithmetic overflow on unsigned - in n - (unsigned int)1: SUCCESS
+[lookup.pointer_dereference.1] line 157 dereference failure: pointer NULL in (base + (signed long int)0)->value: SUCCESS
+[lookup.pointer_dereference.2] line 157 dereference failure: pointer invalid in (base + (signed long int)0)->value: SUCCESS
+[lookup.pointer_dereference.3] line 157 dereference failure: deallocated dynamic object in (base + (signed long int)0)->value: SUCCESS
+[lookup.pointer_dereference.4] line 157 dereference failure: dead object in (base + (signed long int)0)->value: SUCCESS
+[lookup.pointer_dereference.5] line 157 dereference failure: pointer outside object bounds in (base + (signed long int)0)->value: SUCCESS
+[lookup.pointer_dereference.6] line 157 dereference failure: invalid integer address in (base + (signed long int)0)->value: SUCCESS
+[lookup.pointer_dereference.7] line 157 dereference failure: pointer NULL in (base + (signed long int)(n - (unsigned int)1))->value: SUCCESS
+[lookup.pointer_dereference.8] line 157 dereference failure: pointer invalid in (base + (signed long int)(n - (unsigned int)1))->value: SUCCESS
+[lookup.pointer_dereference.9] line 157 dereference failure: deallocated dynamic object in (base + (signed long int)(n - (unsigned int)1))->value: SUCCESS
+[lookup.pointer_dereference.10] line 157 dereference failure: dead object in (base + (signed long int)(n - (unsigned int)1))->value: SUCCESS
+[lookup.pointer_dereference.11] line 157 dereference failure: pointer outside object bounds in (base + (signed long int)(n - (unsigned int)1))->value: SUCCESS
+[lookup.pointer_dereference.12] line 157 dereference failure: invalid integer address in (base + (signed long int)(n - (unsigned int)1))->value: SUCCESS
+[lookup.overflow.2] line 162 arithmetic overflow on unsigned * in (unsigned int)((base + (signed long int)half)->value <= value) * half: SUCCESS
+[lookup.pointer_dereference.13] line 162 dereference failure: pointer NULL in (base + (signed long int)half)->value: SUCCESS
+[lookup.pointer_dereference.14] line 162 dereference failure: pointer invalid in (base + (signed long int)half)->value: SUCCESS
+[lookup.pointer_dereference.15] line 162 dereference failure: deallocated dynamic object in (base + (signed long int)half)->value: SUCCESS
+[lookup.pointer_dereference.16] line 162 dereference failure: dead object in (base + (signed long int)half)->value: SUCCESS
+[lookup.pointer_dereference.17] line 162 dereference failure: pointer outside object bounds in (base + (signed long int)half)->value: SUCCESS
+[lookup.pointer_dereference.18] line 162 dereference failure: invalid integer address in (base + (signed long int)half)->value: SUCCESS
+[lookup.overflow.3] line 163 arithmetic overflow on unsigned - in n - half: SUCCESS
+[lookup.pointer_dereference.19] line 165 dereference failure: pointer NULL in base->value: SUCCESS
+[lookup.pointer_dereference.20] line 165 dereference failure: pointer invalid in base->value: SUCCESS
+[lookup.pointer_dereference.21] line 165 dereference failure: deallocated dynamic object in base->value: SUCCESS
+[lookup.pointer_dereference.22] line 165 dereference failure: dead object in base->value: SUCCESS
+[lookup.pointer_dereference.23] line 165 dereference failure: pointer outside object bounds in base->value: SUCCESS
+[lookup.pointer_dereference.24] line 165 dereference failure: invalid integer address in base->value: SUCCESS
+
+harness/../../../countdown-c/solver.c function partners
+[partners.overflow.1] line 173 arithmetic overflow on unsigned - in target - n: SUCCESS
+[partners.overflow.2] line 173 arithmetic overflow on signed + in count + 1: SUCCESS
+[partners.pointer_dereference.1] line 173 dereference failure: pointer NULL in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.2] line 173 dereference failure: pointer invalid in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.3] line 173 dereference failure: deallocated dynamic object in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.4] line 173 dereference failure: dead object in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.5] line 173 dereference failure: pointer outside object bounds in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.6] line 173 dereference failure: invalid integer address in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.7] line 173 dereference failure: pointer NULL in op[(signed long int)tmp_post_count]: SUCCESS
+[partners.pointer_dereference.8] line 173 dereference failure: pointer invalid in op[(signed long int)tmp_post_count]: SUCCESS
+[partners.pointer_dereference.9] line 173 dereference failure: deallocated dynamic object in op[(signed long int)tmp_post_count]: SUCCESS
+[partners.pointer_dereference.10] line 173 dereference failure: dead object in op[(signed long int)tmp_post_count]: SUCCESS
+[partners.pointer_dereference.11] line 173 dereference failure: pointer outside object bounds in op[(signed long int)tmp_post_count]: SUCCESS
+[partners.pointer_dereference.12] line 173 dereference failure: invalid integer address in op[(signed long int)tmp_post_count]: SUCCESS
+[partners.overflow.3] line 175 arithmetic overflow on unsigned - in n - target: SUCCESS
+[partners.overflow.4] line 175 arithmetic overflow on signed + in count + 1: SUCCESS
+[partners.pointer_dereference.13] line 175 dereference failure: pointer NULL in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.14] line 175 dereference failure: pointer invalid in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.15] line 175 dereference failure: deallocated dynamic object in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.16] line 175 dereference failure: dead object in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.17] line 175 dereference failure: pointer outside object bounds in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.18] line 175 dereference failure: invalid integer address in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.19] line 175 dereference failure: pointer NULL in op[(signed long int)tmp_post_count$0]: SUCCESS
+[partners.pointer_dereference.20] line 175 dereference failure: pointer invalid in op[(signed long int)tmp_post_count$0]: SUCCESS
+[partners.pointer_dereference.21] line 175 dereference failure: deallocated dynamic object in op[(signed long int)tmp_post_count$0]: SUCCESS
+[partners.pointer_dereference.22] line 175 dereference failure: dead object in op[(signed long int)tmp_post_count$0]: SUCCESS
+[partners.pointer_dereference.23] line 175 dereference failure: pointer outside object bounds in op[(signed long int)tmp_post_count$0]: SUCCESS
+[partners.pointer_dereference.24] line 175 dereference failure: invalid integer address in op[(signed long int)tmp_post_count$0]: SUCCESS
+[partners.overflow.5] line 176 arithmetic overflow on unsigned + in n + target: SUCCESS
+[partners.overflow.6] line 176 arithmetic overflow on signed + in count + 1: SUCCESS
+[partners.pointer_dereference.25] line 176 dereference failure: pointer NULL in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.26] line 176 dereference failure: pointer invalid in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.27] line 176 dereference failure: deallocated dynamic object in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.28] line 176 dereference failure: dead object in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.29] line 176 dereference failure: pointer outside object bounds in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.30] line 176 dereference failure: invalid integer address in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.31] line 176 dereference failure: pointer NULL in op[(signed long int)tmp_post_count$1]: SUCCESS
+[partners.pointer_dereference.32] line 176 dereference failure: pointer invalid in op[(signed long int)tmp_post_count$1]: SUCCESS
+[partners.pointer_dereference.33] line 176 dereference failure: deallocated dynamic object in op[(signed long int)tmp_post_count$1]: SUCCESS
+[partners.pointer_dereference.34] line 176 dereference failure: dead object in op[(signed long int)tmp_post_count$1]: SUCCESS
+[partners.pointer_dereference.35] line 176 dereference failure: pointer outside object bounds in op[(signed long int)tmp_post_count$1]: SUCCESS
+[partners.pointer_dereference.36] line 176 dereference failure: invalid integer address in op[(signed long int)tmp_post_count$1]: SUCCESS
+[partners.division-by-zero.1] line 178 division by zero in target % n: SUCCESS
+[partners.overflow.7] line 178 arithmetic overflow on unsigned * in (unsigned int)2 * n: SUCCESS
+[partners.division-by-zero.2] line 179 division by zero in target / n: SUCCESS
+[partners.overflow.8] line 179 arithmetic overflow on signed + in count + 1: SUCCESS
+[partners.pointer_dereference.37] line 179 dereference failure: pointer NULL in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.38] line 179 dereference failure: pointer invalid in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.39] line 179 dereference failure: deallocated dynamic object in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.40] line 179 dereference failure: dead object in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.41] line 179 dereference failure: pointer outside object bounds in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.42] line 179 dereference failure: invalid integer address in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.43] line 179 dereference failure: pointer NULL in op[(signed long int)tmp_post_count$2]: SUCCESS
+[partners.pointer_dereference.44] line 179 dereference failure: pointer invalid in op[(signed long int)tmp_post_count$2]: SUCCESS
+[partners.pointer_dereference.45] line 179 dereference failure: deallocated dynamic object in op[(signed long int)tmp_post_count$2]: SUCCESS
+[partners.pointer_dereference.46] line 179 dereference failure: dead object in op[(signed long int)tmp_post_count$2]: SUCCESS
+[partners.pointer_dereference.47] line 179 dereference failure: pointer outside object bounds in op[(signed long int)tmp_post_count$2]: SUCCESS
+[partners.pointer_dereference.48] line 179 dereference failure: invalid integer address in op[(signed long int)tmp_post_count$2]: SUCCESS
+[partners.division-by-zero.3] line 180 division by zero in n % target: SUCCESS
+[partners.overflow.9] line 180 arithmetic overflow on unsigned * in (unsigned int)2 * target: SUCCESS
+[partners.division-by-zero.4] line 181 division by zero in n / target: SUCCESS
+[partners.overflow.10] line 181 arithmetic overflow on signed + in count + 1: SUCCESS
+[partners.pointer_dereference.49] line 181 dereference failure: pointer NULL in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.50] line 181 dereference failure: pointer invalid in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.51] line 181 dereference failure: deallocated dynamic object in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.52] line 181 dereference failure: dead object in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.53] line 181 dereference failure: pointer outside object bounds in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.54] line 181 dereference failure: invalid integer address in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.55] line 181 dereference failure: pointer NULL in op[(signed long int)tmp_post_count$3]: SUCCESS
+[partners.pointer_dereference.56] line 181 dereference failure: pointer invalid in op[(signed long int)tmp_post_count$3]: SUCCESS
+[partners.pointer_dereference.57] line 181 dereference failure: deallocated dynamic object in op[(signed long int)tmp_post_count$3]: SUCCESS
+[partners.pointer_dereference.58] line 181 dereference failure: dead object in op[(signed long int)tmp_post_count$3]: SUCCESS
+[partners.pointer_dereference.59] line 181 dereference failure: pointer outside object bounds in op[(signed long int)tmp_post_count$3]: SUCCESS
+[partners.pointer_dereference.60] line 181 dereference failure: invalid integer address in op[(signed long int)tmp_post_count$3]: SUCCESS
+[partners.overflow.11] line 183 arithmetic overflow on unsigned * in (uint64_t)n * (unsigned long int)target: SUCCESS
+[partners.overflow.12] line 184 arithmetic overflow on unsigned * in n * target: SUCCESS
+[partners.overflow.13] line 184 arithmetic overflow on signed + in count + 1: SUCCESS
+[partners.pointer_dereference.61] line 184 dereference failure: pointer NULL in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.62] line 184 dereference failure: pointer invalid in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.63] line 184 dereference failure: deallocated dynamic object in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.64] line 184 dereference failure: dead object in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.65] line 184 dereference failure: pointer outside object bounds in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.66] line 184 dereference failure: invalid integer address in m[(signed long int)count]: SUCCESS
+[partners.pointer_dereference.67] line 184 dereference failure: pointer NULL in op[(signed long int)tmp_post_count$4]: SUCCESS
+[partners.pointer_dereference.68] line 184 dereference failure: pointer invalid in op[(signed long int)tmp_post_count$4]: SUCCESS
+[partners.pointer_dereference.69] line 184 dereference failure: deallocated dynamic object in op[(signed long int)tmp_post_count$4]: SUCCESS
+[partners.pointer_dereference.70] line 184 dereference failure: dead object in op[(signed long int)tmp_post_count$4]: SUCCESS
+[partners.pointer_dereference.71] line 184 dereference failure: pointer outside object bounds in op[(signed long int)tmp_post_count$4]: SUCCESS
+[partners.pointer_dereference.72] line 184 dereference failure: invalid integer address in op[(signed long int)tmp_post_count$4]: SUCCESS
+
+harness/../../../countdown-c/solver.c function put_uint
+[put_uint.array_bounds.1] line 338 array 'digits' lower bound in digits[(signed long int)tmp_post_k]: SUCCESS
+[put_uint.array_bounds.2] line 338 array 'digits' upper bound in digits[(signed long int)tmp_post_k]: SUCCESS
+[put_uint.overflow.1] line 338 arithmetic overflow on signed + in k + 1: SUCCESS
+[put_uint.overflow.2] line 338 arithmetic overflow on unsigned + in (unsigned int)48 + n % (unsigned int)10: SUCCESS
+[put_uint.overflow.3] line 338 arithmetic overflow on unsigned to signed type conversion in (char)((unsigned int)48 + n % (unsigned int)10): SUCCESS
+[put_uint.array_bounds.3] line 341 array 'digits' lower bound in digits[(signed long int)k]: SUCCESS
+[put_uint.array_bounds.4] line 341 array 'digits' upper bound in digits[(signed long int)k]: SUCCESS
+[put_uint.overflow.4] line 341 arithmetic overflow on signed - in k - 1: SUCCESS
+[put_uint.pointer_dereference.1] line 341 dereference failure: pointer NULL in *tmp_post_out: SUCCESS
+[put_uint.pointer_dereference.2] line 341 dereference failure: pointer invalid in *tmp_post_out: SUCCESS
+[put_uint.pointer_dereference.3] line 341 dereference failure: deallocated dynamic object in *tmp_post_out: SUCCESS
+[put_uint.pointer_dereference.4] line 341 dereference failure: dead object in *tmp_post_out: SUCCESS
+[put_uint.pointer_dereference.5] line 341 dereference failure: pointer outside object bounds in *tmp_post_out: SUCCESS
+[put_uint.pointer_dereference.6] line 341 dereference failure: invalid integer address in *tmp_post_out: SUCCESS
+
+harness/../../../countdown-c/solver.c function quotient
+[quotient.overflow.1] line 83 arithmetic overflow on signed to unsigned type conversion in (uint32_t)return_value__mm_cvtsd_si32: SUCCESS
+
+harness/../../../countdown-c/solver.c function render
+[render.pointer_dereference.1] line 348 dereference failure: pointer NULL in e->op: SUCCESS
+[render.pointer_dereference.2] line 348 dereference failure: pointer invalid in e->op: SUCCESS
+[render.pointer_dereference.3] line 348 dereference failure: deallocated dynamic object in e->op: SUCCESS
+[render.pointer_dereference.4] line 348 dereference failure: dead object in e->op: SUCCESS
+[render.pointer_dereference.5] line 348 dereference failure: pointer outside object bounds in e->op: SUCCESS
+[render.pointer_dereference.6] line 348 dereference failure: invalid integer address in e->op: SUCCESS
+[render.pointer_dereference.7] line 349 dereference failure: pointer NULL in e->value: SUCCESS
+[render.pointer_dereference.8] line 349 dereference failure: pointer invalid in e->value: SUCCESS
+[render.pointer_dereference.9] line 349 dereference failure: deallocated dynamic object in e->value: SUCCESS
+[render.pointer_dereference.10] line 349 dereference failure: dead object in e->value: SUCCESS
+[render.pointer_dereference.11] line 349 dereference failure: pointer outside object bounds in e->value: SUCCESS
+[render.pointer_dereference.12] line 349 dereference failure: invalid integer address in e->value: SUCCESS
+[render.pointer_dereference.13] line 351 dereference failure: pointer NULL in *tmp_post_out: SUCCESS
+[render.pointer_dereference.14] line 351 dereference failure: pointer invalid in *tmp_post_out: SUCCESS
+[render.pointer_dereference.15] line 351 dereference failure: deallocated dynamic object in *tmp_post_out: SUCCESS
+[render.pointer_dereference.16] line 351 dereference failure: dead object in *tmp_post_out: SUCCESS
+[render.pointer_dereference.17] line 351 dereference failure: pointer outside object bounds in *tmp_post_out: SUCCESS
+[render.pointer_dereference.18] line 351 dereference failure: invalid integer address in *tmp_post_out: SUCCESS
+[render.array_bounds.1] line 352 array.off dynamic object upper bound in s->off[(signed long int)e->larger_mask]: SUCCESS
+[render.array_bounds.2] line 352 array.len dynamic object upper bound in s->len[(signed long int)e->larger_mask]: SUCCESS
+[render.pointer_dereference.19] line 352 dereference failure: pointer NULL in s->arena: SUCCESS
+[render.pointer_dereference.20] line 352 dereference failure: pointer invalid in s->arena: SUCCESS
+[render.pointer_dereference.21] line 352 dereference failure: deallocated dynamic object in s->arena: SUCCESS
+[render.pointer_dereference.22] line 352 dereference failure: dead object in s->arena: SUCCESS
+[render.pointer_dereference.23] line 352 dereference failure: pointer outside object bounds in s->arena: SUCCESS
+[render.pointer_dereference.24] line 352 dereference failure: invalid integer address in s->arena: SUCCESS
+[render.pointer_dereference.25] line 352 dereference failure: pointer NULL in s->off: SUCCESS
+[render.pointer_dereference.26] line 352 dereference failure: pointer invalid in s->off: SUCCESS
+[render.pointer_dereference.27] line 352 dereference failure: deallocated dynamic object in s->off: SUCCESS
+[render.pointer_dereference.28] line 352 dereference failure: dead object in s->off: SUCCESS
+[render.pointer_dereference.29] line 352 dereference failure: pointer outside object bounds in s->off: SUCCESS
+[render.pointer_dereference.30] line 352 dereference failure: invalid integer address in s->off: SUCCESS
+[render.pointer_dereference.31] line 352 dereference failure: pointer NULL in e->larger_mask: SUCCESS
+[render.pointer_dereference.32] line 352 dereference failure: pointer invalid in e->larger_mask: SUCCESS
+[render.pointer_dereference.33] line 352 dereference failure: deallocated dynamic object in e->larger_mask: SUCCESS
+[render.pointer_dereference.34] line 352 dereference failure: dead object in e->larger_mask: SUCCESS
+[render.pointer_dereference.35] line 352 dereference failure: pointer outside object bounds in e->larger_mask: SUCCESS
+[render.pointer_dereference.36] line 352 dereference failure: invalid integer address in e->larger_mask: SUCCESS
+[render.pointer_dereference.37] line 352 dereference failure: pointer NULL in s->len: SUCCESS
+[render.pointer_dereference.38] line 352 dereference failure: pointer invalid in s->len: SUCCESS
+[render.pointer_dereference.39] line 352 dereference failure: deallocated dynamic object in s->len: SUCCESS
+[render.pointer_dereference.40] line 352 dereference failure: dead object in s->len: SUCCESS
+[render.pointer_dereference.41] line 352 dereference failure: pointer outside object bounds in s->len: SUCCESS
+[render.pointer_dereference.42] line 352 dereference failure: invalid integer address in s->len: SUCCESS
+[render.pointer_dereference.43] line 352 dereference failure: pointer NULL in e->larger: SUCCESS
+[render.pointer_dereference.44] line 352 dereference failure: pointer invalid in e->larger: SUCCESS
+[render.pointer_dereference.45] line 352 dereference failure: deallocated dynamic object in e->larger: SUCCESS
+[render.pointer_dereference.46] line 352 dereference failure: dead object in e->larger: SUCCESS
+[render.pointer_dereference.47] line 352 dereference failure: pointer outside object bounds in e->larger: SUCCESS
+[render.pointer_dereference.48] line 352 dereference failure: invalid integer address in e->larger: SUCCESS
+[render.pointer_dereference.49] line 353 dereference failure: pointer NULL in *tmp_post_out$0: SUCCESS
+[render.pointer_dereference.50] line 353 dereference failure: pointer invalid in *tmp_post_out$0: SUCCESS
+[render.pointer_dereference.51] line 353 dereference failure: deallocated dynamic object in *tmp_post_out$0: SUCCESS
+[render.pointer_dereference.52] line 353 dereference failure: dead object in *tmp_post_out$0: SUCCESS
+[render.pointer_dereference.53] line 353 dereference failure: pointer outside object bounds in *tmp_post_out$0: SUCCESS
+[render.pointer_dereference.54] line 353 dereference failure: invalid integer address in *tmp_post_out$0: SUCCESS
+[render.overflow.1] line 354 arithmetic overflow on unsigned to signed type conversion in (char)e->op: SUCCESS
+[render.pointer_dereference.55] line 354 dereference failure: pointer NULL in *tmp_post_out$1: SUCCESS
+[render.pointer_dereference.56] line 354 dereference failure: pointer invalid in *tmp_post_out$1: SUCCESS
+[render.pointer_dereference.57] line 354 dereference failure: deallocated dynamic object in *tmp_post_out$1: SUCCESS
+[render.pointer_dereference.58] line 354 dereference failure: dead object in *tmp_post_out$1: SUCCESS
+[render.pointer_dereference.59] line 354 dereference failure: pointer outside object bounds in *tmp_post_out$1: SUCCESS
+[render.pointer_dereference.60] line 354 dereference failure: invalid integer address in *tmp_post_out$1: SUCCESS
+[render.pointer_dereference.61] line 354 dereference failure: pointer NULL in e->op: SUCCESS
+[render.pointer_dereference.62] line 354 dereference failure: pointer invalid in e->op: SUCCESS
+[render.pointer_dereference.63] line 354 dereference failure: deallocated dynamic object in e->op: SUCCESS
+[render.pointer_dereference.64] line 354 dereference failure: dead object in e->op: SUCCESS
+[render.pointer_dereference.65] line 354 dereference failure: pointer outside object bounds in e->op: SUCCESS
+[render.pointer_dereference.66] line 354 dereference failure: invalid integer address in e->op: SUCCESS
+[render.pointer_dereference.67] line 355 dereference failure: pointer NULL in *tmp_post_out$2: SUCCESS
+[render.pointer_dereference.68] line 355 dereference failure: pointer invalid in *tmp_post_out$2: SUCCESS
+[render.pointer_dereference.69] line 355 dereference failure: deallocated dynamic object in *tmp_post_out$2: SUCCESS
+[render.pointer_dereference.70] line 355 dereference failure: dead object in *tmp_post_out$2: SUCCESS
+[render.pointer_dereference.71] line 355 dereference failure: pointer outside object bounds in *tmp_post_out$2: SUCCESS
+[render.pointer_dereference.72] line 355 dereference failure: invalid integer address in *tmp_post_out$2: SUCCESS
+[render.array_bounds.3] line 356 array.off dynamic object upper bound in s->off[(signed long int)e->smaller_mask]: SUCCESS
+[render.array_bounds.4] line 356 array.len dynamic object upper bound in s->len[(signed long int)e->smaller_mask]: SUCCESS
+[render.pointer_dereference.73] line 356 dereference failure: pointer NULL in s->arena: SUCCESS
+[render.pointer_dereference.74] line 356 dereference failure: pointer invalid in s->arena: SUCCESS
+[render.pointer_dereference.75] line 356 dereference failure: deallocated dynamic object in s->arena: SUCCESS
+[render.pointer_dereference.76] line 356 dereference failure: dead object in s->arena: SUCCESS
+[render.pointer_dereference.77] line 356 dereference failure: pointer outside object bounds in s->arena: SUCCESS
+[render.pointer_dereference.78] line 356 dereference failure: invalid integer address in s->arena: SUCCESS
+[render.pointer_dereference.79] line 356 dereference failure: pointer NULL in s->off: SUCCESS
+[render.pointer_dereference.80] line 356 dereference failure: pointer invalid in s->off: SUCCESS
+[render.pointer_dereference.81] line 356 dereference failure: deallocated dynamic object in s->off: SUCCESS
+[render.pointer_dereference.82] line 356 dereference failure: dead object in s->off: SUCCESS
+[render.pointer_dereference.83] line 356 dereference failure: pointer outside object bounds in s->off: SUCCESS
+[render.pointer_dereference.84] line 356 dereference failure: invalid integer address in s->off: SUCCESS
+[render.pointer_dereference.85] line 356 dereference failure: pointer NULL in e->smaller_mask: SUCCESS
+[render.pointer_dereference.86] line 356 dereference failure: pointer invalid in e->smaller_mask: SUCCESS
+[render.pointer_dereference.87] line 356 dereference failure: deallocated dynamic object in e->smaller_mask: SUCCESS
+[render.pointer_dereference.88] line 356 dereference failure: dead object in e->smaller_mask: SUCCESS
+[render.pointer_dereference.89] line 356 dereference failure: pointer outside object bounds in e->smaller_mask: SUCCESS
+[render.pointer_dereference.90] line 356 dereference failure: invalid integer address in e->smaller_mask: SUCCESS
+[render.pointer_dereference.91] line 356 dereference failure: pointer NULL in s->len: SUCCESS
+[render.pointer_dereference.92] line 356 dereference failure: pointer invalid in s->len: SUCCESS
+[render.pointer_dereference.93] line 356 dereference failure: deallocated dynamic object in s->len: SUCCESS
+[render.pointer_dereference.94] line 356 dereference failure: dead object in s->len: SUCCESS
+[render.pointer_dereference.95] line 356 dereference failure: pointer outside object bounds in s->len: SUCCESS
+[render.pointer_dereference.96] line 356 dereference failure: invalid integer address in s->len: SUCCESS
+[render.pointer_dereference.97] line 356 dereference failure: pointer NULL in e->smaller: SUCCESS
+[render.pointer_dereference.98] line 356 dereference failure: pointer invalid in e->smaller: SUCCESS
+[render.pointer_dereference.99] line 356 dereference failure: deallocated dynamic object in e->smaller: SUCCESS
+[render.pointer_dereference.100] line 356 dereference failure: dead object in e->smaller: SUCCESS
+[render.pointer_dereference.101] line 356 dereference failure: pointer outside object bounds in e->smaller: SUCCESS
+[render.pointer_dereference.102] line 356 dereference failure: invalid integer address in e->smaller: SUCCESS
+[render.pointer_dereference.103] line 358 dereference failure: pointer NULL in *tmp_post_out$3: SUCCESS
+[render.pointer_dereference.104] line 358 dereference failure: pointer invalid in *tmp_post_out$3: SUCCESS
+[render.pointer_dereference.105] line 358 dereference failure: deallocated dynamic object in *tmp_post_out$3: SUCCESS
+[render.pointer_dereference.106] line 358 dereference failure: dead object in *tmp_post_out$3: SUCCESS
+[render.pointer_dereference.107] line 358 dereference failure: pointer outside object bounds in *tmp_post_out$3: SUCCESS
+[render.pointer_dereference.108] line 358 dereference failure: invalid integer address in *tmp_post_out$3: SUCCESS
+
+harness/../../../countdown-c/solver.c function reserve_rights
+[reserve_rights.overflow.1] line 314 arithmetic overflow on unsigned + in mask + 1u: SUCCESS
+[reserve_rights.pointer_dereference.1] line 314 dereference failure: pointer NULL in s->full: SUCCESS
+[reserve_rights.pointer_dereference.2] line 314 dereference failure: pointer invalid in s->full: SUCCESS
+[reserve_rights.pointer_dereference.3] line 314 dereference failure: deallocated dynamic object in s->full: SUCCESS
+[reserve_rights.pointer_dereference.4] line 314 dereference failure: dead object in s->full: SUCCESS
+[reserve_rights.pointer_dereference.5] line 314 dereference failure: pointer outside object bounds in s->full: SUCCESS
+[reserve_rights.pointer_dereference.6] line 314 dereference failure: invalid integer address in s->full: SUCCESS
+[reserve_rights.array_bounds.1] line 315 array.len dynamic object upper bound in s->len[(signed long int)mask]: SUCCESS
+[reserve_rights.array_bounds.2] line 315 array.len dynamic object upper bound in s->len[(signed long int)mask]: SUCCESS
+[reserve_rights.pointer_dereference.7] line 315 dereference failure: pointer NULL in s->len: SUCCESS
+[reserve_rights.pointer_dereference.8] line 315 dereference failure: pointer invalid in s->len: SUCCESS
+[reserve_rights.pointer_dereference.9] line 315 dereference failure: deallocated dynamic object in s->len: SUCCESS
+[reserve_rights.pointer_dereference.10] line 315 dereference failure: dead object in s->len: SUCCESS
+[reserve_rights.pointer_dereference.11] line 315 dereference failure: pointer outside object bounds in s->len: SUCCESS
+[reserve_rights.pointer_dereference.12] line 315 dereference failure: invalid integer address in s->len: SUCCESS
+[reserve_rights.pointer_dereference.13] line 315 dereference failure: pointer NULL in s->len: SUCCESS
+[reserve_rights.pointer_dereference.14] line 315 dereference failure: pointer invalid in s->len: SUCCESS
+[reserve_rights.pointer_dereference.15] line 315 dereference failure: deallocated dynamic object in s->len: SUCCESS
+[reserve_rights.pointer_dereference.16] line 315 dereference failure: dead object in s->len: SUCCESS
+[reserve_rights.pointer_dereference.17] line 315 dereference failure: pointer outside object bounds in s->len: SUCCESS
+[reserve_rights.pointer_dereference.18] line 315 dereference failure: invalid integer address in s->len: SUCCESS
+[reserve_rights.pointer_dereference.19] line 316 dereference failure: pointer NULL in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.20] line 316 dereference failure: pointer invalid in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.21] line 316 dereference failure: deallocated dynamic object in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.22] line 316 dereference failure: dead object in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.23] line 316 dereference failure: pointer outside object bounds in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.24] line 316 dereference failure: invalid integer address in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.25] line 317 dereference failure: pointer NULL in s->right_values: SUCCESS
+[reserve_rights.pointer_dereference.26] line 317 dereference failure: pointer invalid in s->right_values: SUCCESS
+[reserve_rights.pointer_dereference.27] line 317 dereference failure: deallocated dynamic object in s->right_values: SUCCESS
+[reserve_rights.pointer_dereference.28] line 317 dereference failure: dead object in s->right_values: SUCCESS
+[reserve_rights.pointer_dereference.29] line 317 dereference failure: pointer outside object bounds in s->right_values: SUCCESS
+[reserve_rights.pointer_dereference.30] line 317 dereference failure: invalid integer address in s->right_values: SUCCESS
+[reserve_rights.pointer_dereference.31] line 317 dereference failure: pointer NULL in s->right_values: SUCCESS
+[reserve_rights.pointer_dereference.32] line 317 dereference failure: pointer invalid in s->right_values: SUCCESS
+[reserve_rights.pointer_dereference.33] line 317 dereference failure: deallocated dynamic object in s->right_values: SUCCESS
+[reserve_rights.pointer_dereference.34] line 317 dereference failure: dead object in s->right_values: SUCCESS
+[reserve_rights.pointer_dereference.35] line 317 dereference failure: pointer outside object bounds in s->right_values: SUCCESS
+[reserve_rights.pointer_dereference.36] line 317 dereference failure: invalid integer address in s->right_values: SUCCESS
+[reserve_rights.pointer_dereference.37] line 318 dereference failure: pointer NULL in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.38] line 318 dereference failure: pointer invalid in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.39] line 318 dereference failure: deallocated dynamic object in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.40] line 318 dereference failure: dead object in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.41] line 318 dereference failure: pointer outside object bounds in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.42] line 318 dereference failure: invalid integer address in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.43] line 318 dereference failure: pointer NULL in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.44] line 318 dereference failure: pointer invalid in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.45] line 318 dereference failure: deallocated dynamic object in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.46] line 318 dereference failure: dead object in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.47] line 318 dereference failure: pointer outside object bounds in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.48] line 318 dereference failure: invalid integer address in s->right_inv: SUCCESS
+[reserve_rights.overflow.2] line 319 arithmetic overflow on unsigned * in s->right_cap * sizeof(double) /*8ul*/ : SUCCESS
+[reserve_rights.pointer_dereference.49] line 319 dereference failure: pointer NULL in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.50] line 319 dereference failure: pointer invalid in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.51] line 319 dereference failure: deallocated dynamic object in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.52] line 319 dereference failure: dead object in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.53] line 319 dereference failure: pointer outside object bounds in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.54] line 319 dereference failure: invalid integer address in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.55] line 319 dereference failure: pointer NULL in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.56] line 319 dereference failure: pointer invalid in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.57] line 319 dereference failure: deallocated dynamic object in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.58] line 319 dereference failure: dead object in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.59] line 319 dereference failure: pointer outside object bounds in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.60] line 319 dereference failure: invalid integer address in s->right_cap: SUCCESS
+[reserve_rights.pointer_dereference.61] line 319 dereference failure: pointer NULL in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.62] line 319 dereference failure: pointer invalid in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.63] line 319 dereference failure: deallocated dynamic object in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.64] line 319 dereference failure: dead object in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.65] line 319 dereference failure: pointer outside object bounds in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.66] line 319 dereference failure: invalid integer address in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.67] line 320 dereference failure: pointer NULL in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.68] line 320 dereference failure: pointer invalid in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.69] line 320 dereference failure: deallocated dynamic object in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.70] line 320 dereference failure: dead object in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.71] line 320 dereference failure: pointer outside object bounds in s->right_inv: SUCCESS
+[reserve_rights.pointer_dereference.72] line 320 dereference failure: invalid integer address in s->right_inv: SUCCESS
+
+harness/../../../countdown-c/solver.c function reserve_seen
+[reserve_seen.overflow.1] line 295 arithmetic overflow on unsigned + in largest / (unsigned int)64 + (unsigned int)1: SUCCESS
+[reserve_seen.pointer_dereference.1] line 296 dereference failure: pointer NULL in s->seen_words: SUCCESS
+[reserve_seen.pointer_dereference.2] line 296 dereference failure: pointer invalid in s->seen_words: SUCCESS
+[reserve_seen.pointer_dereference.3] line 296 dereference failure: deallocated dynamic object in s->seen_words: SUCCESS
+[reserve_seen.pointer_dereference.4] line 296 dereference failure: dead object in s->seen_words: SUCCESS
+[reserve_seen.pointer_dereference.5] line 296 dereference failure: pointer outside object bounds in s->seen_words: SUCCESS
+[reserve_seen.pointer_dereference.6] line 296 dereference failure: invalid integer address in s->seen_words: SUCCESS
+[reserve_seen.pointer_dereference.7] line 299 dereference failure: pointer NULL in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.8] line 299 dereference failure: pointer invalid in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.9] line 299 dereference failure: deallocated dynamic object in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.10] line 299 dereference failure: dead object in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.11] line 299 dereference failure: pointer outside object bounds in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.12] line 299 dereference failure: invalid integer address in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.13] line 300 dereference failure: pointer NULL in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.14] line 300 dereference failure: pointer invalid in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.15] line 300 dereference failure: deallocated dynamic object in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.16] line 300 dereference failure: dead object in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.17] line 300 dereference failure: pointer outside object bounds in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.18] line 300 dereference failure: invalid integer address in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.19] line 301 dereference failure: pointer NULL in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.20] line 301 dereference failure: pointer invalid in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.21] line 301 dereference failure: deallocated dynamic object in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.22] line 301 dereference failure: dead object in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.23] line 301 dereference failure: pointer outside object bounds in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.24] line 301 dereference failure: invalid integer address in s->seen: SUCCESS
+[reserve_seen.overflow.2] line 302 arithmetic overflow on unsigned * in words * sizeof(uint32_t) /*4ul*/ : SUCCESS
+[reserve_seen.pointer_dereference.25] line 302 dereference failure: pointer NULL in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.26] line 302 dereference failure: pointer invalid in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.27] line 302 dereference failure: deallocated dynamic object in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.28] line 302 dereference failure: dead object in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.29] line 302 dereference failure: pointer outside object bounds in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.30] line 302 dereference failure: invalid integer address in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.31] line 303 dereference failure: pointer NULL in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.32] line 303 dereference failure: pointer invalid in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.33] line 303 dereference failure: deallocated dynamic object in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.34] line 303 dereference failure: dead object in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.35] line 303 dereference failure: pointer outside object bounds in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.36] line 303 dereference failure: invalid integer address in s->seen: SUCCESS
+[reserve_seen.pointer_dereference.37] line 303 dereference failure: pointer NULL in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.38] line 303 dereference failure: pointer invalid in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.39] line 303 dereference failure: deallocated dynamic object in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.40] line 303 dereference failure: dead object in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.41] line 303 dereference failure: pointer outside object bounds in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.42] line 303 dereference failure: invalid integer address in s->rank: SUCCESS
+[reserve_seen.pointer_dereference.43] line 307 dereference failure: pointer NULL in s->seen_words: SUCCESS
+[reserve_seen.pointer_dereference.44] line 307 dereference failure: pointer invalid in s->seen_words: SUCCESS
+[reserve_seen.pointer_dereference.45] line 307 dereference failure: deallocated dynamic object in s->seen_words: SUCCESS
+[reserve_seen.pointer_dereference.46] line 307 dereference failure: dead object in s->seen_words: SUCCESS
+[reserve_seen.pointer_dereference.47] line 307 dereference failure: pointer outside object bounds in s->seen_words: SUCCESS
+[reserve_seen.pointer_dereference.48] line 307 dereference failure: invalid integer address in s->seen_words: SUCCESS
+
+harness/../../../countdown-c/solver.c function solve
+[solve.pointer_dereference.1] line 369 dereference failure: pointer NULL in s->target: SUCCESS
+[solve.pointer_dereference.2] line 369 dereference failure: pointer invalid in s->target: SUCCESS
+[solve.pointer_dereference.3] line 369 dereference failure: deallocated dynamic object in s->target: SUCCESS
+[solve.pointer_dereference.4] line 369 dereference failure: dead object in s->target: SUCCESS
+[solve.pointer_dereference.5] line 369 dereference failure: pointer outside object bounds in s->target: SUCCESS
+[solve.pointer_dereference.6] line 369 dereference failure: invalid integer address in s->target: SUCCESS
+[solve.overflow.1] line 370 arithmetic overflow on unsigned - in (1u << n) - (unsigned int)1: SUCCESS
+[solve.pointer_dereference.7] line 370 dereference failure: pointer NULL in s->full: SUCCESS
+[solve.pointer_dereference.8] line 370 dereference failure: pointer invalid in s->full: SUCCESS
+[solve.pointer_dereference.9] line 370 dereference failure: deallocated dynamic object in s->full: SUCCESS
+[solve.pointer_dereference.10] line 370 dereference failure: dead object in s->full: SUCCESS
+[solve.pointer_dereference.11] line 370 dereference failure: pointer outside object bounds in s->full: SUCCESS
+[solve.pointer_dereference.12] line 370 dereference failure: invalid integer address in s->full: SUCCESS
+[solve.undefined-shift.1] line 370 shift distance too large in 1u << n: SUCCESS
+[solve.overflow.11] line 374 arithmetic overflow on unsigned + in mask + 1u: SUCCESS
+[solve.pointer_dereference.13] line 374 dereference failure: pointer NULL in s->full: SUCCESS
+[solve.pointer_dereference.14] line 374 dereference failure: pointer invalid in s->full: SUCCESS
+[solve.pointer_dereference.15] line 374 dereference failure: deallocated dynamic object in s->full: SUCCESS
+[solve.pointer_dereference.16] line 374 dereference failure: dead object in s->full: SUCCESS
+[solve.pointer_dereference.17] line 374 dereference failure: pointer outside object bounds in s->full: SUCCESS
+[solve.pointer_dereference.18] line 374 dereference failure: invalid integer address in s->full: SUCCESS
+[solve.overflow.2] line 375 arithmetic overflow on unsigned - in mask - (unsigned int)1: SUCCESS
+[solve.array_bounds.1] line 376 array.max dynamic object upper bound in s->max[(signed long int)mask]: SUCCESS
+[solve.bit_count.1] line 376 count trailing zeros is undefined for value zero in __builtin_ctz(mask): SUCCESS
+[solve.pointer_dereference.19] line 376 dereference failure: pointer NULL in s->max: SUCCESS
+[solve.pointer_dereference.20] line 376 dereference failure: pointer invalid in s->max: SUCCESS
+[solve.pointer_dereference.21] line 376 dereference failure: deallocated dynamic object in s->max: SUCCESS
+[solve.pointer_dereference.22] line 376 dereference failure: dead object in s->max: SUCCESS
+[solve.pointer_dereference.23] line 376 dereference failure: pointer outside object bounds in s->max: SUCCESS
+[solve.pointer_dereference.24] line 376 dereference failure: invalid integer address in s->max: SUCCESS
+[solve.pointer_dereference.25] line 376 dereference failure: pointer NULL in pool[(signed long int)__builtin_ctz(mask)]: SUCCESS
+[solve.pointer_dereference.26] line 376 dereference failure: pointer invalid in pool[(signed long int)__builtin_ctz(mask)]: SUCCESS
+[solve.pointer_dereference.27] line 376 dereference failure: deallocated dynamic object in pool[(signed long int)__builtin_ctz(mask)]: SUCCESS
+[solve.pointer_dereference.28] line 376 dereference failure: dead object in pool[(signed long int)__builtin_ctz(mask)]: SUCCESS
+[solve.pointer_dereference.29] line 376 dereference failure: pointer outside object bounds in pool[(signed long int)__builtin_ctz(mask)]: SUCCESS
+[solve.pointer_dereference.30] line 376 dereference failure: invalid integer address in pool[(signed long int)__builtin_ctz(mask)]: SUCCESS
+[solve.overflow.3] line 378 arithmetic overflow on unsigned - in mask - (unsigned int)1: SUCCESS
+[solve.overflow.9] line 378 arithmetic overflow on unsigned - in left - (unsigned int)1: SUCCESS
+[solve.array_bounds.2] line 379 array.max dynamic object upper bound in s->max[(signed long int)left]: SUCCESS
+[solve.array_bounds.3] line 379 array.max dynamic object upper bound in s->max[(signed long int)(mask ^ left)]: SUCCESS
+[solve.pointer_dereference.31] line 379 dereference failure: pointer NULL in s->max: SUCCESS
+[solve.pointer_dereference.32] line 379 dereference failure: pointer invalid in s->max: SUCCESS
+[solve.pointer_dereference.33] line 379 dereference failure: deallocated dynamic object in s->max: SUCCESS
+[solve.pointer_dereference.34] line 379 dereference failure: dead object in s->max: SUCCESS
+[solve.pointer_dereference.35] line 379 dereference failure: pointer outside object bounds in s->max: SUCCESS
+[solve.pointer_dereference.36] line 379 dereference failure: invalid integer address in s->max: SUCCESS
+[solve.overflow.4] line 380 arithmetic overflow on unsigned * in a * b: SUCCESS
+[solve.overflow.5] line 380 arithmetic overflow on unsigned + in a + b: SUCCESS
+[solve.overflow.6] line 380 arithmetic overflow on unsigned * in a * b: SUCCESS
+[solve.overflow.7] line 380 arithmetic overflow on unsigned + in a + b: SUCCESS
+[solve.array_bounds.4] line 381 array.max dynamic object upper bound in s->max[(signed long int)mask]: SUCCESS
+[solve.array_bounds.5] line 381 array.max dynamic object upper bound in s->max[(signed long int)mask]: SUCCESS
+[solve.overflow.8] line 381 arithmetic overflow on unsigned to unsigned type conversion in (uint32_t)m: SUCCESS
+[solve.pointer_dereference.37] line 381 dereference failure: pointer NULL in s->max: SUCCESS
+[solve.pointer_dereference.38] line 381 dereference failure: pointer invalid in s->max: SUCCESS
+[solve.pointer_dereference.39] line 381 dereference failure: deallocated dynamic object in s->max: SUCCESS
+[solve.pointer_dereference.40] line 381 dereference failure: dead object in s->max: SUCCESS
+[solve.pointer_dereference.41] line 381 dereference failure: pointer outside object bounds in s->max: SUCCESS
+[solve.pointer_dereference.42] line 381 dereference failure: invalid integer address in s->max: SUCCESS
+[solve.overflow.10] line 385 arithmetic overflow on signed to unsigned type conversion in (unsigned int)__builtin_popcount(mask): SUCCESS
+[solve.array_bounds.6] line 386 array.max dynamic object upper bound in s->max[(signed long int)mask]: SUCCESS
+[solve.array_bounds.7] line 386 array 'largest' upper bound in largest[(signed long int)size]: SUCCESS
+[solve.pointer_dereference.43] line 386 dereference failure: pointer NULL in s->max: SUCCESS
+[solve.pointer_dereference.44] line 386 dereference failure: pointer invalid in s->max: SUCCESS
+[solve.pointer_dereference.45] line 386 dereference failure: deallocated dynamic object in s->max: SUCCESS
+[solve.pointer_dereference.46] line 386 dereference failure: dead object in s->max: SUCCESS
+[solve.pointer_dereference.47] line 386 dereference failure: pointer outside object bounds in s->max: SUCCESS
+[solve.pointer_dereference.48] line 386 dereference failure: invalid integer address in s->max: SUCCESS
+[solve.pointer_dereference.49] line 391 dereference failure: pointer NULL in s->arena: SUCCESS
+[solve.pointer_dereference.50] line 391 dereference failure: pointer invalid in s->arena: SUCCESS
+[solve.pointer_dereference.51] line 391 dereference failure: deallocated dynamic object in s->arena: SUCCESS
+[solve.pointer_dereference.52] line 391 dereference failure: dead object in s->arena: SUCCESS
+[solve.pointer_dereference.53] line 391 dereference failure: pointer outside object bounds in s->arena: SUCCESS
+[solve.pointer_dereference.54] line 391 dereference failure: invalid integer address in s->arena: SUCCESS
+[solve.overflow.12] line 393 arithmetic overflow on unsigned + in i + 1u: SUCCESS
+[solve.pointer_dereference.55] line 394 dereference failure: pointer NULL in s->arena: SUCCESS
+[solve.pointer_dereference.56] line 394 dereference failure: pointer invalid in s->arena: SUCCESS
+[solve.pointer_dereference.57] line 394 dereference failure: deallocated dynamic object in s->arena: SUCCESS
+[solve.pointer_dereference.58] line 394 dereference failure: dead object in s->arena: SUCCESS
+[solve.pointer_dereference.59] line 394 dereference failure: pointer outside object bounds in s->arena: SUCCESS
+[solve.pointer_dereference.60] line 394 dereference failure: invalid integer address in s->arena: SUCCESS
+[solve.pointer_dereference.61] line 394 dereference failure: pointer NULL in s->arena[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.62] line 394 dereference failure: pointer invalid in s->arena[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.63] line 394 dereference failure: deallocated dynamic object in s->arena[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.64] line 394 dereference failure: dead object in s->arena[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.65] line 394 dereference failure: pointer outside object bounds in s->arena[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.66] line 394 dereference failure: invalid integer address in s->arena[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.67] line 394 dereference failure: pointer NULL in pool[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.68] line 394 dereference failure: pointer invalid in pool[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.69] line 394 dereference failure: deallocated dynamic object in pool[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.70] line 394 dereference failure: dead object in pool[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.71] line 394 dereference failure: pointer outside object bounds in pool[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.72] line 394 dereference failure: invalid integer address in pool[(signed long int)i]: SUCCESS
+[solve.array_bounds.8] line 395 array.off dynamic object upper bound in s->off[(signed long int)(1u << i)]: SUCCESS
+[solve.pointer_dereference.73] line 395 dereference failure: pointer NULL in s->off: SUCCESS
+[solve.pointer_dereference.74] line 395 dereference failure: pointer invalid in s->off: SUCCESS
+[solve.pointer_dereference.75] line 395 dereference failure: deallocated dynamic object in s->off: SUCCESS
+[solve.pointer_dereference.76] line 395 dereference failure: dead object in s->off: SUCCESS
+[solve.pointer_dereference.77] line 395 dereference failure: pointer outside object bounds in s->off: SUCCESS
+[solve.pointer_dereference.78] line 395 dereference failure: invalid integer address in s->off: SUCCESS
+[solve.undefined-shift.2] line 395 shift distance too large in 1u << i: SUCCESS
+[solve.array_bounds.9] line 396 array.len dynamic object upper bound in s->len[(signed long int)(1u << i)]: SUCCESS
+[solve.pointer_dereference.79] line 396 dereference failure: pointer NULL in s->len: SUCCESS
+[solve.pointer_dereference.80] line 396 dereference failure: pointer invalid in s->len: SUCCESS
+[solve.pointer_dereference.81] line 396 dereference failure: deallocated dynamic object in s->len: SUCCESS
+[solve.pointer_dereference.82] line 396 dereference failure: dead object in s->len: SUCCESS
+[solve.pointer_dereference.83] line 396 dereference failure: pointer outside object bounds in s->len: SUCCESS
+[solve.pointer_dereference.84] line 396 dereference failure: invalid integer address in s->len: SUCCESS
+[solve.undefined-shift.3] line 396 shift distance too large in 1u << i: SUCCESS
+[solve.pointer_dereference.85] line 397 dereference failure: pointer NULL in pool[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.86] line 397 dereference failure: pointer invalid in pool[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.87] line 397 dereference failure: deallocated dynamic object in pool[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.88] line 397 dereference failure: dead object in pool[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.89] line 397 dereference failure: pointer outside object bounds in pool[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.90] line 397 dereference failure: invalid integer address in pool[(signed long int)i]: SUCCESS
+[solve.pointer_dereference.91] line 398 dereference failure: pointer NULL in s->arena: SUCCESS
+[solve.pointer_dereference.92] line 398 dereference failure: pointer invalid in s->arena: SUCCESS
+[solve.pointer_dereference.93] line 398 dereference failure: deallocated dynamic object in s->arena: SUCCESS
+[solve.pointer_dereference.94] line 398 dereference failure: dead object in s->arena: SUCCESS
+[solve.pointer_dereference.95] line 398 dereference failure: pointer outside object bounds in s->arena: SUCCESS
+[solve.pointer_dereference.96] line 398 dereference failure: invalid integer address in s->arena: SUCCESS
+[solve.pointer_dereference.97] line 400 dereference failure: pointer NULL in s->top: SUCCESS
+[solve.pointer_dereference.98] line 400 dereference failure: pointer invalid in s->top: SUCCESS
+[solve.pointer_dereference.99] line 400 dereference failure: deallocated dynamic object in s->top: SUCCESS
+[solve.pointer_dereference.100] line 400 dereference failure: dead object in s->top: SUCCESS
+[solve.pointer_dereference.101] line 400 dereference failure: pointer outside object bounds in s->top: SUCCESS
+[solve.pointer_dereference.102] line 400 dereference failure: invalid integer address in s->top: SUCCESS
+[solve.overflow.15] line 405 arithmetic overflow on unsigned + in mask + 1u: SUCCESS
+[solve.pointer_dereference.103] line 405 dereference failure: pointer NULL in s->full: SUCCESS
+[solve.pointer_dereference.104] line 405 dereference failure: pointer invalid in s->full: SUCCESS
+[solve.pointer_dereference.105] line 405 dereference failure: deallocated dynamic object in s->full: SUCCESS
+[solve.pointer_dereference.106] line 405 dereference failure: dead object in s->full: SUCCESS
+[solve.pointer_dereference.107] line 405 dereference failure: pointer outside object bounds in s->full: SUCCESS
+[solve.pointer_dereference.108] line 405 dereference failure: invalid integer address in s->full: SUCCESS
+[solve.array_bounds.10] line 406 array 'first' lower bound in first[(signed long int)(__builtin_popcount(mask) + 1)]: SUCCESS
+[solve.array_bounds.11] line 406 array 'first' upper bound in first[(signed long int)(__builtin_popcount(mask) + 1)]: SUCCESS
+[solve.overflow.13] line 406 arithmetic overflow on signed + in __builtin_popcount(mask) + 1: SUCCESS
+[solve.overflow.14] line 406 arithmetic overflow on unsigned + in first[(signed long int)(__builtin_popcount(mask) + 1)] + 1u: SUCCESS
+[solve.overflow.16] line 407 arithmetic overflow on unsigned + in n + (unsigned int)1: SUCCESS
+[solve.overflow.19] line 407 arithmetic overflow on unsigned + in size + 1u: SUCCESS
+[solve.array_bounds.12] line 408 array 'first' upper bound in first[(signed long int)size]: SUCCESS
+[solve.array_bounds.13] line 408 array 'first' upper bound in first[(signed long int)(size - (unsigned int)1)]: SUCCESS
+[solve.overflow.17] line 408 arithmetic overflow on unsigned - in size - (unsigned int)1: SUCCESS
+[solve.overflow.18] line 408 arithmetic overflow on unsigned + in first[(signed long int)size] + first[(signed long int)(size - (unsigned int)1)]: SUCCESS
+[solve.overflow.22] line 411 arithmetic overflow on unsigned + in mask + 1u: SUCCESS
+[solve.pointer_dereference.109] line 411 dereference failure: pointer NULL in s->full: SUCCESS
+[solve.pointer_dereference.110] line 411 dereference failure: pointer invalid in s->full: SUCCESS
+[solve.pointer_dereference.111] line 411 dereference failure: deallocated dynamic object in s->full: SUCCESS
+[solve.pointer_dereference.112] line 411 dereference failure: dead object in s->full: SUCCESS
+[solve.pointer_dereference.113] line 411 dereference failure: pointer outside object bounds in s->full: SUCCESS
+[solve.pointer_dereference.114] line 411 dereference failure: invalid integer address in s->full: SUCCESS
+[solve.array_bounds.14] line 412 array 'fill' lower bound in fill[(signed long int)__builtin_popcount(mask)]: SUCCESS
+[solve.array_bounds.15] line 412 array 'fill' upper bound in fill[(signed long int)__builtin_popcount(mask)]: SUCCESS
+[solve.array_bounds.16] line 412 array 'order' upper bound in order[(signed long int)tmp_post]: SUCCESS
+[solve.overflow.20] line 412 arithmetic overflow on unsigned + in fill[(signed long int)__builtin_popcount(mask)] + 1u: SUCCESS
+[solve.overflow.21] line 412 arithmetic overflow on unsigned to unsigned type conversion in (uint8_t)mask: SUCCESS
+[solve.overflow.27] line 416 arithmetic overflow on unsigned + in size + 1u: SUCCESS
+[solve.array_bounds.17] line 418 array 'first' upper bound in first[(signed long int)size]: SUCCESS
+[solve.array_bounds.18] line 418 array 'first' upper bound in first[(signed long int)(size + (unsigned int)1)]: SUCCESS
+[solve.overflow.23] line 418 arithmetic overflow on unsigned + in size + (unsigned int)1: SUCCESS
+[solve.overflow.24] line 418 arithmetic overflow on unsigned + in k + 1u: SUCCESS
+[solve.array_bounds.19] line 419 array 'order' upper bound in order[(signed long int)k]: SUCCESS
+[solve.array_bounds.20] line 426 array 'largest' upper bound in largest[(signed long int)size]: SUCCESS
+[solve.array_bounds.21] line 427 array 'first' upper bound in first[(signed long int)size]: SUCCESS
+[solve.array_bounds.22] line 427 array 'first' upper bound in first[(signed long int)(size + (unsigned int)1)]: SUCCESS
+[solve.overflow.25] line 427 arithmetic overflow on unsigned + in size + (unsigned int)1: SUCCESS
+[solve.overflow.26] line 427 arithmetic overflow on unsigned + in k + 1u: SUCCESS
+[solve.array_bounds.23] line 428 array 'order' upper bound in order[(signed long int)k]: SUCCESS
+[solve.overflow.29] line 436 arithmetic overflow on unsigned + in mask + 1u: SUCCESS
+[solve.pointer_dereference.115] line 436 dereference failure: pointer NULL in s->full: SUCCESS
+[solve.pointer_dereference.116] line 436 dereference failure: pointer invalid in s->full: SUCCESS
+[solve.pointer_dereference.117] line 436 dereference failure: deallocated dynamic object in s->full: SUCCESS
+[solve.pointer_dereference.118] line 436 dereference failure: dead object in s->full: SUCCESS
+[solve.pointer_dereference.119] line 436 dereference failure: pointer outside object bounds in s->full: SUCCESS
+[solve.pointer_dereference.120] line 436 dereference failure: invalid integer address in s->full: SUCCESS
+[solve.array_bounds.24] line 438 array.off dynamic object upper bound in s->off[(signed long int)mask]: SUCCESS
+[solve.pointer_dereference.121] line 438 dereference failure: pointer NULL in s->arena: SUCCESS
+[solve.pointer_dereference.122] line 438 dereference failure: pointer invalid in s->arena: SUCCESS
+[solve.pointer_dereference.123] line 438 dereference failure: deallocated dynamic object in s->arena: SUCCESS
+[solve.pointer_dereference.124] line 438 dereference failure: dead object in s->arena: SUCCESS
+[solve.pointer_dereference.125] line 438 dereference failure: pointer outside object bounds in s->arena: SUCCESS
+[solve.pointer_dereference.126] line 438 dereference failure: invalid integer address in s->arena: SUCCESS
+[solve.pointer_dereference.127] line 438 dereference failure: pointer NULL in s->off: SUCCESS
+[solve.pointer_dereference.128] line 438 dereference failure: pointer invalid in s->off: SUCCESS
+[solve.pointer_dereference.129] line 438 dereference failure: deallocated dynamic object in s->off: SUCCESS
+[solve.pointer_dereference.130] line 438 dereference failure: dead object in s->off: SUCCESS
+[solve.pointer_dereference.131] line 438 dereference failure: pointer outside object bounds in s->off: SUCCESS
+[solve.pointer_dereference.132] line 438 dereference failure: invalid integer address in s->off: SUCCESS
+[solve.array_bounds.25] line 439 array.len dynamic object upper bound in s->len[(signed long int)mask]: SUCCESS
+[solve.overflow.28] line 439 arithmetic overflow on unsigned + in i + 1u: SUCCESS
+[solve.pointer_dereference.133] line 439 dereference failure: pointer NULL in s->len: SUCCESS
+[solve.pointer_dereference.134] line 439 dereference failure: pointer invalid in s->len: SUCCESS
+[solve.pointer_dereference.135] line 439 dereference failure: deallocated dynamic object in s->len: SUCCESS
+[solve.pointer_dereference.136] line 439 dereference failure: dead object in s->len: SUCCESS
+[solve.pointer_dereference.137] line 439 dereference failure: pointer outside object bounds in s->len: SUCCESS
+[solve.pointer_dereference.138] line 439 dereference failure: invalid integer address in s->len: SUCCESS
+[solve.pointer_dereference.139] line 440 dereference failure: pointer NULL in (values + (signed long int)i)->value: SUCCESS
+[solve.pointer_dereference.140] line 440 dereference failure: pointer invalid in (values + (signed long int)i)->value: SUCCESS
+[solve.pointer_dereference.141] line 440 dereference failure: deallocated dynamic object in (values + (signed long int)i)->value: SUCCESS
+[solve.pointer_dereference.142] line 440 dereference failure: dead object in (values + (signed long int)i)->value: SUCCESS
+[solve.pointer_dereference.143] line 440 dereference failure: pointer outside object bounds in (values + (signed long int)i)->value: SUCCESS
+[solve.pointer_dereference.144] line 440 dereference failure: invalid integer address in (values + (signed long int)i)->value: SUCCESS
+[solve.pointer_dereference.145] line 450 dereference failure: pointer NULL in s->full: SUCCESS
+[solve.pointer_dereference.146] line 450 dereference failure: pointer invalid in s->full: SUCCESS
+[solve.pointer_dereference.147] line 450 dereference failure: deallocated dynamic object in s->full: SUCCESS
+[solve.pointer_dereference.148] line 450 dereference failure: dead object in s->full: SUCCESS
+[solve.pointer_dereference.149] line 450 dereference failure: pointer outside object bounds in s->full: SUCCESS
+[solve.pointer_dereference.150] line 450 dereference failure: invalid integer address in s->full: SUCCESS
+[solve.overflow.30] line 451 arithmetic overflow on unsigned - in full - (unsigned int)1: SUCCESS
+[solve.overflow.67] line 451 arithmetic overflow on unsigned - in left - (unsigned int)1: SUCCESS
+[solve.array_bounds.26] line 453 array.off dynamic object upper bound in s->off[(signed long int)left]: SUCCESS
+[solve.array_bounds.27] line 453 array.len dynamic object upper bound in s->len[(signed long int)left]: SUCCESS
+[solve.array_bounds.28] line 453 array.len dynamic object upper bound in s->len[(signed long int)(full ^ left)]: SUCCESS
+[solve.array_bounds.29] line 453 array.off dynamic object upper bound in s->off[(signed long int)(full ^ left)]: SUCCESS
+[solve.overflow.31] line 453 arithmetic overflow on unsigned + in j + 1u: SUCCESS
+[solve.overflow.32] line 453 arithmetic overflow on unsigned + in x_ + y_: SUCCESS
+[solve.overflow.33] line 453 arithmetic overflow on unsigned - in v_ - target: SUCCESS
+[solve.overflow.34] line 453 arithmetic overflow on unsigned - in target - v_: SUCCESS
+[solve.overflow.35] line 453 arithmetic overflow on unsigned to unsigned type conversion in (uint32_t)whole_head: SUCCESS
+[solve.overflow.36] line 453 arithmetic overflow on unsigned - in x_ - y_: SUCCESS
+[solve.overflow.37] line 453 arithmetic overflow on unsigned - in v_ - target: SUCCESS
+[solve.overflow.38] line 453 arithmetic overflow on unsigned - in target - v_: SUCCESS
+[solve.overflow.39] line 453 arithmetic overflow on unsigned to unsigned type conversion in (uint32_t)whole_head: SUCCESS
+[solve.overflow.40] line 453 arithmetic overflow on unsigned * in x_ * y_: SUCCESS
+[solve.overflow.41] line 453 arithmetic overflow on unsigned - in v_ - target: SUCCESS
+[solve.overflow.42] line 453 arithmetic overflow on unsigned - in target - v_: SUCCESS
+[solve.overflow.43] line 453 arithmetic overflow on unsigned to unsigned type conversion in (uint32_t)whole_head: SUCCESS
+[solve.overflow.44] line 453 arithmetic overflow on unsigned * in q_ * y_: SUCCESS
+[solve.overflow.45] line 453 arithmetic overflow on unsigned - in v_ - target: SUCCESS
+[solve.overflow.46] line 453 arithmetic overflow on unsigned - in target - v_: SUCCESS
+[solve.overflow.47] line 453 arithmetic overflow on unsigned to unsigned type conversion in (uint32_t)whole_head: SUCCESS
+[solve.overflow.48] line 453 arithmetic overflow on unsigned + in j + 1u: SUCCESS
+[solve.overflow.49] line 453 arithmetic overflow on unsigned + in x_ + y_: SUCCESS
+[solve.overflow.50] line 453 arithmetic overflow on unsigned - in v_ - target: SUCCESS
+[solve.overflow.51] line 453 arithmetic overflow on unsigned - in target - v_: SUCCESS
+[solve.overflow.52] line 453 arithmetic overflow on unsigned to unsigned type conversion in (uint32_t)whole_head: SUCCESS
+[solve.overflow.53] line 453 arithmetic overflow on unsigned - in x_ - y_: SUCCESS
+[solve.overflow.54] line 453 arithmetic overflow on unsigned - in v_ - target: SUCCESS
+[solve.overflow.55] line 453 arithmetic overflow on unsigned - in target - v_: SUCCESS
+[solve.overflow.56] line 453 arithmetic overflow on unsigned to unsigned type conversion in (uint32_t)whole_head: SUCCESS
+[solve.overflow.57] line 453 arithmetic overflow on unsigned * in x_ * y_: SUCCESS
+[solve.overflow.58] line 453 arithmetic overflow on unsigned - in v_ - target: SUCCESS
+[solve.overflow.59] line 453 arithmetic overflow on unsigned - in target - v_: SUCCESS
+[solve.overflow.60] line 453 arithmetic overflow on unsigned to unsigned type conversion in (uint32_t)whole_head: SUCCESS
+[solve.overflow.61] line 453 arithmetic overflow on unsigned * in q_ * y_: SUCCESS
+[solve.overflow.62] line 453 arithmetic overflow on unsigned - in v_ - target: SUCCESS
+[solve.overflow.63] line 453 arithmetic overflow on unsigned - in target - v_: SUCCESS
+[solve.overflow.64] line 453 arithmetic overflow on unsigned to unsigned type conversion in (uint32_t)whole_head: SUCCESS
+[solve.overflow.65] line 453 arithmetic overflow on unsigned + in j + 1u: SUCCESS
+[solve.overflow.66] line 453 arithmetic overflow on unsigned + in i + 1u: SUCCESS
+[solve.pointer_dereference.151] line 453 dereference failure: pointer NULL in s->arena: SUCCESS
+[solve.pointer_dereference.152] line 453 dereference failure: pointer invalid in s->arena: SUCCESS
+[solve.pointer_dereference.153] line 453 dereference failure: deallocated dynamic object in s->arena: SUCCESS
+[solve.pointer_dereference.154] line 453 dereference failure: dead object in s->arena: SUCCESS
+[solve.pointer_dereference.155] line 453 dereference failure: pointer outside object bounds in s->arena: SUCCESS
+[solve.pointer_dereference.156] line 453 dereference failure: invalid integer address in s->arena: SUCCESS
+[solve.pointer_dereference.157] line 453 dereference failure: pointer NULL in s->off: SUCCESS
+[solve.pointer_dereference.158] line 453 dereference failure: pointer invalid in s->off: SUCCESS
+[solve.pointer_dereference.159] line 453 dereference failure: deallocated dynamic object in s->off: SUCCESS
+[solve.pointer_dereference.160] line 453 dereference failure: dead object in s->off: SUCCESS
+[solve.pointer_dereference.161] line 453 dereference failure: pointer outside object bounds in s->off: SUCCESS
+[solve.pointer_dereference.162] line 453 dereference failure: invalid integer address in s->off: SUCCESS
+[solve.pointer_dereference.163] line 453 dereference failure: pointer NULL in s->len: SUCCESS
+[solve.pointer_dereference.164] line 453 dereference failure: pointer invalid in s->len: SUCCESS
+[solve.pointer_dereference.165] line 453 dereference failure: deallocated dynamic object in s->len: SUCCESS
+[solve.pointer_dereference.166] line 453 dereference failure: dead object in s->len: SUCCESS
+[solve.pointer_dereference.167] line 453 dereference failure: pointer outside object bounds in s->len: SUCCESS
+[solve.pointer_dereference.168] line 453 dereference failure: invalid integer address in s->len: SUCCESS
+[solve.pointer_dereference.169] line 453 dereference failure: pointer NULL in s->right_values: SUCCESS
+[solve.pointer_dereference.170] line 453 dereference failure: pointer invalid in s->right_values: SUCCESS
+[solve.pointer_dereference.171] line 453 dereference failure: deallocated dynamic object in s->right_values: SUCCESS
+[solve.pointer_dereference.172] line 453 dereference failure: dead object in s->right_values: SUCCESS
+[solve.pointer_dereference.173] line 453 dereference failure: pointer outside object bounds in s->right_values: SUCCESS
+[solve.pointer_dereference.174] line 453 dereference failure: invalid integer address in s->right_values: SUCCESS
+[solve.pointer_dereference.175] line 453 dereference failure: pointer NULL in s->right_inv: SUCCESS
+[solve.pointer_dereference.176] line 453 dereference failure: pointer invalid in s->right_inv: SUCCESS
+[solve.pointer_dereference.177] line 453 dereference failure: deallocated dynamic object in s->right_inv: SUCCESS
+[solve.pointer_dereference.178] line 453 dereference failure: dead object in s->right_inv: SUCCESS
+[solve.pointer_dereference.179] line 453 dereference failure: pointer outside object bounds in s->right_inv: SUCCESS
+[solve.pointer_dereference.180] line 453 dereference failure: invalid integer address in s->right_inv: SUCCESS
+[solve.pointer_dereference.181] line 453 dereference failure: pointer NULL in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.182] line 453 dereference failure: pointer invalid in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.183] line 453 dereference failure: deallocated dynamic object in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.184] line 453 dereference failure: dead object in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.185] line 453 dereference failure: pointer outside object bounds in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.186] line 453 dereference failure: invalid integer address in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.187] line 453 dereference failure: pointer NULL in (rights_ + (signed long int)j)->value: SUCCESS
+[solve.pointer_dereference.188] line 453 dereference failure: pointer invalid in (rights_ + (signed long int)j)->value: SUCCESS
+[solve.pointer_dereference.189] line 453 dereference failure: deallocated dynamic object in (rights_ + (signed long int)j)->value: SUCCESS
+[solve.pointer_dereference.190] line 453 dereference failure: dead object in (rights_ + (signed long int)j)->value: SUCCESS
+[solve.pointer_dereference.191] line 453 dereference failure: pointer outside object bounds in (rights_ + (signed long int)j)->value: SUCCESS
+[solve.pointer_dereference.192] line 453 dereference failure: invalid integer address in (rights_ + (signed long int)j)->value: SUCCESS
+[solve.pointer_dereference.193] line 453 dereference failure: pointer NULL in ri_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.194] line 453 dereference failure: pointer invalid in ri_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.195] line 453 dereference failure: deallocated dynamic object in ri_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.196] line 453 dereference failure: dead object in ri_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.197] line 453 dereference failure: pointer outside object bounds in ri_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.198] line 453 dereference failure: invalid integer address in ri_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.199] line 453 dereference failure: pointer NULL in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.200] line 453 dereference failure: pointer invalid in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.201] line 453 dereference failure: deallocated dynamic object in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.202] line 453 dereference failure: dead object in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.203] line 453 dereference failure: pointer outside object bounds in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.204] line 453 dereference failure: invalid integer address in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.205] line 453 dereference failure: pointer NULL in (lefts_ + (signed long int)i)->value: SUCCESS
+[solve.pointer_dereference.206] line 453 dereference failure: pointer invalid in (lefts_ + (signed long int)i)->value: SUCCESS
+[solve.pointer_dereference.207] line 453 dereference failure: deallocated dynamic object in (lefts_ + (signed long int)i)->value: SUCCESS
+[solve.pointer_dereference.208] line 453 dereference failure: dead object in (lefts_ + (signed long int)i)->value: SUCCESS
+[solve.pointer_dereference.209] line 453 dereference failure: pointer outside object bounds in (lefts_ + (signed long int)i)->value: SUCCESS
+[solve.pointer_dereference.210] line 453 dereference failure: invalid integer address in (lefts_ + (signed long int)i)->value: SUCCESS
+[solve.pointer_dereference.211] line 453 dereference failure: pointer NULL in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.212] line 453 dereference failure: pointer invalid in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.213] line 453 dereference failure: deallocated dynamic object in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.214] line 453 dereference failure: dead object in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.215] line 453 dereference failure: pointer outside object bounds in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.216] line 453 dereference failure: invalid integer address in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.217] line 453 dereference failure: pointer NULL in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.218] line 453 dereference failure: pointer invalid in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.219] line 453 dereference failure: deallocated dynamic object in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.220] line 453 dereference failure: dead object in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.221] line 453 dereference failure: pointer outside object bounds in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.222] line 453 dereference failure: invalid integer address in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.223] line 453 dereference failure: pointer NULL in ri_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.224] line 453 dereference failure: pointer invalid in ri_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.225] line 453 dereference failure: deallocated dynamic object in ri_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.226] line 453 dereference failure: dead object in ri_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.227] line 453 dereference failure: pointer outside object bounds in ri_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.228] line 453 dereference failure: invalid integer address in ri_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.229] line 453 dereference failure: pointer NULL in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.230] line 453 dereference failure: pointer invalid in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.231] line 453 dereference failure: deallocated dynamic object in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.232] line 453 dereference failure: dead object in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.233] line 453 dereference failure: pointer outside object bounds in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.234] line 453 dereference failure: invalid integer address in rv_[(signed long int)j]: SUCCESS
+[solve.pointer_dereference.235] line 464 dereference failure: pointer NULL in *return_value_render: SUCCESS
+[solve.pointer_dereference.236] line 464 dereference failure: pointer invalid in *return_value_render: SUCCESS
+[solve.pointer_dereference.237] line 464 dereference failure: deallocated dynamic object in *return_value_render: SUCCESS
+[solve.pointer_dereference.238] line 464 dereference failure: dead object in *return_value_render: SUCCESS
+[solve.pointer_dereference.239] line 464 dereference failure: pointer outside object bounds in *return_value_render: SUCCESS
+[solve.pointer_dereference.240] line 464 dereference failure: invalid integer address in *return_value_render: SUCCESS
+[solve.pointer_dereference.241] line 465 dereference failure: pointer NULL in best->value: SUCCESS
+[solve.pointer_dereference.242] line 465 dereference failure: pointer invalid in best->value: SUCCESS
+[solve.pointer_dereference.243] line 465 dereference failure: deallocated dynamic object in best->value: SUCCESS
+[solve.pointer_dereference.244] line 465 dereference failure: dead object in best->value: SUCCESS
+[solve.pointer_dereference.245] line 465 dereference failure: pointer outside object bounds in best->value: SUCCESS
+[solve.pointer_dereference.246] line 465 dereference failure: invalid integer address in best->value: SUCCESS
+[solve.pointer_dereference.247] line 466 dereference failure: pointer NULL in s->arena: SUCCESS
+[solve.pointer_dereference.248] line 466 dereference failure: pointer invalid in s->arena: SUCCESS
+[solve.pointer_dereference.249] line 466 dereference failure: deallocated dynamic object in s->arena: SUCCESS
+[solve.pointer_dereference.250] line 466 dereference failure: dead object in s->arena: SUCCESS
+[solve.pointer_dereference.251] line 466 dereference failure: pointer outside object bounds in s->arena: SUCCESS
+[solve.pointer_dereference.252] line 466 dereference failure: invalid integer address in s->arena: SUCCESS
+[solve.pointer_dereference.253] line 467 dereference failure: pointer NULL in s->tmp: SUCCESS
+[solve.pointer_dereference.254] line 467 dereference failure: pointer invalid in s->tmp: SUCCESS
+[solve.pointer_dereference.255] line 467 dereference failure: deallocated dynamic object in s->tmp: SUCCESS
+[solve.pointer_dereference.256] line 467 dereference failure: dead object in s->tmp: SUCCESS
+[solve.pointer_dereference.257] line 467 dereference failure: pointer outside object bounds in s->tmp: SUCCESS
+[solve.pointer_dereference.258] line 467 dereference failure: invalid integer address in s->tmp: SUCCESS
+[solve.pointer_dereference.259] line 468 dereference failure: pointer NULL in s->seen: SUCCESS
+[solve.pointer_dereference.260] line 468 dereference failure: pointer invalid in s->seen: SUCCESS
+[solve.pointer_dereference.261] line 468 dereference failure: deallocated dynamic object in s->seen: SUCCESS
+[solve.pointer_dereference.262] line 468 dereference failure: dead object in s->seen: SUCCESS
+[solve.pointer_dereference.263] line 468 dereference failure: pointer outside object bounds in s->seen: SUCCESS
+[solve.pointer_dereference.264] line 468 dereference failure: invalid integer address in s->seen: SUCCESS
+[solve.pointer_dereference.265] line 469 dereference failure: pointer NULL in s->rank: SUCCESS
+[solve.pointer_dereference.266] line 469 dereference failure: pointer invalid in s->rank: SUCCESS
+[solve.pointer_dereference.267] line 469 dereference failure: deallocated dynamic object in s->rank: SUCCESS
+[solve.pointer_dereference.268] line 469 dereference failure: dead object in s->rank: SUCCESS
+[solve.pointer_dereference.269] line 469 dereference failure: pointer outside object bounds in s->rank: SUCCESS
+[solve.pointer_dereference.270] line 469 dereference failure: invalid integer address in s->rank: SUCCESS
+[solve.pointer_dereference.271] line 470 dereference failure: pointer NULL in s->right_values: SUCCESS
+[solve.pointer_dereference.272] line 470 dereference failure: pointer invalid in s->right_values: SUCCESS
+[solve.pointer_dereference.273] line 470 dereference failure: deallocated dynamic object in s->right_values: SUCCESS
+[solve.pointer_dereference.274] line 470 dereference failure: dead object in s->right_values: SUCCESS
+[solve.pointer_dereference.275] line 470 dereference failure: pointer outside object bounds in s->right_values: SUCCESS
+[solve.pointer_dereference.276] line 470 dereference failure: invalid integer address in s->right_values: SUCCESS
+[solve.pointer_dereference.277] line 471 dereference failure: pointer NULL in s->right_inv: SUCCESS
+[solve.pointer_dereference.278] line 471 dereference failure: pointer invalid in s->right_inv: SUCCESS
+[solve.pointer_dereference.279] line 471 dereference failure: deallocated dynamic object in s->right_inv: SUCCESS
+[solve.pointer_dereference.280] line 471 dereference failure: dead object in s->right_inv: SUCCESS
+[solve.pointer_dereference.281] line 471 dereference failure: pointer outside object bounds in s->right_inv: SUCCESS
+[solve.pointer_dereference.282] line 471 dereference failure: invalid integer address in s->right_inv: SUCCESS
+
+harness/cats_ops.c function main
+[main.assertion.1] line 31 assertion count >= 1 && count <= 6: SUCCESS
+[main.overflow.1] line 37 arithmetic overflow on unsigned - in v_ - target: SUCCESS
+[main.overflow.2] line 37 arithmetic overflow on unsigned - in target - v_: SUCCESS
+[main.overflow.3] line 37 arithmetic overflow on unsigned to unsigned type conversion in (uint32_t)whole_head: SUCCESS
+[main.overflow.4] line 43 arithmetic overflow on unsigned + in largest / (unsigned int)64 + (unsigned int)1: SUCCESS
+[main.assertion.2] line 44 assertion (size_t)(w >> 6) < words: SUCCESS
+[main.assertion.3] line 45 assertion (size_t)(bound / 64 + 1) <= words: SUCCESS
+[main.overflow.5] line 45 arithmetic overflow on unsigned + in bound / (unsigned int)64 + (unsigned int)1: SUCCESS
+[main.assertion.4] line 46 assertion (uint64_t)words * sizeof(uint64_t) < 16u << 20: SUCCESS
+[main.overflow.6] line 46 arithmetic overflow on unsigned * in (uint64_t)words * sizeof(uint64_t) /*8ul*/ : SUCCESS
+
+shim/immintrin.h function _bzhi_u64
+[_bzhi_u64.overflow.1] line 57 arithmetic overflow on unsigned to unsigned type conversion in (unsigned int)(n & (unsigned long int)0xFF): SUCCESS
+[_bzhi_u64.overflow.2] line 58 arithmetic overflow on unsigned - in (1ull << i) - (unsigned long int)1: SUCCESS
+[_bzhi_u64.undefined-shift.1] line 58 shift distance too large in 1ull << i: SUCCESS
+
+shim/immintrin.h function _mm_cvtsd_si32
+[_mm_cvtsd_si32.overflow.1] line 49 arithmetic overflow on unsigned to signed type conversion in (signed int)0x80000000u: SUCCESS
+[_mm_cvtsd_si32.overflow.2] line 50 arithmetic overflow on float to signed integer type conversion in (signed int)r: SUCCESS
+
+** 0 of 1331 failed (1 iterations)
+VERIFICATION SUCCESSFUL
+286.04 s 81996 KB

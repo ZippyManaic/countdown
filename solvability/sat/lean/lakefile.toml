@@ -1,0 +1,9 @@
+name = "countdownsat"
+defaultTargets = ["CountdownSat"]
+
+[[require]]
+name = "countdown"
+path = "../../lean"
+
+[[lean_lib]]
+name = "CountdownSat"
