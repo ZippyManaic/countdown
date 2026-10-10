@@ -755,9 +755,9 @@ PyTorch with transformer proposals  & 0.0354   & --                & --         
 Haskell (GHC)                       & 0.0360   & 0.639             & 17.8$\times$ & 0.82  & identical \\
 Kotlin (JVM)                        & 0.0373   & 0.149             & 4.0$\times$ & 48.2  & identical \\
 Java (OpenJDK 25)                   & 0.0391   & 0.154\rlap{$^b$}  & 3.9$\times$ & 34.2  & identical \\
+Rust                                & 0.0451   & 9.7\rlap{$^a$}    & 215$\times$ & 0.51  & identical \\
 Common Lisp (SBCL)                  & 0.0472   & 0.446             & 9.4$\times$ & 1.51  & identical \\
 OCaml                               & 0.0537   & 0.450             & 8.4$\times$ & 0.64  & identical \\
-Rust                                & 0.0557   & 9.7\rlap{$^a$}    & 174$\times$ & 0.51  & identical \\
 Erlang (BEAM)\rlap{$^c$}            & 0.0575   & 0.494             & 8.6$\times$ & 73.7  & identical \\
 Elixir (BEAM)\rlap{$^c$}            & 0.0576   & 0.729             & 12.7$\times$ & 83.6  & identical \\
 JavaScript (Node 24)                & 0.0848   & 0.381             & 4.5$\times$ & 24.3  & identical \\
@@ -856,7 +856,7 @@ Kotlin & 0.149 & 0.0373 & 4.0$\times$ & port of the optimised Java with \texttt{
 Haskell & 0.639 & 0.0360 & 17.8$\times$ & \texttt{ST} over unboxed \texttt{PrimArray}s; bitset with rank sort; values only, origins rebuilt for the answer \\
 Common Lisp & 0.446 & 0.0472 & 9.4$\times$ & port of the optimised C with typed arrays, \texttt{logcount} and \texttt{(safety 0)} \\
 OCaml & 0.450 & 0.0537 & 8.4$\times$ & byte bitset with radix sort; integer-only \texttt{max} and \texttt{min}; \texttt{Bigarray}s to spare the collector; values only \\
-Rust & 9.7$^a$ & 0.0557 & 174$\times$ & staged search with early exit; values only while searching; compact entries with a bitset; partner lookups; none of (a)--(f) yet \\
+Rust & 9.7$^a$ & 0.0451 & 215$\times$ & staged search with early exit; values only while searching; compact entries with a bitset grown by subset size; partner lookups; none of (a)--(f) yet \\
 Erlang$^c$ & 0.494 & 0.0575 & 8.6$\times$ & rewritten to Elixir's design, with tuples for binary search and subset tables as constants \\
 Elixir$^c$ & 0.729 & 0.0576 & 12.7$\times$ & values only with \texttt{:lists.usort}; four- and five-number subsets deferred; ordered partner checks; outward search for closest rounds \\
 JavaScript & 0.381 & 0.0848 & 4.5$\times$ & four 32-bit words per entry in a \texttt{Uint32Array}; 32-bit bitset words with a hand-written popcount; no typed-array views in the insertion sort \\
@@ -966,11 +966,11 @@ Rust               & 0.0503 & 608{,}000 & 259{,}900 & 2.34 & 3{,}665 & 134{,}400
 OCaml              & 0.0541 & 1{,}102{,}000 & 272{,}500 & 4.04 & 1{,}676 & 203{,}400 \\ \bottomrule
 \end{tabular}
 \caption{Hardware counters per round for the ahead-of-time compiled solvers, on the 10{,}000 benchmark
-rounds.}\label{tab:counters}
+rounds, with the Rust solver as it was before the bitset fix described in Section~\ref{sec:cats}.}\label{tab:counters}
 \end{table}
 
-\paragraph{Common Lisp beats Rust.}
-SBCL is a dynamically typed Lisp, yet its optimised solver, at 0.049\,ms, beats the Rust solver, at 0.050\,ms. The
+\paragraph{Common Lisp nearly matches Rust.}
+SBCL is a dynamically typed Lisp, yet when Table~\ref{tab:counters} was measured its optimised solver, at 0.049\,ms, beat the Rust solver, at 0.050\,ms. The
 counters show why. Rust executes \emph{fewer} instructions than Lisp, but it suffers 3{,}665 branch
 mispredictions per round against Lisp's 845, which is close to C's 797. At roughly 15--20 cycles each, the
 extra 2{,}800 mispredictions cost about 50{,}000 cycles. That is most of the difference, and it drags Rust's
@@ -978,7 +978,7 @@ instructions per cycle (IPC) down to 2.34. The Lisp version is a direct port of 
 branchless append and binary search of refinements (a) and (e). The Rust solver has not yet had any of
 (a)--(f). So this result is about design rather than language: SBCL with full type declarations and
 \texttt{(safety 0)} compiles to plain machine arithmetic, and the branchless design matters more than the
-better compiler. Profiling also shows that 11--15\% of the Lisp solver's cycles are in \texttt{memset}, called from
+better compiler. A later fix stopped Rust zeroing a bitset sized for the whole pool on every solve (Section~\ref{sec:cats}). That brought Rust to 0.045\,ms against Lisp's 0.047, but left it at about 3{,}800 branch mispredictions per round. Profiling also shows that 11--15\% of the Lisp solver's cycles are in \texttt{memset}, called from
 SBCL's allocator (\texttt{lisp\_alloc}). The allocator zeroes each fresh region of memory it hands out,
 and the solver allocates its arrays anew for every solve. Lisp therefore has further headroom.
 
@@ -1356,7 +1356,7 @@ ISPC & 0.0115 & 0.116 & 0.0153 & all identical \\
 C & 0.0208 & 0.117 & 0.0236 & all identical \\
 Erlang & 0.0575 & 0.103 & 0.0641 & all identical \\
 Elixir & 0.0576 & 0.106 & 0.0669 & all identical \\
-Rust & 0.0557 & 0.154 & 0.124 & all identical \\
+Rust & 0.0451 & 0.0967 & 0.0454 & all identical \\
 Go & 0.0330 & 0.206 & 0.0380 & all identical \\
 Java & 0.0391 & 0.251 & 0.0467 & all identical \\
 Haskell & 0.0360 & 0.565 & 0.0487 & all identical \\
@@ -1376,9 +1376,8 @@ large numbers: C takes $0.018$\,ms with one large number, $0.059$\,ms with three
 Like many of the compiled ports, C marks the values each subset has made in a bitset sized by that
 subset's largest possible value (Section~\ref{sec:cpu}, ``Duplicates by bitset''), and with four large numbers
 that bitset reaches 11.7\,MB, which costs more to clear than the search does. Erlang and Elixir sort each
-subset's values instead, slow down by only $1.8$ times and become the fastest single-core solvers on cats,
-ahead of C and ISPC. The nasty cards' largest value is a quarter of the standard cards', and most compiled
-solvers run nasty-cats rounds within $35\%$ of their standard time. A solver for every mode would choose
+subset's values instead, slow down by only $1.8$ times and run cats rounds faster than C and ISPC. The nasty cards' largest value is a quarter of the standard cards', and most compiled
+solvers run nasty-cats rounds within $35\%$ of their standard time. Rust was the exception, at first taking $0.126$\,ms on nasty-cats rounds, $88\%$ of it in \texttt{memset}. It allocated a bitset sized for the whole pool on every solve. With four standard cards that is about 150\,MB, and glibc maps that much straight from the operating system as lazily zeroed pages. With four nasty cards it is 7--30\,MB, below glibc's mapping threshold, so it came from the heap and was cleared in full. Growing the bitset by subset size, as C does, brought Rust to $0.045$\,ms on nasty-cats, $0.097$ on cats, the fastest single-core time, and $0.045$ on the standard set. A solver for every mode would choose
 between the bitset and sorting by the size of the bound.
 
 \section{Machine-checked guarantees}\label{sec:checked}

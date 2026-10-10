@@ -32,9 +32,9 @@ Solve time is the best of three runs over 10,000 fixed rounds, measured inside e
 | Haskell (GHC) | 0.0360 | 0.639 | 17.8x | 0.82 |
 | Kotlin (JVM) | 0.0373 | 0.149 | 4.0x | 48.2 |
 | Java (OpenJDK 25) | 0.0391 | 0.154 | 3.9x | 34.2 |
+| Rust‡ | 0.0451 | 9.7 (first version) | 215x | 0.51 |
 | Common Lisp (SBCL) | 0.0472 | 0.446 | 9.4x | 1.51 |
 | OCaml | 0.0537 | 0.450 | 8.4x | 0.64 |
-| Rust | 0.0557 | 9.7 (first version) | 174x | 0.51 |
 | Erlang (BEAM)* | 0.0575 | 0.494 | 8.6x | 73.7 |
 | Elixir (BEAM)* | 0.0576 | 0.729 | 12.7x | 83.6 |
 | JavaScript (Node 24) | 0.0848 | 0.381 | 4.5x | 24.3 |
@@ -55,6 +55,8 @@ The FreeBASIC, WebAssembly, F#, Haskell, Kotlin, Common Lisp, OCaml, Ruby and BA
 The lookup table, PyTorch and transformer rows were measured on 2026-10-09 in a quieter session, when C measured 0.0184–0.0188 ms, so PyTorch is about 17% faster than C rather than the 23% the table suggests. The PyTorch figures are throughput for all 10,000 rounds solved as one batch, not the time one round takes, and their whole-program times average 10 runs rather than 300 because each takes about three seconds; see their language notes.
 
 The CUDA row was re-measured on 2026-10-10, after it gained cats support, in a session where C measured 0.0182 ms.
+
+‡Rust was re-measured on 2026-10-10 after its bitset fix, in a session where C measured 0.0182 ms and Common Lisp 0.0473 ms.
 
 †ISPC was added on 2026-10-10 in a session where C measured 0.0183 ms, so it is 1.6 times faster than C rather than the 1.8 times the table suggests.
 
@@ -114,6 +116,7 @@ Times below are from one run of each solver (`-n 1`), so they are rougher than t
 | `erlang-par` (parallel) | – | 0.0632 | – | 0.0500 | all identical | all identical |
 | `rust-par` (parallel) | – | 0.0937 | – | 0.0265 | all identical | all identical |
 | `rust-par1` (parallel) | – | 0.0949 | – | 0.0447 | all identical | all identical |
+| Rust | 0.0451 | 0.0967 | 2.1x | 0.0454 | all identical | all identical |
 | Erlang (BEAM)* | 0.0575 | 0.1033 | 1.8x | 0.0641 | all identical | all identical |
 | Elixir (BEAM)* | 0.0576 | 0.106 | 1.8x | 0.0669 | all identical | all identical |
 | ISPC (AVX2, four 64-bit lanes)† | 0.0115 | 0.1162 | 10.1x | 0.0153 | all identical | all identical |
@@ -127,7 +130,6 @@ Times below are from one run of each solver (`-n 1`), so they are rougher than t
 | FreeBASIC (GCC back end) | 0.0215 | 0.1319 | 6.1x | 0.0276 | all identical | all identical |
 | Ada (GNAT) | 0.0260 | 0.1355 | 5.2x | 0.0302 | all identical | all identical |
 | C# (.NET 10) | 0.0274 | 0.1357 | 5.0x | 0.0319 | all identical | all identical |
-| Rust | 0.0557 | 0.1541 | 2.8x | 0.1236 | all identical | all identical |
 | F# (.NET 10) | 0.0287 | 0.1597 | 5.6x | 0.0357 | all identical | all identical |
 | OCaml | 0.0537 | 0.1642 | 3.1x | 0.0571 | all identical | all identical |
 | Pascal (Free Pascal) | 0.0352 | 0.1816 | 5.2x | 0.0405 | all identical | all identical |
@@ -160,8 +162,9 @@ Times below are from one run of each solver (`-n 1`), so they are rougher than t
 - **PyTorch is second only to CUDA on cats and loses nothing on nasty-cats.** Its keys now give each value 27 bits, enough for the largest bound any cats round reaches (93,750,000), at no cost on the standard set. It slows by 1.5x on cats, like the sorting and hashing CPU solvers, because sorting each level's values does not care how large they are. The transformer version gives no wrong answers but stays about twice as slow as the solver alone (0.044 against 0.023 ms on cats), with more ties than on the standard set, since the model was trained only on standard pools. The model has no tokens for 12, 37, 62 and 87, so rounds with a nasty card skip it and go straight to the exact search; its 8 nasty-cats ties come from rounds with no large numbers. A re-run with the GPU otherwise idle gave the same times within 1%.
 - **The lookup table falls back to Python.** It only holds pools with one or two standard large numbers. Every other pool goes to the Python solver, so it runs at Python's speed and inherits Python's ties. `run.sh` now times it once on these sets rather than 20 times.
 - **Four large numbers are what make cats slow.** C takes 0.029 ms on rounds with no large numbers, 0.018 with one, 0.019 with two, 0.059 with three and 0.456 with four (5 runs on CPU 2). C, Rust and many of the other ports mark the values a subset has already made in a bitset sized by that subset's largest possible value. With four large numbers that bitset is up to 11.7 MB, and clearing it costs more than the search.
-- **Sorting and hashing solvers cope best.** Erlang and Elixir sort each subset's values instead of using a bitset. They slow by only 1.8x and are the fastest single-core solvers on cats, ahead of C (5.6x) and ISPC (10.1x). Ruby, Lua and LuaJIT use hash tables and slow by 1.4x to 2.1x.
-- **Nasty-cats costs little extra.** The nasty cards reach at most 239,493,600, about a quarter of the standard cards' 937,500,000, so the bitsets stay smaller. Most compiled solvers run within 35% of their standard-game time. Rust is the exception at 2.2x, which has not been investigated.
+- **Sorting and hashing solvers cope best.** Erlang and Elixir sort each subset's values instead of using a bitset. They slow by only 1.8x and run cats rounds faster than C (5.6x) and ISPC (10.1x); only Rust, after its bitset fix, is faster on one core. Ruby, Lua and LuaJIT use hash tables and slow by 1.4x to 2.1x.
+- **Rust was slow on nasty-cats because of how glibc zeroes memory.** It took 0.126 ms against C's 0.024, almost all of it on rounds with four large numbers (0.345 ms against 0.038), and `perf` put 88% of that in `memset`. Rust allocated its bitset with `vec![0; n]` on every solve, sized for the whole pool even though only smaller subsets use it. With four standard cards that is about 150 MB, which glibc takes straight from the OS as lazily zeroed pages, so it cost almost nothing. With four nasty cards it is 7–30 MB, under glibc's mmap threshold, which rises to 32 MB after the first large free, so it came from the heap and was cleared in full every time. Rust now grows the bitset by subset size, to the largest bound of the size being built, as C does. Standard rounds take 0.0451 ms (was 0.0501 in the same session), cats 0.0967 (was 0.153, now faster than C's 0.117) and nasty-cats 0.0454 (was 0.126).
+- **Nasty-cats costs little extra.** The nasty cards reach at most 239,493,600, about a quarter of the standard cards' 937,500,000, so the bitsets stay smaller. Most compiled solvers run within 35% of their standard-game time.
 
 ## What each solution cost
 
@@ -278,7 +281,7 @@ These techniques carried over to most languages, roughly in order of impact:
 
 **Pascal.** Free Pascal's heap manager also returns large blocks to the kernel; using the `cmem` unit (the C library's allocator) halved the time. Free Pascal treats `1.0` as a single-precision constant, which made the reciprocal too inexact to be safe, fixed with `{$minfpconstprec 64}`. Its code generator still produces about twice the instructions of Clang.
 
-**Rust.** Optimised in stages from 9.7 ms: values only while searching, stopping at the first size that hits the target, compact entries with a bitset, and searching halves for the target. It has not yet had the assembly-derived techniques.
+**Rust.** Optimised in stages from 9.7 ms: values only while searching, stopping at the first size that hits the target, compact entries with a bitset, and searching halves for the target. On 2026-10-10 the bitset was changed to grow by subset size instead of being sized for the whole pool on every solve, which took 0.0501 ms to 0.0451 (see "Cats and nasty-cats rounds"). It has not yet had the assembly-derived techniques.
 
 **COBOL.** GnuCOBOL turns `MULTIPLY`, `DIVIDE`, `COMPUTE` and the `B-AND` and `B-OR` operators into calls to GMP's decimal arithmetic; only `ADD`, `SUBTRACT`, comparisons, subscripts and moves between same-sized fields become native code. The optimised version uses only that subset in its hot paths:
 - multiplication by shift and add and division by long division
@@ -342,7 +345,7 @@ Each round still runs through dozens of barrier-separated phases with little wor
 
 **OCaml.** OCaml 5.4.0 without flambda, built with `-unsafe -inline 200`. OCaml has no population count, so the bitset is a byte per 8 values and the rank sort became a radix sort with 9-bit digits. Polymorphic `max` and `min` were calling the runtime's generic comparison in the hot loops, and allocating the radix counts on every sort was costly; fixing both took it from 0.075 to 0.057 ms. The garbage collector was marking the large integer arrays (about 20% of the time) until they moved to `Bigarray`s (3%). It runs at 4.0 instructions per cycle, the best of any solver, but executes 3.4 times C's instructions, mostly tag-bit arithmetic and the radix sort.
 
-**Common Lisp.** SBCL 2.6.0, a direct port of the optimised C with `(unsigned-byte 32/64)` arrays in a struct, `logcount` for the rank sort and `(speed 3) (safety 0)` with full type declarations; SBCL's compiler notes show no generic arithmetic left in the hot loops. It mispredicts branches about as rarely as C, which is why it beats the Rust solver. 11–15% of its time is SBCL's allocator zeroing fresh memory, because each solve allocates its arrays afresh. A `(safety 3)` build gave identical answers. The saved executable is 34 MB but starts in about 1.5 ms.
+**Common Lisp.** SBCL 2.6.0, a direct port of the optimised C with `(unsigned-byte 32/64)` arrays in a struct, `logcount` for the rank sort and `(speed 3) (safety 0)` with full type declarations; SBCL's compiler notes show no generic arithmetic left in the hot loops. It mispredicts branches about as rarely as C, which is why it nearly matches the Rust solver despite Rust running fewer instructions. 11–15% of its time is SBCL's allocator zeroing fresh memory, because each solve allocates its arrays afresh. A `(safety 3)` build gave identical answers. The saved executable is 34 MB but starts in about 1.5 ms.
 
 **Ruby.** Ruby 3.3.8, written like the Lua version: a Hash per subset from value to packed origin, a sorted key list, and split pair loops. `h[v] = o unless h.key?(v)` beat `h[v] ||= o`, and unrolling the whole-pool pass into the same split loops removed 21% of the time that the rare closest rounds took. Stamping values in an Array instead of a Hash was 12% slower. It beats Lua 5.4 mainly in sorting: Lua's `table.sort` spends 21% of Lua's time in the general `lua_geti`, `lua_seti` and `lua_compare` calls, while Ruby sorts integers in C with a fast path. Ubuntu's Ruby has no YJIT; the experimental RJIT (removed in Ruby 3.4) is about 1.7 times faster. Ruby builds per-size subset and split tables once when the file loads; they depend only on the pool size, like the COBOL and Forth tables.
 
@@ -358,6 +361,7 @@ Each round still runs through dozens of barrier-separated phases with little wor
 
 - Peeling the edge cases out of C's pair loop: fewer instructions but more mispredicted branches.
 - Radix sort instead of the bitset rank sort in C, at any sparsity threshold.
+- Dropping Rust's bitset for a stable sort that keeps the first way found to each value: 0.111 ms standard, 0.189 cats and 0.104 nasty-cats, against 0.0451, 0.0967 and 0.0454 with the bitset grown by subset size, because the duplicates then reach the sort.
 - Clearing the bitset during C's rank pass: the larger rank array cost more than the pass it saved.
 - Profile-guided optimisation for C, Go and Fortran: at most 3%, not worth a two-stage build.
 - Omitting the frame pointer in Zig.

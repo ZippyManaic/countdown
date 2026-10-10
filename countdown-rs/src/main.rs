@@ -258,9 +258,11 @@ fn solve(target: u32, pool: &[u32]) -> (u32, String) {
     let full = reachable.len() - 1;
     let mut candidates = Vec::new();
     let mut exact = None;
-    // Size a bitset of values seen in the current subset by the largest value any expression can reach
-    let bound: u64 = pool.iter().map(|&n| u64::from(n) + 1).product();
-    let mut seen = vec![0u64; bound.div_ceil(64) as usize];
+    // Bound each subset's values by the product of its numbers plus one, as Proposition prop:bound shows
+    let bound = |mask: usize| -> u64 {
+        (0..pool.len()).filter(|i| mask >> i & 1 == 1).map(|i| u64::from(pool[i]) + 1).product()
+    };
+    let mut seen: Vec<u64> = Vec::new();
 
     // Work through subsets smallest first so the search can stop at the first size that hits the target
     let size_masks = |size| (1..=full).filter(move |m: &usize| m.count_ones() == size);
@@ -286,6 +288,11 @@ fn solve(target: u32, pool: &[u32]) -> (u32, String) {
         }
         if size == 1 {
             continue;
+        }
+        // Grow the bitset only as far as this size needs since most rounds stop before the largest subsets
+        let words = size_masks(size).map(bound).max().unwrap_or(0).div_ceil(64) as usize;
+        if words > seen.len() {
+            seen.resize(words, 0);
         }
         for mask in size_masks(size) {
             candidates.clear();
