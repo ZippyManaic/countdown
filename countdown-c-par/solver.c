@@ -718,7 +718,9 @@ unsigned solve(unsigned target, const unsigned *pool_numbers, unsigned n, char *
         // Rank by distance from the target then by how many numbers are used so the simplest answer wins
         uint32_t best_distance = UINT32_MAX;
         int best_used = 99;
-        for (unsigned mask = 1; mask < s->full; mask++) {
+        // Include a one-number pool here since the whole-pool pass below needs at least two numbers
+        unsigned last = n > 1 ? s->full - 1 : s->full;
+        for (unsigned mask = 1; mask <= last; mask++) {
             int used = __builtin_popcount(mask);
             const entry *values = s->arena + s->off[mask];
             for (uint32_t i = 0; i < s->len[mask]; i++) {

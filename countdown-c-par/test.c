@@ -100,6 +100,7 @@ int main(void)
     expect(solve(552, (unsigned[]){8, 4, 2, 5, 100, 25}, 6, expr) == 552, "solves 552");
     unsigned value = solve(974, (unsigned[]){8, 8, 6, 8, 25, 100}, 6, expr);
     expect(value == 973 || value == 975, "reports closest when unsolvable");
+    expect(solve(100, (unsigned[]){7}, 1, expr) == 7 && !strcmp(expr, "7"), "reports a lone number as closest");
     expect(solve(999, (unsigned[]){10, 10, 25, 50, 75, 100}, 6, expr) == 999 &&
                !strcmp(expr, "(((75 + 25) * 100) - 10) / 10"),
            "solves 999 with four large");

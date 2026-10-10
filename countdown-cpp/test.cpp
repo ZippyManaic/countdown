@@ -98,6 +98,8 @@ int main()
     expect(countdown::solve(552, std::vector<std::uint32_t>{8, 4, 2, 5, 100, 25}).first == 552, "solves 552");
     auto closest = countdown::solve(974, std::vector<std::uint32_t>{8, 8, 6, 8, 25, 100}).first;
     expect(closest == 973 || closest == 975, "reports closest when unsolvable");
+    auto lone = countdown::solve(100, std::vector<std::uint32_t>{7});
+    expect(lone.first == 7 && lone.second == "7", "reports a lone number as closest");
     auto cats = countdown::solve(999, std::vector<std::uint32_t>{10, 10, 25, 50, 75, 100});
     expect(cats.first == 999 && cats.second == "(((75 + 25) * 100) - 10) / 10", "solves 999 with four large");
     auto none = countdown::solve(100, std::vector<std::uint32_t>{1, 1, 2, 2, 3, 3});
