@@ -9,6 +9,8 @@
 
 // Sort subsets with fewer values than this by insertion rather than by rank in the bitset
 #define RANK_MIN 16
+// Radix sort a subset when its bitset has more than this many words per value
+#define SPARSE 64
 
 enum { OP_ADD = '+', OP_SUB = '-', OP_MUL = '*', OP_DIV = '/' };
 
@@ -269,6 +271,30 @@ static void build(state *s, unsigned mask)
             for (; k > 0 && sorted[k - 1].value > e.value; k--)
                 sorted[k] = sorted[k - 1];
             sorted[k] = e;
+        }
+    } else if (s->max[mask] / 64 + 1 > (size_t)SPARSE * count) {
+        // Radix sort sparse subsets so the cost follows the values found rather than the range they could span
+        uint32_t counts[3][2048] = {{0}};
+        for (size_t i = 0; i < count; i++) {
+            uint32_t v = s->tmp[i].value;
+            seen[v >> 6] = 0;
+            counts[0][v & 2047]++;
+            counts[1][v >> 11 & 2047]++;
+            counts[2][v >> 22]++;
+        }
+        entry *from = s->tmp, *to = sorted;
+        for (int pass = 0; pass < 3; pass++) {
+            uint32_t sum = 0;
+            for (int d = 0; d < 2048; d++) {
+                uint32_t c = counts[pass][d];
+                counts[pass][d] = sum;
+                sum += c;
+            }
+            for (size_t i = 0; i < count; i++)
+                to[counts[pass][from[i].value >> (11 * pass) & 2047]++] = from[i];
+            entry *t = from;
+            from = to;
+            to = t;
         }
     } else {
         // Place each value at its rank in the bitset which needs no comparisons

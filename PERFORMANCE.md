@@ -112,19 +112,19 @@ Times below are from one run of each solver (`-n 1`), so they are rougher than t
 | Rust + CUDA | 0.000442 | 0.000617 | 1.4x | 0.000471 | all identical | all identical |
 | PyTorch on the GPU | 0.0157 | 0.0229 | 1.5x | 0.0159 | all identical | all identical |
 | PyTorch with transformer proposals | 0.0354 | 0.0441 | 1.2x | 0.0212 | 431 ties | 8 ties |
+| C (Clang) | 0.0208 | 0.0550 | 2.6x | 0.0212 | all identical | all identical |
 | `elixir-par` (parallel) | – | 0.0599 | – | 0.0462 | all identical | all identical |
 | `erlang-par` (parallel) | – | 0.0632 | – | 0.0500 | all identical | all identical |
+| WebAssembly (C in Node 24) | 0.0229 | 0.0632 | 2.8x | 0.0258 | all identical | all identical |
 | `rust-par` (parallel) | – | 0.0937 | – | 0.0265 | all identical | all identical |
 | `rust-par1` (parallel) | – | 0.0949 | – | 0.0447 | all identical | all identical |
 | Rust | 0.0451 | 0.0967 | 2.1x | 0.0454 | all identical | all identical |
 | Erlang (BEAM)* | 0.0575 | 0.1033 | 1.8x | 0.0641 | all identical | all identical |
 | Elixir (BEAM)* | 0.0576 | 0.106 | 1.8x | 0.0669 | all identical | all identical |
 | ISPC (AVX2, four 64-bit lanes)† | 0.0115 | 0.1162 | 10.1x | 0.0153 | all identical | all identical |
-| C (Clang) | 0.0208 | 0.1174 | 5.6x | 0.0236 | all identical | all identical |
 | C++ (Clang) | 0.0213 | 0.1188 | 5.6x | 0.0238 | all identical | all identical |
 | x86-64 assembly | 0.0218 | 0.1188 | 5.4x | 0.0254 | all identical | all identical |
 | Zig (ReleaseFast) | 0.0203 | 0.1213 | 6.0x | 0.0252 | all identical | all identical |
-| WebAssembly (C in Node 24) | 0.0229 | 0.1285 | 5.6x | 0.0287 | all identical | all identical |
 | `julia-par` (parallel) | – | 0.1304 | – | 0.0215 | all identical | all identical |
 | Fortran (gfortran) | 0.0247 | 0.1309 | 5.3x | 0.0286 | all identical | all identical |
 | FreeBASIC (GCC back end) | 0.0215 | 0.1319 | 6.1x | 0.0276 | all identical | all identical |
@@ -161,9 +161,9 @@ Times below are from one run of each solver (`-n 1`), so they are rougher than t
 - **Rust + CUDA is the fastest solver on both sets.** Subsets up to two smaller than the pool stay below 2^24 in every mode (at most 9,375,000), so only the global-memory table of subsets one smaller than the pool needs more than 24 bits, up to 93,750,000. Rounds that need it (2,287 cats and 1,012 nasty-cats rounds) go to a second instantiation of the kernel whose global keys are 64 bits wide; shared memory and occupancy are unchanged. It slows by 1.4x on cats and by 7% on nasty-cats, which was not broken down further. It also matches C on every distinct cats and nasty-cats pool with three targets each (39,729 rounds per mode). The times are the best of three runs with `-n 3`; a re-run with the GPU otherwise idle gave 0.000444, 0.000626 and 0.000475 ms.
 - **PyTorch is second only to CUDA on cats and loses nothing on nasty-cats.** Its keys now give each value 27 bits, enough for the largest bound any cats round reaches (93,750,000), at no cost on the standard set. It slows by 1.5x on cats, like the sorting and hashing CPU solvers, because sorting each level's values does not care how large they are. The transformer version gives no wrong answers but stays about twice as slow as the solver alone (0.044 against 0.023 ms on cats), with more ties than on the standard set, since the model was trained only on standard pools. The model has no tokens for 12, 37, 62 and 87, so rounds with a nasty card skip it and go straight to the exact search; its 8 nasty-cats ties come from rounds with no large numbers. A re-run with the GPU otherwise idle gave the same times within 1%.
 - **The lookup table falls back to Python.** It only holds pools with one or two standard large numbers. Every other pool goes to the Python solver, so it runs at Python's speed and inherits Python's ties. `run.sh` now times it once on these sets rather than 20 times.
-- **Four large numbers are what make cats slow.** C takes 0.029 ms on rounds with no large numbers, 0.018 with one, 0.019 with two, 0.059 with three and 0.456 with four (5 runs on CPU 2). C, Rust and many of the other ports mark the values a subset has already made in a bitset sized by that subset's largest possible value. With four large numbers that bitset is up to 11.7 MB, and clearing it costs more than the search.
-- **Sorting and hashing solvers cope best.** Erlang and Elixir sort each subset's values instead of using a bitset. They slow by only 1.8x and run cats rounds faster than C (5.6x) and ISPC (10.1x); only Rust, after its bitset fix, is faster on one core. Ruby, Lua and LuaJIT use hash tables and slow by 1.4x to 2.1x.
-- **Rust was slow on nasty-cats because of how glibc zeroes memory.** It took 0.126 ms against C's 0.024, almost all of it on rounds with four large numbers (0.345 ms against 0.038), and `perf` put 88% of that in `memset`. Rust allocated its bitset with `vec![0; n]` on every solve, sized for the whole pool even though only smaller subsets use it. With four standard cards that is about 150 MB, which glibc takes straight from the OS as lazily zeroed pages, so it cost almost nothing. With four nasty cards it is 7–30 MB, under glibc's mmap threshold, which rises to 32 MB after the first large free, so it came from the heap and was cleared in full every time. Rust now grows the bitset by subset size, to the largest bound of the size being built, as C does. Standard rounds take 0.0451 ms (was 0.0501 in the same session), cats 0.0967 (was 0.153, now faster than C's 0.117) and nasty-cats 0.0454 (was 0.126).
+- **Four large numbers are what make cats slow.** C takes 0.029 ms on rounds with no large numbers, 0.018 with one, 0.019 with two, 0.059 with three and 0.456 with four (5 runs on CPU 2). C, Rust and many of the other ports mark the values a subset has already made in a bitset sized by that subset's largest possible value. With four large numbers that bitset is up to 11.7 MB, and scanning it for ranks and clearing it cost more than the search. C now radix sorts any subset whose bitset has more than 64 words per value and clears only the words its values touched, which took four-large rounds from 0.441 to 0.157 ms and the cats set from 0.114 to 0.055 ms, with the standard set unchanged at 0.0183 (5 runs, same session). Half of what remains on four-large rounds is zeroing the bitset once per solve, which the no-state rule leaves in place. The other bitset ports have not had this change yet.
+- **Sorting and hashing solvers cope best.** Erlang and Elixir sort each subset's values instead of using a bitset. They slow by only 1.8x, against 5.6x for C before its radix-sort path and 10.1x for ISPC. Ruby, Lua and LuaJIT use hash tables and slow by 1.4x to 2.1x.
+- **Rust was slow on nasty-cats because of how glibc zeroes memory.** It took 0.126 ms against C's 0.024, almost all of it on rounds with four large numbers (0.345 ms against 0.038), and `perf` put 88% of that in `memset`. Rust allocated its bitset with `vec![0; n]` on every solve, sized for the whole pool even though only smaller subsets use it. With four standard cards that is about 150 MB, which glibc takes straight from the OS as lazily zeroed pages, so it cost almost nothing. With four nasty cards it is 7–30 MB, under glibc's mmap threshold, which rises to 32 MB after the first large free, so it came from the heap and was cleared in full every time. Rust now grows the bitset by subset size, to the largest bound of the size being built, as C does. Standard rounds take 0.0451 ms (was 0.0501 in the same session), cats 0.0967 (was 0.153, and faster than C's 0.117 until C gained its radix-sort path) and nasty-cats 0.0454 (was 0.126).
 - **Nasty-cats costs little extra.** The nasty cards reach at most 239,493,600, about a quarter of the standard cards' 937,500,000, so the bitsets stay smaller. Most compiled solvers run within 35% of their standard-game time.
 
 ## What each solution cost
@@ -267,7 +267,7 @@ These techniques carried over to most languages, roughly in order of impact:
 
 ## Language notes
 
-**C.** Clang compiles the hot loops about 10% faster than GCC, so the Makefile uses Clang. Clang ignored a hint asking for a conditional move in the binary search, so the search adds `(value <= target) * half` instead. Listing subsets in size order up front removed another unpredictable branch. C ends slightly faster than the hand-written assembly because Clang allocates registers better.
+**C.** Clang compiles the hot loops about 10% faster than GCC, so the Makefile uses Clang. Subsets whose bitset has more than 64 words per value are radix sorted (three 11-bit passes) instead of ranked through the bitset, which only happens with three or four large numbers; see "Cats and nasty-cats rounds". Clang ignored a hint asking for a conditional move in the binary search, so the search adds `(value <= target) * half` instead. Listing subsets in size order up front removed another unpredictable branch. C ends slightly faster than the hand-written assembly because Clang allocates registers better.
 
 **C++.** The same design as C, with templates and lambdas instead of macros and buffers that skip zero-filling. The straight port beat straight C because `std::sort` is generated for the entry type and inlined, where C's `qsort` calls its comparison through a pointer. Clang beats GCC by about 20% here.
 
@@ -360,7 +360,7 @@ Each round still runs through dozens of barrier-separated phases with little wor
 ## Tried and rejected
 
 - Peeling the edge cases out of C's pair loop: fewer instructions but more mispredicted branches.
-- Radix sort instead of the bitset rank sort in C, at any sparsity threshold.
+- Radix sort instead of the bitset rank sort in C, at any sparsity threshold, on the standard set. On cats rounds it wins for sparse subsets: thresholds of 1, 4, 16, 64, 128, 256 and 1024 words per value gave 0.0329, 0.0232, 0.0191, 0.0183, 0.0183, 0.0183 and 0.0187 ms on the standard set and 0.068, 0.062, 0.055, 0.055, 0.058, 0.065 and 0.115 on cats, so C uses 64.
 - Dropping Rust's bitset for a stable sort that keeps the first way found to each value: 0.111 ms standard, 0.189 cats and 0.104 nasty-cats, against 0.0451, 0.0967 and 0.0454 with the bitset grown by subset size, because the duplicates then reach the sort.
 - Clearing the bitset during C's rank pass: the larger rank array cost more than the pass it saved.
 - Profile-guided optimisation for C, Go and Fortran: at most 3%, not worth a two-stage build.
