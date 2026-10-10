@@ -1,0 +1,1167 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\proc}[1]{\textnormal{\textsc{#1}}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Ops}{\operatorname{Ops}}
+\newcommand{\val}{\operatorname{val}}
+\newcommand{\leaves}{\operatorname{lv}}
+\newcommand{\mask}{\mu}
+\newcommand{\str}[1]{\texttt{#1}}
+
+\title{The Countdown Numbers Problem:\\ a Canonical Formulation}
+\author{}
+\date{October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+In the numbers round of the television game \emph{Countdown}, contestants combine six dealt numbers with
+the four arithmetic operations to reach a three-digit target. We give a precise mathematical definition
+of the problem solved by the implementations in the accompanying repository~\cite{repo}. The definition goes beyond ``reach the
+target'': it fixes the rules for intermediate values, an objective that prefers exact and then
+simpler answers, and a total tie-breaking order that makes the answer, including its printed text,
+a function of the input. We prove that the definition is well posed, show that it agrees with the
+staged ``exact first, otherwise closest'' procedure the solvers carry out, and record the structural facts
+the fast solvers rely on. We then describe the algorithms the solvers use and prove them correct, from the
+sequential reference to massively parallel GPU versions, and close with statistics and timings for every implementation on a 10{,}000-round benchmark set.
+\end{abstract}
+
+\section{Introduction}
+
+A Countdown numbers round deals a \emph{pool} of six positive integers and a \emph{target} between
+100 and 999. Using each number at most once, together with addition, subtraction, multiplication and
+division, players try to make the target. Every intermediate result must be a positive integer, and not
+every number has to be used. If the target cannot be reached, the closest attainable value wins.
+
+The repository~\cite{repo}, at \url{https://github.com/ZippyManaic/countdown}, contains solvers for this game in more than thirty languages, from x86-64 assembly and line-numbered
+BASIC to CUDA, plus seven versions that share each round across several threads. They are required to produce \emph{byte-identical} output, so the problem they
+solve has to be defined down to which of several equally good expressions is printed and how it is
+bracketed. This paper gives that definition. Section~\ref{sec:instances} describes the inputs.
+Section~\ref{sec:expressions} defines legal expressions and the values they reach.
+Section~\ref{sec:objective} defines the objective and Section~\ref{sec:canonical} the canonical answer.
+Section~\ref{sec:structure} collects the properties that efficient solvers exploit,
+Section~\ref{sec:algorithms} gives the algorithms with their correctness proofs and
+Section~\ref{sec:data} reports measurements of the problem and Section~\ref{sec:performance} the
+timings of every implementation. Section~\ref{sec:optimisation} compares each language's straight port with
+its optimised version, and Section~\ref{sec:parallel} shares a single round across CPU threads. Hutton~\cite{hutton} gave an earlier formalisation that
+lists every solution. Here the task is to choose exactly one.
+
+\section{Instances}\label{sec:instances}
+
+\begin{definition}[Instance]
+An \emph{instance} is a pair $(t, p)$ in which the \emph{target} $t \in \N_{\ge 1}$ is a positive integer
+and the \emph{pool} $p = (p_0, \dots, p_{n-1})$ is a finite sequence of $n \ge 1$ positive integers.
+Write $[n] = \{0, \dots, n-1\}$ for the set of \emph{positions}.
+\end{definition}
+
+The pool is a \emph{sequence} rather than a multiset. Positions distinguish equal numbers, and
+Section~\ref{sec:canonical} shows that the order of the pool can change the printed answer. It cannot change
+how good that answer is.
+
+\begin{definition}[Subsets and masks]
+For $S \subseteq [n]$ let $\mask(S) = \sum_{i \in S} 2^i$ be its \emph{mask}. The map $\mask$ is a bijection
+from subsets of $[n]$ to $\{0, \dots, 2^n - 1\}$, and we freely identify a subset with its mask. Write
+$|S|$ for the number of positions in $S$.
+\end{definition}
+
+\paragraph{The game's distribution.}
+A round of the game is dealt as follows. The target is uniform on $\{100, \dots, 999\}$. The number of
+\emph{large} numbers $\ell$ is uniform on $\{1, 2\}$. The $6 - \ell$ \emph{small} numbers are drawn without
+replacement from a deck holding two cards of each of $1, \dots, 10$, and the $\ell$ large numbers are drawn
+without replacement from $\{25, 50, 75, 100\}$. The pool lists the small numbers followed by the large ones.
+The solvers accept any pool with $1 \le n \le 6$, and the definitions below hold for every $n$.
+
+\begin{proposition}\label{prop:pools}
+Up to order, the game can deal exactly $9{,}498$ distinct pools, so it has $9{,}498 \times 900 = 8{,}548{,}200$
+distinct instances.
+\end{proposition}
+
+\begin{proof}
+A multiset of $k$ small numbers using each of $1, \dots, 10$ at most twice corresponds to the coefficient of
+$x^k$ in $(1 + x + x^2)^{10}$. That coefficient is $615$ for $k = 4$ and $1{,}452$ for $k = 5$. Two large numbers
+can be chosen in $\binom{4}{2} = 6$ ways and one in $4$ ways. The large and small numbers never coincide,
+so the count is $6 \cdot 615 + 4 \cdot 1{,}452 = 9{,}498$.
+\end{proof}
+
+\section{Expressions and reachable values}\label{sec:expressions}
+
+\begin{definition}[Legal operations]\label{def:ops}
+For integers $x \ge y \ge 1$, the \emph{legal operations} on the ordered pair $(x, y)$ are listed below in
+their \emph{operator order}. Each one is legal only when its condition holds.
+\[
+\begin{array}{llll}
+\text{rank} & \text{operator} & \text{result} & \text{condition} \\ \midrule
+0 & + & x + y & \text{always} \\
+1 & - & x - y & x > y \\
+2 & \times & x \cdot y & y \ne 1 \\
+3 & \div & x / y & y \ne 1 \text{ and } y \mid x
+\end{array}
+\]
+Write $\Ops(x, y)$ for the list of legal pairs $(r, \circ)$ of result and operator. Every result is a positive
+integer.
+\end{definition}
+
+Operations always take the larger operand first, so subtraction never goes negative and division never
+produces a fraction below one. The game's rules additionally allow $x - x = 0$, $x \times 1$ and $x \div 1$.
+Proposition~\ref{prop:restriction} shows that excluding them never changes how good the best answer is.
+
+\begin{definition}[Expression]\label{def:expr}
+An \emph{expression} over $p$ is a finite binary tree $T$ with a value $\val(T)$ and a leaf set
+$\leaves(T) \subseteq [n]$, built by two rules:
+\begin{enumerate}[label=(\roman*)]
+\item for each $i \in [n]$ the leaf $\langle i \rangle$ is an expression with $\val = p_i$ and $\leaves = \{i\}$;
+\item if $T_1$ and $T_2$ are expressions with $\leaves(T_1) \cap \leaves(T_2) = \emptyset$ and
+      $\val(T_1) \ge \val(T_2)$, and $(r, \circ) \in \Ops(\val(T_1), \val(T_2))$, then the node
+      $(T_1 \circ T_2)$ is an expression with $\val = r$ and $\leaves = \leaves(T_1) \cup \leaves(T_2)$.
+\end{enumerate}
+\end{definition}
+
+Disjointness of leaf sets says that each dealt number is used at most once. The number of numbers an
+expression \emph{uses} is $|\leaves(T)|$.
+
+\begin{definition}[Reachable values]
+For non-empty $S \subseteq [n]$, let
+\[
+V(S) = \{\val(T) : T \text{ an expression with } \leaves(T) = S\}.
+\]
+\end{definition}
+
+A \emph{split} of $S$ is an unordered pair $\{L, R\}$ of non-empty sets with $L \cup R = S$ and
+$L \cap R = \emptyset$. Because $\mask$ is injective, each split has a unique representative with
+$\mask(L) < \mask(R)$.
+
+\begin{theorem}[Subset recursion]\label{thm:recursion}
+$V(\{i\}) = \{p_i\}$, and for $|S| \ge 2$
+\[
+V(S) = \bigcup_{\{L, R\} \text{ split of } S} \;
+       \bigcup_{a \in V(L),\, b \in V(R)}
+       \{\, r : (r, \circ) \in \Ops(\max(a, b), \min(a, b)) \,\}.
+\]
+\end{theorem}
+
+\begin{proof}
+A tree whose leaf set is a singleton must be that leaf, which gives the base case. For $|S| \ge 2$ a tree $T$
+with $\leaves(T) = S$ is a node $(T_1 \circ T_2)$. Its children's leaf sets form a split of $S$, and their
+values lie in $V(L)$ and $V(R)$, so $\val(T)$ belongs to the right-hand side. Conversely, take $a \in V(L)$
+and $b \in V(R)$ for a split, witnessed by trees $A$ and $B$. Put the one with the larger value first, taking
+$A$ when $a = b$. Then each legal operation builds a node whose value is the corresponding result, and its
+leaf set is $S$.
+\end{proof}
+
+\begin{proposition}[Value bound]\label{prop:bound}
+Every $v \in V(S)$ satisfies $1 \le v \le \prod_{i \in S} (p_i + 1) - 1$.
+\end{proposition}
+
+\begin{proof}
+Use induction on $|S|$, where the base case is $p_i \le (p_i + 1) - 1$. For $x \ge y \ge 1$ each legal result is
+at most $\max(x + y, x y) \le x y + x + y = (x + 1)(y + 1) - 1$, and the bounds multiply over a split.
+\end{proof}
+
+For a game pool this is below $101 \cdot 76 \cdot 11^2 \cdot 10^2 < 2^{27}$, so every value fits in 32 bits.
+Several solvers size a bitset of seen values by this bound.
+
+\begin{proposition}[Restricted rules lose nothing]\label{prop:restriction}
+Allow also the results $x - x = 0$, $x \times 1$ and $x \div 1$, and let $d^\dagger$ and $k^\dagger$ be the
+optimal distance and number count of Definition~\ref{def:objective} under these looser rules. If $t \ge 1$
+then the restricted rules attain the same $d^\dagger$ with the same $k^\dagger$.
+\end{proposition}
+
+\begin{proof}
+It suffices to show that any loose expression using one of the extra moves can be replaced by one that is
+no worse in distance and strictly better in distance or count. A node $T_1 \times 1$ or $T_1 \div 1$ can be
+replaced by $T_1$, which has the same value and one leaf fewer, and the replacement propagates up
+unchanged. Next consider a zero. Its parent combines it with some $w \ge 0$ through $w + 0$, $w - 0$ or
+$w \times 0$, giving $w$ or $0$. In the first case the zero subtree can be deleted, which keeps the value and
+uses fewer leaves. Otherwise zero propagates to the root, so the whole expression has distance $t$. Take a
+lowest zero node $x - x$ with $x \ge 1$. If $x \ne 1$, replace it by $x \div x = 1$, which uses the same
+leaves. If $x = 1$, take either operand subtree, which has value $1$ and fewer leaves. Either way a value of
+$1$ is reached, at distance $t - 1 < t$.
+\end{proof}
+
+\section{The objective}\label{sec:objective}
+
+\begin{definition}[Candidates and the objective]\label{def:objective}
+The \emph{candidates} of an instance are the pairs $(S, v)$ with $\emptyset \ne S \subseteq [n]$ and
+$v \in V(S)$. Each candidate has the key
+\[
+\kappa(S, v) = \bigl(\, |t - v|,\; |S|,\; \mask(S),\; v \,\bigr) \in \N^4,
+\]
+and the \emph{optimal candidate} $(S^*, v^*)$ is the candidate with the lexicographically least key.
+Call $d^* = |t - v^*|$ the \emph{optimal distance} and $k^* = |S^*|$ the \emph{optimal count}.
+\end{definition}
+
+The four components, in priority order, say: get as close to the target as possible, then use as few
+numbers as possible, then prefer the subset with the smallest mask, then the smaller value. The last
+component only separates $t - d$ from $t + d$, and it picks the value below the target.
+
+\begin{proposition}
+The optimal candidate exists and is unique.
+\end{proposition}
+
+\begin{proof}
+There is at least one candidate, since $(\{0\}, p_0)$ qualifies, and there are finitely many, since each $V(S)$
+is finite by Proposition~\ref{prop:bound}. The key determines $S$ through $\mask$ and also $v$, so distinct
+candidates have distinct keys.
+\end{proof}
+
+The solvers do not minimise $\kappa$ directly. They follow the staged procedure below, which mirrors how
+the game is played.
+
+\begin{proposition}[Staged form]\label{prop:staged}
+Let $F = [n]$ be the whole pool. The optimal candidate is produced by the following procedure.
+\begin{enumerate}[label=(\alph*)]
+\item If $t \in V(S)$ for some $S$, let $k$ be the least such $|S|$. Return $(S, t)$ for the least mask $S$ of size
+      $k$ with $t \in V(S)$.
+\item Otherwise let $(S_1, v_1)$ minimise $\kappa$ over candidates with $S \ne F$, and let $v_2$ minimise
+      $(|t - v|, v)$ over $v \in V(F)$. Return $(F, v_2)$ if $|t - v_2| < |t - v_1|$, and $(S_1, v_1)$ otherwise.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Case (a) is the definition restricted to distance $0$. In case (b), $F$ is the only subset of size $n$, so a
+candidate on $F$ has a count larger than every other candidate. A candidate on $F$ therefore beats
+$(S_1, v_1)$ under $\kappa$ exactly when it is strictly closer. Among candidates on $F$, the mask and size
+are fixed, so $\kappa$ reduces to $(|t - v|, v)$. When $n = 1$ the set of candidates with $S \neq F$ is empty
+and the procedure returns the single number.
+\end{proof}
+
+Stage (b) only ever needs the closest values of $V(F)$, never the whole set. This is why solvers can stream
+the full pool's results without storing them.
+
+\section{The canonical answer}\label{sec:canonical}
+
+Many expressions can share the optimal value and subset. For example $4 + 2$ and $2 \times 3$ might both
+give $6$ from different subsets, and a single subset typically has many trees per value. To make the output
+a function of the input we fix one tree, the first derivation in a prescribed enumeration order.
+
+\begin{definition}[Split order]
+For $|S| \ge 2$ the \emph{split order} $\Sigma(S)$ is the sequence of sets $L$ such that
+$\emptyset \ne L \subsetneq S$ and $\mask(L) < \mask(S \setminus L)$, listed in \emph{decreasing} order of
+$\mask(L)$. Each split $\{L, S \setminus L\}$ appears exactly once. Write $\sigma_S(L)$ for the position of $L$
+in this sequence.
+\end{definition}
+
+This is the order produced by the standard sub-mask loop
+$L \leftarrow (S - 1) \mathbin{\&} S$, then $L \leftarrow (L - 1) \mathbin{\&} S$ repeatedly, keeping only
+$L < S \oplus L$.
+
+\begin{definition}[Canonical derivation]\label{def:derivation}
+Let $|S| \ge 2$ and $v \in V(S)$. A \emph{derivation} of $v$ from $S$ is a tuple $(L, a, b, \circ)$ with
+$L \in \Sigma(S)$, $R = S \setminus L$, $a \in V(L)$, $b \in V(R)$ and $(v, \circ) \in \Ops(\max(a, b), \min(a, b))$.
+The \emph{canonical derivation} $\omega(S, v)$ is the derivation that minimises
+\[
+\bigl(\, \sigma_S(L),\; a,\; b,\; \operatorname{rank}(\circ) \,\bigr)
+\]
+lexicographically, where the rank is the one in Definition~\ref{def:ops}.
+\end{definition}
+
+The canonical derivation exists because $v \in V(S)$ and Theorem~\ref{thm:recursion} guarantee at least one
+derivation. It is unique because the key, together with $S$, determines the tuple. In implementation terms
+it is the \emph{first} way of making $v$ found when the splits are visited in order, each half's values in
+ascending order and the operators in operator order.
+
+\begin{definition}[Canonical tree]
+Define $\tau(S, v)$ for every candidate by recursion on $|S|$. If $S = \{i\}$, then $\tau(S, v) = \langle i \rangle$.
+Otherwise let $\omega(S, v) = (L, a, b, \circ)$ and $R = S \setminus L$, and set
+\[
+\tau(S, v) =
+\begin{cases}
+\bigl(\tau(L, a) \circ \tau(R, b)\bigr) & \text{if } a \ge b,\\[2pt]
+\bigl(\tau(R, b) \circ \tau(L, a)\bigr) & \text{if } a < b.
+\end{cases}
+\]
+\end{definition}
+
+The recursion terminates because $|L|, |R| < |S|$. When the operands are equal the half with the smaller mask
+is written first. Every subtree of a canonical tree is itself canonical for its own subset and value. This
+is what lets a solver store a single origin per reachable value.
+
+\begin{definition}[Rendering]
+The text $\rho(T)$ of an expression is defined by
+$\rho(\langle i \rangle) = $ the decimal digits of $p_i$, and
+\[
+\rho\bigl((T_1 \circ T_2)\bigr) = \str{(}\;\rho(T_1)\;\str{\textvisiblespace}\;s(\circ)\;\str{\textvisiblespace}\;\rho(T_2)\;\str{)},
+\]
+where $s(+) = \str{+}$, $s(-) = \str{-}$, $s(\times) = \str{*}$ and $s(\div) = \str{/}$, and juxtaposition is
+concatenation. The \emph{display text} $\hat\rho(T)$ removes the first and last characters of $\rho(T)$ when $T$
+is a node and equals $\rho(T)$ when $T$ is a leaf.
+\end{definition}
+
+Every node is fully bracketed, with the larger operand on the left, so no precedence conventions are
+needed to read the text back. Only the outermost brackets are dropped.
+
+\begin{definition}[The Countdown problem]\label{def:problem}
+Given an instance $(t, p)$, compute
+\[
+\operatorname{Solve}(t, p) = \bigl(\, v^*,\; \hat\rho(\tau(S^*, v^*)) \,\bigr),
+\]
+where $(S^*, v^*)$ is the optimal candidate of Definition~\ref{def:objective}.
+\end{definition}
+
+\begin{example}
+For $t = 125$ and $p = (1, 5, 7, 3, 75, 50)$ no single number equals $125$, but $75 + 50$ does, so $k^* = 2$ and
+$\operatorname{Solve} = (125, \str{75 + 50})$.
+\end{example}
+
+\begin{example}
+For $t = 423$ and $p = (6, 2, 2, 1, 1, 25)$ the target needs all six numbers:
+\[
+\operatorname{Solve}(t, p) = \bigl(423,\; \str{(25 * ((6 * (2 + 1)) - 1)) - 2}\bigr).
+\]
+\end{example}
+
+\begin{example}
+For $t = 431$ and $p = (3, 2, 3, 4, 2, 25)$ the target is unreachable. Both $430$ and $432$ lie at distance $1$.
+The key's value component would favour $430$, but $430$ needs all six numbers while $432$ needs five, so the
+count decides:
+$\operatorname{Solve}(t, p) = \bigl(432,\; \str{((25 * 3) - 3) * (4 + 2)}\bigr)$.
+\end{example}
+
+\begin{remark}[Invariance]\label{rem:invariance}
+Permuting the pool permutes the positions and preserves every $V(S)$ up to relabelling, so $d^*$, $k^*$ and $v^*$
+can change only through the mask and value components of the key. The two \emph{costs} $(d^*, k^*)$ are
+invariant. The \emph{display text} is not, because masks and split orders depend on positions. This is why
+the lookup-table solver, which answers for the sorted pool, matches the reference text on only 69\% of rounds
+while never being worse.
+\end{remark}
+
+\begin{definition}[Equally good answers]
+An answer $(v, e)$ to $(t, p)$ is \emph{equally good} as $\operatorname{Solve}(t, p)$ when $e$ is a legal
+expression over $p$ with value $v$, $|t - v| = d^*$ and $e$ uses $k^*$ numbers.
+\end{definition}
+
+The benchmark checker counts an answer as \emph{identical} when it matches $\operatorname{Solve}$ byte for byte,
+as a \emph{tie} when it is equally good, and as \emph{wrong} otherwise. In practice the checker approximates
+legality by evaluating the text and comparing the value and the count of numbers.
+
+\section{Structure used by the solvers}\label{sec:structure}
+
+\begin{proposition}[Number of splits]
+A set of size $k \ge 2$ has $2^{k-1} - 1$ splits, and the pool as a whole has
+$\sum_{k} \binom{n}{k} (2^{k-1} - 1) = \tfrac12 (3^n - 2^{n+1} + 1)$ splits across all its subsets. For $n = 6$ this
+is $301$.
+\end{proposition}
+
+\begin{proof}
+Ordered pairs $(L, R)$ with both non-empty number $2^k - 2$, and each split counts twice. For the total, use
+$\sum_k \binom{n}{k} 2^k = 3^n$.
+\end{proof}
+
+\begin{proposition}[Smallest subsets first]\label{prop:early}
+If $t \in V(S)$ for some $S$ with $|S| = k$, then $k^* \le k$ and no subset of size greater than $k$ affects
+the answer. In particular, a solver that builds $V$ in increasing order of size can stop at the first size
+whose subsets contain the target. Among those subsets, the smallest mask is the answer.
+\end{proposition}
+
+\begin{proof}
+Any candidate with $|S| > k$ has a key with first component at least $0$ and second component greater than
+$k$, so it loses to $(S, t)$. The canonical tree of the answer only involves subsets of $S^*$.
+\end{proof}
+
+Testing whether $t \in V(S)$ does not require building $V(S)$. It is enough to look, for each split and each
+value on one side, for the few values on the other side that combine to $t$.
+
+\begin{lemma}[Partners]\label{lem:partners}
+Let $a, b, t \ge 1$. Some legal operation on $(\max(a, b), \min(a, b))$ yields $t$ if and only if $b$ belongs to
+the set of positive integers among
+\[
+t - a, \qquad a - t, \qquad a + t, \qquad \tfrac{t}{a}\ \ (a \mid t,\ \min(a, \tfrac{t}{a}) \ne 1), \qquad
+\tfrac{a}{t}\ \ (t \mid a,\ \tfrac{a}{t} \ne 1), \qquad a t\ \ (a \ne 1).
+\]
+\end{lemma}
+
+\begin{proof}
+These are the solutions for $b$ of $a + b = t$, $|a - b| = t$ with $a \ne b$, $a b = t$ with neither factor $1$,
+and the quotient of the larger by the smaller equalling $t$ with divisor not $1$. Positivity of $t$ gives
+$a \ne b$ in the subtraction cases. For the quotient $a / b = t$ the divisor is $b = a / t \le a$. For
+$b / a = t$ it is $a$, and $b = a t \ge a$.
+\end{proof}
+
+So $t \in V(S)$ can be decided with at most six membership queries per value on the smaller half of each split.
+The canonical derivation is the least $(\sigma_S(L), a, b, \operatorname{rank})$ among the hits. The fast
+solvers also use this lemma recursively, to decide $t \in V(S)$ for $|S| = n$ without first building
+$V$ for subsets of size $n - 1$.
+
+\begin{remark}[Hardness]
+With only addition allowed, deciding whether $d^* = 0$ is the Subset Sum problem, which is NP-complete when
+numbers are written in binary. The game avoids this by fixing $n = 6$ and keeping numbers small.
+Every instance is then a constant-size computation, and the interest lies in its constant factors.
+\end{remark}
+
+\section{Algorithms}\label{sec:algorithms}
+
+This section describes how the implementations compute $\operatorname{Solve}$ and proves that they compute
+it exactly. Section~\ref{sec:reference} gives the reference algorithm that every byte-identical solver
+follows. Sections~\ref{sec:cpu} and~\ref{sec:gpu} cover the refinements used on CPUs and GPUs.
+Section~\ref{sec:approx} covers the two versions that return equally good rather than identical answers.
+
+\subsection{The reference algorithm}\label{sec:reference}
+
+The reference algorithm stores, for every subset $S$ it builds, the sorted list of $V(S)$ with one
+\emph{origin} per value, recording the derivation that made it. Two procedures act on a subset.
+$\proc{Build}$ enumerates every derivation in canonical order and keeps the first one for each value.
+$\proc{Find}$ decides whether a value is in $V(S)$ without building $V(S)$, by scanning one half of
+each split and looking up the partners of Lemma~\ref{lem:partners} in the other.
+
+\begin{algorithm}[ht]
+\caption{Reference solver for $\operatorname{Solve}(t, p)$}\label{alg:reference}
+\begin{algorithmic}[1]
+\Procedure{Build}{$S$}
+  \State $W \gets$ empty map from values to derivations
+  \For{$L \in \Sigma(S)$ in order, with $R = S \setminus L$}
+    \For{$a \in V(L)$ ascending, $b \in V(R)$ ascending}
+      \For{$(r, \circ) \in \Ops(\max(a, b), \min(a, b))$ in operator order}
+        \If{$r \notin W$} $W[r] \gets (L, a, b, \circ)$ \EndIf
+      \EndFor
+    \EndFor
+  \EndFor
+  \State store $V(S) \gets$ the keys of $W$ sorted ascending, each with its derivation
+\EndProcedure
+\Statex
+\Procedure{Find}{$S, v$}
+  \For{$L \in \Sigma(S)$ in order, with $R = S \setminus L$}
+    \State $H \gets \{(a, b, \circ) : a \in V(L),\ b \in V(R),\ (v, \circ) \in \Ops(\max(a, b), \min(a, b))\}$
+    \State \Comment{enumerate $H$ by scanning the shorter of $V(L)$ and $V(R)$ and looking up partners}
+    \If{$H \neq \emptyset$} \Return $(L, \min H)$ \EndIf
+  \EndFor
+  \State \Return $\bot$
+\EndProcedure
+\Statex
+\Procedure{Solve}{$t, p$}
+  \For{$i \in [n]$} store $V(\{i\}) \gets \{p_i\}$ \EndFor
+  \If{$p_i = t$ for some $i$} \Return the leaf for the least such $i$ \EndIf
+  \For{$k \gets 2$ \textbf{to} $n$}
+    \For{$S$ with $|S| = k$ in increasing mask order}
+      \If{$\textsc{Find}(S, t) \neq \bot$} \Return $(t, \hat\rho(\tau(S, t)))$ \EndIf
+    \EndFor
+    \If{$k < n$} \For{$S$ with $|S| = k$} $\textsc{Build}(S)$ \EndFor \EndIf
+  \EndFor
+  \State $(S_1, v_1) \gets$ least $\kappa$ over all stored values of subsets $S \ne [n]$
+  \State $v_2 \gets$ least $(|t - v|, v)$ over results of the pairs of every split of $[n]$, streamed and not stored
+  \State \Return $([n], v_2)$ if $|t - v_2| < |t - v_1|$, otherwise $(S_1, v_1)$, rendered through the origins
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\begin{theorem}[Correctness]\label{thm:correct}
+Algorithm~\ref{alg:reference} returns $\operatorname{Solve}(t, p)$.
+\end{theorem}
+
+\begin{proof}
+\emph{Build keeps the canonical derivation.} By induction on $|S|$ the stored lists are exactly the sets
+$V(L)$, sorted. $\proc{Build}(S)$ then visits every derivation of every $v \in V(S)$ in increasing order of
+the key $(\sigma_S(L), a, b, \operatorname{rank})$ of Definition~\ref{def:derivation}, and it keeps the first,
+which is the least: this is $\omega(S, v)$. The set of keys is $V(S)$ by Theorem~\ref{thm:recursion}.
+
+\emph{Find returns the canonical derivation.} The relation ``some legal operation on $a$ and $b$ yields $v$''
+is symmetric in $a$ and $b$, so scanning either half finds the same set $H$, and Lemma~\ref{lem:partners}
+lists, for each scanned value, every partner that could be in $H$. Splits are visited in order and the
+least element of $H$ is taken, so the result is $\omega(S, v)$ whenever $v \in V(S)$, and $\bot$ otherwise.
+
+\emph{The loop realises the objective.} Searching size $k$ needs only the lists for sizes below $k$, which
+have been built. The first size and least mask with a hit give case~(a) of Proposition~\ref{prop:staged}. If
+no size hits, every proper subset has been built, and the last three lines are case~(b) verbatim.
+
+\emph{Rendering.} The stored origins are the canonical derivations, so following them from the answer
+reproduces $\tau(S^*, v^*)$, which is rendered as $\hat\rho$.
+\end{proof}
+
+\paragraph{Cost.}
+Table~\ref{tab:cost} measures the work by subset size. Building size $k$ forms every pair across every split
+of every $k$-subset, while searching forms only one scan of the shorter half of each split. At size five,
+searching scans 214 values and building forms 7{,}140 pairs, so the early exit of
+Proposition~\ref{prop:early} matters far more than any constant factor. The search also replaces the
+build for the whole pool, where building would form 15{,}456 pairs.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrr}
+\toprule
+$k$ & pairs to build size $k$ & legal results & values scanned to search size $k$ \\ \midrule
+2 & 15 & 46 & 15 \\
+3 & 184 & 571 & 60 \\
+4 & 1{,}446 & 4{,}522 & 185 \\
+5 & 7{,}140 & 22{,}334 & 214 \\
+6 & 15{,}456 & 48{,}213 & 196 \\ \bottomrule
+\end{tabular}
+\caption{Work per round summed over all subsets of size $k$, averaged over the first 300 benchmark rounds.
+Each scanned value costs at most six lookups.}\label{tab:cost}
+\end{table}
+
+\subsection{Refinements on the CPU}\label{sec:cpu}
+
+The compiled implementations keep Algorithm~\ref{alg:reference} and change how $\proc{Build}$ removes
+duplicates and sorts. Each refinement is exact, so the output is unchanged.
+
+\paragraph{Duplicates by bitset.}
+Instead of a map, a bitset $B$ over $\{0, \dots, M(S)\}$ records which values have been seen. Each legal
+result is written to the next output slot unconditionally, and the output pointer advances by one minus
+the old bit. The first derivation of each value is therefore the one kept, as before, with no branch to
+mispredict.
+
+\paragraph{Sorting by rank.}
+Once every result is in, the bitset itself is the sorted set.
+
+\begin{lemma}[Rank]\label{lem:rank}
+Split $B$ into 64-bit words $B_0, B_1, \dots$, and let $c_j = \sum_{i < j} \operatorname{popcount}(B_i)$. A value
+$v \in B$ belongs at index $c_{\lfloor v / 64 \rfloor} + \operatorname{popcount}\bigl(B_{\lfloor v / 64 \rfloor}
+\mathbin{\&} (2^{v \bmod 64} - 1)\bigr)$ of the ascending list.
+\end{lemma}
+
+\begin{proof}
+The expression counts the members of $B$ below $v$: whole words before $v$'s word, then the lower bits of its own.
+\end{proof}
+
+This sorts the list in time linear in the number of values and words, with no comparisons. Sets with
+few values use insertion sort instead.
+
+\paragraph{A tighter value bound.}
+The bitset is sized by $M(S)$, where $M(\{i\}) = p_i$ and
+$M(S) = \max_{\{L, R\}} \max\bigl(M(L) + M(R),\ M(L)\, M(R)\bigr)$. Every $v \in V(S)$ satisfies $v \le M(S)$, since
+subtraction and division never exceed the larger operand and addition and multiplication are monotone.
+This is at most the bound of Proposition~\ref{prop:bound}.
+
+\paragraph{Division by reciprocal.}
+Integer division is slow, so the solvers test exactness with a precomputed floating-point reciprocal.
+
+\begin{lemma}[Reciprocal division]\label{lem:reciprocal}
+Let $1 \le y \le x < 2^{31}$ and let $q$ be $x \cdot \operatorname{fl}(1/y)$, computed in IEEE double precision and
+rounded to the nearest integer. Then $y \mid x$ if and only if $q y = x$.
+\end{lemma}
+
+\begin{proof}
+With unit roundoff $u = 2^{-53}$, the computed product differs from $x / y$ by at most
+$(x / y)(2u + u^2) < 2^{31} \cdot 2^{-51} < \tfrac12$. If $y \mid x$ then $x / y$ is the nearest integer, so
+$q = x / y$ and $q y = x$. If $y \nmid x$, no integer $q$ satisfies $q y = x$.
+\end{proof}
+
+Values stay below $2^{27}$ (Proposition~\ref{prop:bound}), so the lemma applies with room to spare. An inexact
+division writes $0$, whose bit is set before building starts, so the bitset drops it without a branch.
+
+\paragraph{Known larger operand.}
+Because $V(R)$ is sorted, the right values not exceeding a left value $a$ form a prefix. Looping over that
+prefix and then the rest fixes which operand is larger without comparing them.
+
+\subsection{Parallel algorithms on the GPU}\label{sec:gpu}
+
+A GPU runs thousands of threads with no common order of events, so ``keep the first derivation found''
+has no direct meaning. Two observations restore determinism.
+
+\begin{proposition}[Derivation by minimum]\label{prop:min}
+Encode a derivation $(L, a, b, \circ)$ of $v$ from $S$ as the integer
+$\bigl(\sigma_S(L), a, b, \operatorname{rank}(\circ)\bigr)$ packed most significant first. Then
+$\omega(S, v)$ is the minimum of the codes of all derivations, whatever order they are found in.
+\end{proposition}
+
+\begin{proof}
+Packing with enough bits per field turns the lexicographic order of Definition~\ref{def:derivation} into
+integer order, and the minimum of a set does not depend on the order of its elements.
+\end{proof}
+
+So threads can fold derivations into a result with an atomic minimum. The second observation is that
+origins need not be stored at all.
+
+\begin{proposition}[Sets suffice]\label{prop:sets}
+Given the sets $V(L)$ for all $L \subsetneq S$, $\proc{Find}(S, v)$ computes $\omega(S, v)$ for any $v \in V(S)$.
+Hence $\tau(S^*, v^*)$ can be recovered from the value sets alone with at most $k^* - 1$ calls to
+$\proc{Find}$, one per internal node.
+\end{proposition}
+
+\begin{proof}
+The first claim is the second step of the proof of Theorem~\ref{thm:correct}, which used only the sets. The tree
+has $k^*$ leaves and so $k^* - 1$ internal nodes, each of which is the canonical derivation of its own subset
+and value.
+\end{proof}
+
+The CUDA solver uses both. One thread block solves one round in on-chip shared memory. It stores each
+subset's values in a hash table keyed by subset and value, so duplicates are removed by an atomic
+compare-and-swap and nothing is sorted. The nodes of the answer tree at the same depth are independent,
+so they are expanded one level at a time, with all threads searching at once. The PyTorch solver instead
+keeps every value of every round in one sorted array of keys (size, round, mask, value) and answers
+membership queries by binary search. It removes duplicates with a stable sort of results generated in
+canonical order, so the first derivation of each value survives.
+
+Both GPU solvers also avoid building the subsets of size $n - 1$ when the answer uses every number.
+
+\begin{lemma}[Deferred level]\label{lem:defer}
+Let $n \ge 3$. In any split of $[n]$, if one half has size $n - 1$ then the other is a singleton. So
+$\proc{Find}([n], t)$ can run with the sets of size $n - 1$ unbuilt: in those splits it scans the singleton
+and decides each of at most six partners $b$ by a nested $\proc{Find}(L, b)$ with $|L| = n - 1$, which needs
+only sets of size at most $n - 2$.
+\end{lemma}
+
+\begin{proof}
+The sizes of the two halves add up to $n$. Nested searches return membership correctly by the second step of
+Theorem~\ref{thm:correct}.
+\end{proof}
+
+There are $n$ such splits with at most six partners each, so at most $6n = 36$ nested searches, against
+7{,}140 pairs to build size five. The sets of size $n - 1$ are still built when the whole pool misses the
+target, because case~(b) of Proposition~\ref{prop:staged} needs every proper subset. By the same counting,
+a subset of size $n - 2$ is a half only in splits of sets of size $n - 1$ or $n$, where the other half has size
+$1$ or $2$. When $n \ge 5$ that other half is the smaller one, so searches scan it and only look up the
+values of the $(n - 2)$-subset. The CUDA solver therefore keeps those sets as hash tables without a list,
+listing them by a table scan only in the rare rounds that build size $n - 1$. This cuts its shared memory
+enough to run three rounds on each multiprocessor at once. For $n = 4$ the argument fails, since the split
+$2 + 2$ has equal halves, and the solver lists those sets as usual.
+
+\subsection{Precomputed and learned answers}\label{sec:approx}
+
+Two further versions trade exact text for speed. Their answers are equally good but not always identical.
+
+\paragraph{Lookup table.}
+By Proposition~\ref{prop:pools} the game has only $8{,}548{,}200$ instances up to the order of the pool, so
+their answers can all be computed in advance. The table is keyed by the sorted pool, so by
+Remark~\ref{rem:invariance} it stores $\operatorname{Solve}$ of a permutation of the dealt pool: the same
+$(d^*, k^*)$, possibly with different text. Keying on dealt order instead would need about 430 million
+answers.
+
+\paragraph{Learned proposals with a certificate.}
+A small transformer reads $(t, p)$ and proposes an expression one token at a time, with decoding constrained so
+that every proposal is legal. A proposal is only a hint, and the solver accepts it on the following
+certificate.
+
+\begin{proposition}[Certificate]\label{prop:certificate}
+Suppose a legal expression $e$ over $p$ has value $t$ and uses $k$ numbers, and $\proc{Find}(S, t) = \bot$ for
+every $S$ with $|S| < k$. Then $d^* = 0$, $k^* = k$ and $e$ is equally good as $\operatorname{Solve}(t, p)$.
+\end{proposition}
+
+\begin{proof}
+The expression shows that $t \in V(\leaves(e))$, so $d^* = 0$ and $k^* \le k$, and the failed searches show
+$k^* \ge k$.
+\end{proof}
+
+Checking the certificate needs only subsets of size up to $k - 2$ built, so an accepted proposal saves
+building size $k - 1$. A rejected or missing proposal falls back to the full algorithm, so the hybrid is
+never worse than the solver. In practice the model proposes a shortest answer too rarely, on 7\% of
+six-number rounds, for the saving to outweigh the cost of running it.
+
+\section{Empirical facts}\label{sec:data}
+
+The benchmark set \texttt{bench/data/rounds10k.txt} holds $10{,}000$ game-distributed rounds. Its
+reference answers \texttt{ref10k.tsv} are $\operatorname{Solve}(t, p)$ as computed by the Rust solver.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lr}
+\toprule
+Outcome & Rounds \\ \midrule
+Exact ($d^* = 0$) & 9{,}776 \\
+\quad using 1 number & 3 \\
+\quad using 2 numbers & 81 \\
+\quad using 3 numbers & 860 \\
+\quad using 4 numbers & 3{,}622 \\
+\quad using 5 numbers & 4{,}063 \\
+\quad using 6 numbers & 1{,}147 \\
+Closest at $d^* = 1$ & 207 \\
+Closest at $d^* = 2$ & 13 \\
+Closest at $d^* = 3$ & 2 \\
+Closest at $d^* = 4$ & 2 \\ \bottomrule
+\end{tabular}
+\caption{Optimal distance and count over the 10{,}000 benchmark rounds.}
+\end{table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{rrr}
+\toprule
+$|S|$ & mean $|V(S)|$ & largest $|V(S)|$ \\ \midrule
+1 & 1.0 & 1 \\
+2 & 3.1 & 4 \\
+3 & 17.1 & 28 \\
+4 & 133.8 & 228 \\
+5 & 1{,}079.1 & 2{,}181 \\
+6 & 8{,}154.1 & 18{,}946 \\ \bottomrule
+\end{tabular}
+\caption{Sizes of reachable sets over the first 300 benchmark rounds. The largest value seen was 25{,}200{,}000.}\label{tab:sets}
+\end{table}
+
+Two consequences shape the solvers. First, almost every round is exact, so by
+Proposition~\ref{prop:early} the full pool's value set is almost never needed. The five-number sets are needed only by the 11\% of
+rounds whose answer uses all six numbers, and the GPU solvers avoid even those by Lemma~\ref{lem:defer},
+building them only for the 2\% of rounds that miss. Second, the work is dominated by the largest subsets. The reachable sets
+grow roughly eightfold with each extra number, and most of the cost lies in combining two halves of a
+five- or six-number subset.
+
+\section{Performance}\label{sec:performance}
+
+Every implementation was timed on the same 10{,}000 benchmark rounds. Table~\ref{tab:perf} lists the
+results, copied from the repository's \texttt{PERFORMANCE.md}, fastest first.
+
+\paragraph{Method.}
+The machine is an Intel Core i9-13900HX with an NVIDIA RTX 4070 Laptop GPU, running Linux 7.0. CPU
+benchmarks are pinned to one performance core. \emph{Solve time} is the best of three runs, measured
+inside a harness for each language, so that start-up and output are excluded. Python and bwBASIC are timed on a
+1{,}000-round set because the full set takes over a minute. The just-in-time compiled languages are timed after three
+untimed warm-up passes. The GPU harnesses warm up first too, so that CUDA start-up, kernel compilation and
+the GPU's climb from its idle clock are excluded. \emph{Straight port} is the solve time of each language's
+first faithful translation, before any language-specific optimisation. \emph{Whole program} is the mean
+wall-clock time of each language's own executable dealing and solving one random round, over 300 runs (10
+for the two PyTorch versions), so it includes process and runtime start-up.
+
+The twelve newest languages (FreeBASIC, BASIC, WebAssembly, F\#, Haskell, Kotlin, Common Lisp, OCaml, Ruby,
+Julia, Erlang and Elixir) were measured later on 2026-10-09, in sessions in which C measured 0.0182--0.0185\,ms. The four GPU and precomputed rows were measured a day after the original set, in a quieter session in which C
+measured 0.0184--0.0188\,ms rather than 0.0208\,ms. Comparisons between those rows and the others
+therefore carry roughly 10\% uncertainty. The GPU rows are throughput, with all 10{,}000 rounds submitted as
+one batch, not the latency of a single round.
+
+\begin{table}[p]
+\centering
+\footnotesize
+\begin{tabular}{@{}lrrrrl@{}}
+\toprule
+Implementation & \multicolumn{1}{c}{Solve} & \multicolumn{1}{c}{Straight port} & \multicolumn{1}{c}{Gain}
+  & \multicolumn{1}{c}{Whole program} & Answers \\
+ & ms/round & ms/round & & ms/run & \\ \midrule
+Rust + CUDA (GPU, batched)          & 0.000466 & 0.0107\rlap{$^a$} & 23$\times$  & 203   & identical \\
+Lookup table (Python)               & 0.00069  & --                & --          & 13.4  & 31\% ties \\
+PyTorch on the GPU (batched)        & 0.0157   & 0.142\rlap{$^a$}  & 9.0$\times$ & 3{,}218 & identical \\
+Zig (ReleaseFast)                   & 0.0203   & 0.083             & 4.1$\times$ & 0.48  & identical \\
+C (Clang)                           & 0.0208   & 0.118             & 5.7$\times$ & 0.39  & identical \\
+Julia 1.13                          & 0.0208   & 0.259             & 12.5$\times$ & 548   & identical \\
+C++ (Clang)                         & 0.0213   & 0.086             & 4.0$\times$ & 0.73  & identical \\
+FreeBASIC (GCC back end)            & 0.0215   & 0.123             & 5.7$\times$ & 0.50  & identical \\
+x86-64 assembly                     & 0.0218   & 0.043\rlap{$^a$}  & 2.0$\times$ & 0.23  & identical \\
+WebAssembly (C in Node)             & 0.0229   & 0.243             & 10.6$\times$ & 17.4 & identical \\
+Fortran (gfortran)                  & 0.0247   & 0.109             & 4.4$\times$ & 0.52  & identical \\
+Ada (GNAT)                          & 0.0260   & 0.260             & 10$\times$  & 0.78  & identical \\
+C\# (.NET 10)                       & 0.0274   & 0.212             & 7.7$\times$ & 21.9  & identical \\
+Swift                               & 0.0274   & 0.212             & 7.7$\times$ & 1.52  & identical \\
+F\# (.NET 10)                       & 0.0287   & 0.332             & 11.6$\times$ & 30.3 & identical \\
+Go                                  & 0.0330   & 0.190             & 5.8$\times$ & 0.64  & identical \\
+Pascal (Free Pascal)                & 0.0352   & 0.752             & 21$\times$  & 0.38  & identical \\
+PyTorch with transformer proposals  & 0.0354   & --                & --          & 3{,}223 & 8\% ties \\
+Haskell (GHC)                       & 0.0360   & 0.639             & 17.8$\times$ & 0.82  & identical \\
+Kotlin (JVM)                        & 0.0373   & 0.149             & 4.0$\times$ & 48.2  & identical \\
+Java (OpenJDK 25)                   & 0.0391   & 0.154\rlap{$^b$}  & 3.9$\times$ & 34.2  & identical \\
+Common Lisp (SBCL)                  & 0.0472   & 0.446             & 9.4$\times$ & 1.51  & identical \\
+OCaml                               & 0.0537   & 0.450             & 8.4$\times$ & 0.64  & identical \\
+Rust                                & 0.0557   & 9.7\rlap{$^a$}    & 174$\times$ & 0.51  & identical \\
+Erlang (BEAM)\rlap{$^c$}            & 0.0575   & 0.494             & 8.6$\times$ & 73.7  & identical \\
+Elixir (BEAM)\rlap{$^c$}            & 0.0576   & 0.729             & 12.7$\times$ & 83.6  & identical \\
+JavaScript (Node 24)                & 0.0848   & 0.381             & 4.5$\times$ & 24.3  & identical \\
+COBOL (GnuCOBOL)                    & 0.173    & 2.07              & 12$\times$  & 1.30  & identical \\
+LuaJIT                              & 0.186    & 0.61              & 3.3$\times$ & 2.11  & identical \\
+Ruby with RJIT                      & 0.291    & --                & --          & 29.0  & identical \\
+Forth (\texttt{gforth-fast})        & 0.318    & 0.864             & 2.7$\times$ & 4.28  & identical \\
+Forth (\texttt{gforth})             & 0.399    & 1.036             & 2.6$\times$ & 7.02  & identical \\
+Ruby 3.3                            & 0.494    & 2.22              & 4.5$\times$ & 29.6  & identical \\
+Lua 5.4                             & 0.550    & 1.10              & 2.0$\times$ & 2.44  & identical \\
+Python                              & 7.23     & 12.0\rlap{$^a$}   & 1.7$\times$ & 17.6  & 1.5\% ties \\
+BASIC (bwBASIC, line-numbered)      & 306      & 1{,}114        & 3.6$\times$ & 282   & identical \\ \bottomrule
+\end{tabular}
+\caption{Solve time per round over the 10{,}000 benchmark rounds (1{,}000 for Python and bwBASIC), the time before optimisation, and the time
+for a whole program run. $^a$First version rather than a straight port of another language. $^b$Re-measured with the current harness (Section~\ref{sec:surprises}); 0.257\,ms was recorded originally. $^c$Defers the four- and five-number subsets, extending Lemma~\ref{lem:defer}, and so does less work than the other CPU versions; Erlang built like the others takes about 0.22\,ms. ``Ties'' are
+equally good answers that differ in text from $\operatorname{Solve}$; no implementation gives a worse answer.}
+\label{tab:perf}
+\end{table}
+
+\paragraph{Observations.}
+\begin{enumerate}[label=(\arabic*)]
+\item \emph{The algorithm matters more than the language.} The compiled languages from Zig to Java lie within a
+factor of two of one another, while every one of them gained between two and twenty-one times from the
+techniques of Sections~\ref{sec:reference} and~\ref{sec:cpu}. The largest single gain, Rust's
+174$\times$, came from moving its first version to the staged search with early exit
+(Proposition~\ref{prop:early}) and searching rather than building (Lemma~\ref{lem:partners}), together with a compact bitset store.
+\item \emph{Compilers set the floor.} C, C++, Zig, FreeBASIC and hand-written assembly finish within 8\% of one another,
+because they share one design and differ only in code generation. Garbage-collected and managed languages
+come close when written over flat buffers, and interpreters trail C by between nine times and, for the line-numbered bwBASIC, about fifteen thousand times. WebAssembly in Node comes within 25\% of native C.
+\item \emph{Parallelism needs batches.} The CUDA solver is about 40 times faster than C per round, but only
+when thousands of rounds are in flight, one per thread block. The PyTorch solver takes 11\,ms for a single
+round, slower than plain Python, and only passes C at around 10{,}000 rounds per batch. Their whole-program
+times, 0.2 and 3.2 seconds, are almost entirely runtime and GPU start-up. The parallel formulation of
+Section~\ref{sec:gpu} makes the GPU versions exact, but it does not make them suitable for one round at a time. Sharing one round across CPU threads gains at most a factor of two (Section~\ref{sec:parallel}).
+\item \emph{Precomputation wins on latency.} Because the instance space is finite
+(Proposition~\ref{prop:pools}), a 248\,MB table answers in 0.7\,\textmu s from plain Python, faster than any
+solver except CUDA. The price is that its text matches $\operatorname{Solve}$ for only 69\% of rounds
+(Remark~\ref{rem:invariance}).
+\item \emph{Learning did not pay.} The transformer's certified proposals (Proposition~\ref{prop:certificate})
+never give a wrong answer, but they too rarely save the expensive levels to cover the cost of running the
+model, so the hybrid is 2.3 times slower than the PyTorch solver it guides.
+\end{enumerate}
+
+\section{Straight ports against optimised versions}\label{sec:optimisation}
+
+Every language was implemented twice. The \emph{straight port} is a faithful translation of
+Algorithm~\ref{alg:reference} as the Rust reference writes it. It uses the language's ordinary data
+structures, the library sort, a branching binary search and the \texttt{\%} operator for the division test.
+The \emph{optimised version} keeps the same algorithm and the same output, and changes only how the work is
+done. Both versions of every language were checked against the reference answers. Table~\ref{tab:opt}
+summarises what changed, and the rest of this section explains why the changes help.
+
+\subsection{Changes shared across languages}
+
+Most optimised versions adopt some or all of the refinements of Section~\ref{sec:cpu}. In rough order of
+impact they are:
+\begin{enumerate}[label=(\alph*)]
+\item a 16-byte entry holding the value, operator, masks and both operands, written without a branch and
+      kept only if the bitset shows the value is new;
+\item the reciprocal division test of Lemma~\ref{lem:reciprocal} in place of an integer division;
+\item each pair loop split at the left value, so the larger operand is known without a comparison;
+\item sorting by rank in the bitset (Lemma~\ref{lem:rank}), which needs no comparisons;
+\item branchless binary search and other unpredictable comparisons turned into conditional moves or
+      arithmetic masks;
+\item the bitset sized by the bound $M(S)$, so it grows only when larger subsets are built.
+\end{enumerate}
+Each of these is an exact transformation of $\proc{Build}$ or $\proc{Find}$, so none can change
+$\operatorname{Solve}$. The straight ports already had the staged search, the early exit and the
+partner lookups, because the Rust reference they copy has them.
+
+\begin{table}[p]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrp{9.5cm}@{}}
+\toprule
+Language & \multicolumn{1}{c}{Straight} & \multicolumn{1}{c}{Optimised} & \multicolumn{1}{c}{Gain} & Principal changes \\
+ & ms/round & ms/round & & \\ \midrule
+Zig & 0.083 & 0.0203 & 4.1$\times$ & C allocator instead of the default, which returned memory to the kernel on every free; buffers grown by doubling; branch hint for a conditional move in the search \\
+C & 0.118 & 0.0208 & 5.7$\times$ & all of (a)--(f); Clang instead of GCC; binary search adds \texttt{(value <= target) * half}; subsets listed in size order up front \\
+Julia & 0.259 & 0.0208 & 12.5$\times$ & values listed straight from the bitset with \texttt{trailing\_zeros}, so no sort; an \texttt{llvmcall} select marked \texttt{!unpredictable} to force conditional moves \\
+C++ & 0.086 & 0.0213 & 4.0$\times$ & the C design with templates and lambdas; buffers that skip zero-filling; Clang instead of GCC \\
+FreeBASIC & 0.123 & 0.0215 & 5.7$\times$ & port of the optimised C with typed pointers and macros; \texttt{-march=native} for a one-instruction popcount; \texttt{IIf} replaced by a mask \\
+Assembly & 0.043$^a$ & 0.0218 & 2.0$\times$ & rank sort; branchless stores; conditional moves in the search; branchless division test \\
+WebAssembly & 0.243 & 0.0229 & 10.6$\times$ & the optimised C compiled unchanged with portable stand-ins for three intrinsics; quotient rounded by adding $1.5 \cdot 2^{52}$ \\
+Fortran & 0.109 & 0.0247 & 4.4$\times$ & \texttt{-O3} so the store is inlined; no default component values, which zeroed whole arrays; arrays passed separately so they cannot alias; masks instead of \texttt{merge} \\
+Ada & 0.260 & 0.0260 & 10$\times$ & runtime checks suppressed with \texttt{-gnatp}; cross-unit inlining; popcount and rounding intrinsics; modular type for masks \\
+C\# & 0.212 & 0.0274 & 7.7$\times$ & near line-for-line port of the optimised C using \texttt{unsafe} pointers, native memory and \texttt{PopCount} \\
+Swift & 0.212 & 0.0274 & 7.7$\times$ & unsafe pointer buffers; wrapping arithmetic; \texttt{-Ounchecked}; ternaries replaced by arithmetic masks \\
+F\# & 0.332 & 0.0287 & 11.6$\times$ & port of the optimised C\# over native memory; conversions through signed \texttt{int64}; arithmetic mask in the division test \\
+Go & 0.190 & 0.0330 & 5.8$\times$ & flat harness data so the garbage collector stops rescanning; \texttt{GOAMD64=v3}; masks instead of branches; lookup trimmed to fit the inliner \\
+Pascal & 0.752 & 0.0352 & 21$\times$ & C allocator via \texttt{cmem}; 64-bit floating constants so the reciprocal is exact \\
+Java & 0.154$^b$ & 0.0391 & 3.9$\times$ & entries packed into a \texttt{long[]}; \texttt{Long.bitCount} rank sort; straight-line partner checks \\
+Kotlin & 0.149 & 0.0373 & 4.0$\times$ & port of the optimised Java with \texttt{LongArray} entries \\
+Haskell & 0.639 & 0.0360 & 17.8$\times$ & \texttt{ST} over unboxed \texttt{PrimArray}s; bitset with rank sort; values only, origins rebuilt for the answer \\
+Common Lisp & 0.446 & 0.0472 & 9.4$\times$ & port of the optimised C with typed arrays, \texttt{logcount} and \texttt{(safety 0)} \\
+OCaml & 0.450 & 0.0537 & 8.4$\times$ & byte bitset with radix sort; integer-only \texttt{max} and \texttt{min}; \texttt{Bigarray}s to spare the collector; values only \\
+Rust & 9.7$^a$ & 0.0557 & 174$\times$ & staged search with early exit; values only while searching; compact entries with a bitset; partner lookups; none of (a)--(f) yet \\
+Erlang$^c$ & 0.494 & 0.0575 & 8.6$\times$ & rewritten to Elixir's design, with tuples for binary search and subset tables as constants \\
+Elixir$^c$ & 0.729 & 0.0576 & 12.7$\times$ & values only with \texttt{:lists.usort}; four- and five-number subsets deferred; ordered partner checks; outward search for closest rounds \\
+JavaScript & 0.381 & 0.0848 & 4.5$\times$ & four 32-bit words per entry in a \texttt{Uint32Array}; 32-bit bitset words with a hand-written popcount; no typed-array views in the insertion sort \\
+COBOL & 2.07 & 0.173 & 12$\times$ & every hot operation kept out of GMP decimal arithmetic: shift-and-add multiplication, long division, a byte stamp per value and a byte radix sort \\
+LuaJIT & 0.61 & 0.186 & 3.3$\times$ & each origin packed into one number; a radix sort written in Lua; hash tables pre-sized \\
+Ruby & 2.22 & 0.494 & 4.5$\times$ & a Hash per subset with \texttt{key?} checks; split pair loops; whole-pool pass unrolled \\
+Forth (fast) & 0.864 & 0.318 & 2.7$\times$ & byte stamp per value; byte radix sort; pointer stepping; hot words compiled in place \\
+Forth & 1.036 & 0.399 & 2.6$\times$ & as above \\
+Lua 5.4 & 1.10 & 0.550 & 2.0$\times$ & each origin packed into one number; \texttt{table.sort} kept \\
+Python & 12.0$^a$ & 7.23 & 1.7$\times$ & values without origins while searching; origins rebuilt only for the answer \\
+bwBASIC & 1{,}114 & 306 & 3.6$\times$ & one hash table of values without origins; hot subroutines placed first because \texttt{GOTO} searches from the top \\ \midrule
+PyTorch & 0.142$^a$ & 0.0157 & 9.0$\times$ & expressions typeset on the GPU; pair generation fused by \texttt{torch.compile}; shorter half scanned; five-number subsets deferred; illegal results dropped before sorting \\
+Rust + CUDA & 0.0107$^a$ & 0.000466 & 23$\times$ & split tables computed once; each phase flattened across all threads; four-number subsets kept as tables only; values appended as they are found; answer unfolded a level at a time \\ \bottomrule
+\end{tabular}
+\caption{Straight port against optimised version for each language. $^a$First version rather than a
+straight port. $^b$Re-measured (Section~\ref{sec:surprises}). $^c$Defers the four- and five-number subsets, extending Lemma~\ref{lem:defer}, and so does less work than the other CPU versions.}\label{tab:opt}
+\end{table}
+
+\subsection{What the gains reveal}
+
+The changes fall into a handful of recurring kinds, and which kinds matter says more about each language's
+implementation than about the language itself.
+
+\paragraph{Memory management.}
+Several of the largest single gains had nothing to do with arithmetic. Zig's default allocator and Free
+Pascal's heap manager both returned large blocks to the kernel on every free. Since each solve allocates
+its own memory, Zig's version took 255{,}000 page faults over a run. Switching to the C library's allocator halved
+both run times. Go spent a third of its time in the garbage collector rescanning the harness's 20{,}000
+small objects, and gfortran zeroed whole arrays because of default component values. In each case the
+straight port was paying for the runtime rather than the algorithm.
+
+\paragraph{Branches.}
+The binary search in $\proc{Find}$ and the duplicate test in $\proc{Build}$ take each direction about
+half the time, so a branch there mispredicts constantly. Every compiled language gained by making them
+branchless, but each needed a different way to ask for it. Zig has an explicit hint. Clang ignored its
+hint, so the C version multiplies by a comparison. Go has no way to ask, so its version uses arithmetic
+masks, and so do Fortran and Swift, whose compilers turned \texttt{merge} and the ternary operator back
+into branches.
+
+\paragraph{Slow primitives.}
+Integer division is slow, so the reciprocal test of Lemma~\ref{lem:reciprocal} pays off in every
+compiled language. Free Pascal first stored the constant $1.0$ in single precision, which made the
+reciprocal too inexact for the lemma to hold until the precision was raised. COBOL is the extreme case.
+GnuCOBOL compiles multiplication, division and bitwise operations into calls to GMP's decimal arithmetic,
+which took 65\% of the time. The optimised version restricts its hot paths to the operations that compile to
+native code and builds the rest from them, which cut decimal arithmetic to 3\%.
+
+\paragraph{Sorting.}
+Library sorts compare, and comparisons through a function pointer are slow. This is why straight C, which uses
+\texttt{qsort}, started slower than straight C++, whose \texttt{std::sort} is inlined for the entry type. The
+rank sort of Lemma~\ref{lem:rank} removes comparisons entirely where a population count is cheap. COBOL and Forth
+use a byte radix sort instead, and so does LuaJIT, which cannot compile \texttt{table.sort}. Lua 5.4 kept \texttt{table.sort}, because its
+interpreter runs a radix sort written in Lua three times slower than the built-in.
+
+\paragraph{Safety checks.}
+Ada's straight port keeps the language's default bounds and overflow checks, and its optimised build
+suppresses them alongside inlining and native code generation. Swift's
+\texttt{-Ounchecked} took it from 0.043 to 0.030\,ms. Removing checks is only safe once the code is known to be
+in range, so the optimised Ada solver was also run over all 10{,}000 rounds with checks enabled, with
+identical answers.
+
+\paragraph{Interpreters.}
+In Lua and Forth the cost tracks the number of operations the interpreter dispatches, not the machine work
+behind them. The gains there come from doing less per value: packing an origin into one number instead of a
+table, stamping a byte with the subset's mask instead of clearing a bitset, and stepping pointers rather than
+computing indices.
+
+\paragraph{Line-numbered BASIC.}
+bwBASIC interprets the program text almost directly. It costs about 2.4\,\textmu s per statement, plus about
+1\,\textmu s per operator, and a fifth of its time is spent in \texttt{strcmp}. It finds every \texttt{GOTO} and
+\texttt{GOSUB} target by searching from the start of the program. A jump to a line near the end therefore costs
+about 3\,\textmu s, against 0.4\,\textmu s near the start, and the optimised solver puts its hot subroutines
+first, so that line numbers themselves become a performance decision. Its 3.6-fold gain otherwise came from
+Proposition~\ref{prop:sets}: it keeps one hash table of values, with no sorting and no stored origins, and
+rebuilds the few origins the answer needs by search.
+
+\paragraph{Python.}
+The Python version took a different route, using Proposition~\ref{prop:sets}. It stores only the value sets while
+searching and rebuilds origins only for the nodes of the final answer. That saves about 40\%. The interpreter's
+cost per value still dominates, so Python remains 350 times slower than C.
+
+\paragraph{What did not carry over.}
+A SIMD rewrite of the assembly was ruled out because removing duplicates is serial: whether a value is new
+depends on every value before it. Profile-guided optimisation gave at most 3\% in C, Go and Fortran. Radix sort
+lost to rank sort in C at every sparsity tested. The GPU versions are a different story. Their gains come
+from restructuring for parallelism (Section~\ref{sec:gpu}) rather than from any of (a)--(f).
+
+\subsection{Surprises examined}\label{sec:surprises}
+
+Adding Haskell, OCaml, Common Lisp, F\#, Kotlin, Ruby and WebAssembly produced several results that go
+against the usual reputations of these languages. This subsection gives the evidence for each one and our
+reading of the cause. Times are best of three, pinned to one core. Hardware counters come from
+\texttt{perf stat}. To leave out start-up and input parsing, they difference a run of six passes over the
+10{,}000 rounds against a run of one pass. Where we infer a cause rather than measure it, we say so.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Language & ms/round & instructions & cycles & IPC & branch misses & loads \\ \midrule
+C (Clang)          & 0.0187 & 324{,}000 & 93{,}400  & 3.47 & 797   & 52{,}300 \\
+Go                 & 0.0303 & 541{,}000 & 154{,}700 & 3.50 & 985   & 106{,}300 \\
+Haskell (GHC)      & 0.0366 & 596{,}000 & 186{,}500 & 3.20 & 1{,}576 & 140{,}800 \\
+Common Lisp (SBCL) & 0.0487 & 800{,}000 & 237{,}500 & 3.37 & 845   & 168{,}800 \\
+Rust               & 0.0503 & 608{,}000 & 259{,}900 & 2.34 & 3{,}665 & 134{,}400 \\
+OCaml              & 0.0541 & 1{,}102{,}000 & 272{,}500 & 4.04 & 1{,}676 & 203{,}400 \\ \bottomrule
+\end{tabular}
+\caption{Hardware counters per round for the ahead-of-time compiled solvers, on the 10{,}000 benchmark
+rounds.}\label{tab:counters}
+\end{table}
+
+\paragraph{Common Lisp beats Rust.}
+SBCL is a dynamically typed Lisp, yet its optimised solver, at 0.049\,ms, beats the Rust solver, at 0.050\,ms. The
+counters show why. Rust executes \emph{fewer} instructions than Lisp, but it suffers 3{,}665 branch
+mispredictions per round against Lisp's 845, which is close to C's 797. At roughly 15--20 cycles each, the
+extra 2{,}800 mispredictions cost about 50{,}000 cycles. That is most of the difference, and it drags Rust's
+instructions per cycle (IPC) down to 2.34. The Lisp version is a direct port of the optimised C design, including the
+branchless append and binary search of refinements (a) and (e). The Rust solver has not yet had any of
+(a)--(f). So this result is about design rather than language: SBCL with full type declarations and
+\texttt{(safety 0)} compiles to plain machine arithmetic, and the branchless design matters more than the
+better compiler. Profiling also shows that 11--15\% of the Lisp solver's cycles are in \texttt{memset}, called from
+SBCL's allocator (\texttt{lisp\_alloc}). The allocator zeroes each fresh region of memory it hands out,
+and the solver allocates its arrays anew for every solve. Lisp therefore has further headroom.
+
+\paragraph{Haskell comes within a factor of two of C.}
+A lazy, purely functional language might be expected to trail far behind, but the optimised Haskell solver
+runs at 0.037\,ms. That puts it between Go and Java, and ahead of OCaml, Lisp and Rust. Two-thirds of its cycles
+are in a single function, \texttt{\$wsolve}. This is GHC's \emph{worker}: after strictness analysis
+has shown that every argument will be evaluated, GHC splits off a version that takes them unboxed, in
+registers. The state lives in unboxed \texttt{PrimArray}s inside the \texttt{ST} monad, which compile to
+plain loads and stores, and the garbage collector's share is under 5\%. What remains is a code-generation
+gap. Haskell executes 1.84 times C's instructions and suffers twice C's branch mispredictions. We think,
+without having checked the assembly, that GHC's native code generator emits real branches where Clang
+emits conditional moves.
+
+\paragraph{OCaml trails Haskell.}
+OCaml is usually the faster of the two, but here it is the slowest of the compiled functional languages.
+Its counters are unusual. It runs at 4.04 instructions per cycle, the best of any solver, so the processor
+is not stalling. It simply executes 3.4 times as many instructions as C. We attribute this to three
+causes. First, OCaml integers are 63 bits with a tag bit, so most arithmetic needs extra
+instructions to adjust the tag. Second, OCaml has no population-count primitive, so the rank sort of
+Lemma~\ref{lem:rank} is unavailable: the solver keeps a byte per 8 values and sorts with a multi-pass radix sort
+instead. Third, the compiler installed here lacks the \emph{flambda} optimiser, so it inlines less.
+Garbage collection costs about 3\% after the large arrays were moved to \texttt{Bigarray}s. Haskell wins because GHC
+can work on raw unboxed integers, which suits an integer-array workload like this one.
+
+\paragraph{WebAssembly is 3.3 times faster than JavaScript in the same engine.}
+Both run in V8, yet the C solver compiled to WebAssembly takes 0.023\,ms, against 0.076\,ms for the
+hand-optimised JavaScript solver. That is only 1.24 times native C. The difference is in what each format
+lets the engine assume. JavaScript's bitwise operators work on 32 bits, so the JavaScript bitset has twice
+as many words and counts bits with shifts and masks. Every number must also be checked for its type at run
+time. WebAssembly has native 64-bit integers and a \texttt{popcnt} instruction, its types are fixed in
+advance, and Clang has already optimised the code before V8 sees it. On 64-bit hosts V8 also
+avoids most bounds checks on WebAssembly memory accesses by reserving guard pages around them. The
+remaining 24\% over native comes from about 1.5 times native's instruction count. Neither BMI2 nor the
+direct rounding conversion used by the C version is available, and V8's compiler optimises less
+aggressively than Clang. The straight port suffers far more, running 2.1 times slower than its native
+build. About half of its time goes to the C library's \texttt{qsort}, which calls the comparison function
+through an indirect call. Another fifth goes to V8's out-of-line handling of the variable-length
+\texttt{memory.copy} instructions behind \texttt{realloc}. The optimised solver uses neither sorting by
+comparison nor frequent reallocation, which is why WebAssembly costs it so little.
+
+\paragraph{F\# needed one change C\# did not.}
+F\# and C\# share the .NET runtime and its compiler, and the optimised F\# solver, a port of the C\# design,
+ends within 10\% of it. The largest single gain, from 0.032 to 0.0275\,ms, came from converting between
+integers and floating point through \emph{signed} 64-bit integers. Before AVX-512, x86-64 has no instruction
+that converts an unsigned 64-bit integer to or from a double, so the compiler emits a branching sequence of
+several instructions for each conversion. The values stay below $2^{27}$
+(Proposition~\ref{prop:bound}), so the signed conversion is exact. The straight ports differ more:
+F\#'s takes 0.33\,ms and C\#'s 0.19\,ms. A profile of the F\# port puts 15\% of its cycles in runtime type
+tests (\texttt{IsInstance}) and in F\#'s generic structural comparison. Idiomatic F\# compares tuples
+structurally, for instance in \texttt{Seq.minBy} with a tuple key, and that comparison goes through a
+generic comparer that discovers types at run time. F\#'s \texttt{option} type also allocates an object for
+every \texttt{Some}, where C\# uses a null reference.
+
+\paragraph{A surprise that was not.}
+At first the Kotlin straight port, at 0.15\,ms, appeared much faster than Java's recorded 0.257\,ms. We
+suspected Kotlin's \texttt{inline} functions, which remove the per-pair lambda calls Java's port makes.
+Re-timing Java's straight port with the current harness gives 0.154\,ms, the same as Kotlin. The old figure
+dates from before the harness ran three full warm-up passes, so it measured HotSpot part-way through compiling.
+Table~\ref{tab:perf} and Table~\ref{tab:opt} now show the new figure. The optimised Kotlin and Java solvers also tie,
+at 0.0374 and 0.0376\,ms, as expected of two languages compiling to near-identical bytecode.
+
+\paragraph{Interpreted Ruby beats interpreted Lua.}
+The optimised Ruby solver runs at 0.51\,ms in the standard interpreter, slightly ahead of Lua 5.4's 0.55\,ms.
+It runs at 0.31\,ms under Ruby's RJIT compiler. Lua is normally considered the lighter and faster interpreter. The
+profiles point to sorting. In Lua 5.4, 21\% of all cycles are in \texttt{lua\_geti}, \texttt{lua\_seti} and
+\texttt{lua\_compare}, the general-purpose C interface that \texttt{table.sort} uses to read, write and
+compare every element. Ruby's \texttt{Array\#sort} on integers instead calls the C library's merge sort with
+a fast path for comparing small integers, which takes 4\% of its cycles. Both interpreters spend most of
+their remaining time in hash-table lookups, where they are evenly matched.
+
+\paragraph{Two languages on one virtual machine.}
+Erlang and Elixir compile to the same BEAM bytecode and run on the same just-in-time compiler, yet their first
+optimised solvers differed by a factor of 2.8: 0.162\,ms for Erlang against 0.058\,ms for Elixir. The
+difference was entirely in design. Building a value costs 50--80\,ns on BEAM, against a few nanoseconds in C,
+so it pays to build less even at the price of more searches. Elixir left both the four- and five-number
+subsets unbuilt, extending Lemma~\ref{lem:defer} by one level, stopped at the first matching partner, and
+searched outward from the target ($t \pm 1$, $t \pm 2$, up to 8) before building the whole pool in the 2\% of
+rounds that miss. Those rounds had taken 38\% of its time. Rewritten to the same design, Erlang runs at
+0.0575\,ms, level with Elixir. Removing each idea from the rewritten version in turn shows that the extra
+deferred level gives the largest gain and the outward search about a quarter. Building none of the
+subsets was the opposite of what PyTorch found, where deferring the four-number subsets as well cost 30\%.
+
+\paragraph{What the surprises have in common.}
+Each one has the same explanation underneath: what matters is how many instructions the hot loops execute
+and how often they mispredict a branch, not the language's general reputation. A language does well when
+it can express the design of Section~\ref{sec:cpu} directly. That means unboxed integer arrays, a population
+count, and branchless selection. It does badly when its runtime inserts work into those loops: tag bits,
+type tests, generic comparison, allocation zeroing or indirect calls.
+
+\section{Sharing one round across threads}\label{sec:parallel}
+
+The GPU solvers of Section~\ref{sec:gpu} are fast only on batches. Seven of the CPU solvers (C, Rust, Go,
+Java, Julia, Erlang and Elixir) also have a separate version that splits a \emph{single} round across
+threads. They use three kinds of independence in Algorithm~\ref{alg:reference}, chosen so that the answer
+does not depend on which thread does what.
+\begin{enumerate}[label=(\roman*)]
+\item \emph{Builds within a level.} The value set of $S$ depends only on the sets of its proper subsets, so
+all subsets of one size can be built at once, each by a single thread in the usual order. Removing
+duplicates inside one subset stays serial, because ``first derivation found'' needs a fixed order.
+\item \emph{Searches across splits.} The splits of $\Sigma(S)$ are searched by several threads, and the
+earliest hit in split order wins. A shared atomic records the best position found so far, and threads skip
+splits that come after it.
+\item \emph{The closest pass.} Each thread finds the minimum canonical key $\kappa$ over its share of the
+splits, and the minima are combined, as in the derivation-by-minimum argument used by the GPU solvers.
+\end{enumerate}
+Creating threads inside a solve costs more than C's entire solve, so each version keeps a worker pool alive
+between solves, holding no round data. Rounds that finish within four numbers stay on one thread.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{@{}lrrrrrrrr@{}}
+\toprule
+Solver & 1 & 2 & 4 & 8 & 16 (P+HT) & 16 (P+E) & 32 & Best \\ \midrule
+C       & 0.0187 & 0.0159 & 0.0142 & \textbf{0.0132} & 0.0153 & 0.0148 & 0.0236 & 1.42$\times$ \\
+Julia   & 0.0208 & 0.0173 & \textbf{0.0154} & 0.0161 & 0.0181 & 0.0180 & 0.0233 & 1.35$\times$ \\
+Rust    & 0.0461 & 0.0326 & 0.0253 & \textbf{0.0228} & 0.0258 & 0.0290 & 0.0416 & 2.02$\times$ \\
+Java    & 0.0334 & 0.0275 & \textbf{0.0222} & 0.0266 & 0.0342 & 0.0421 & 0.0465 & 1.50$\times$ \\
+Go      & 0.0296 & 0.0272 & \textbf{0.0267} & 0.0317 & 0.0429 & 0.0544 & 0.0660 & 1.11$\times$ \\
+Elixir$^c$ & 0.0549 & 0.0416 & \textbf{0.0316} & 0.0318 & 0.0469 & 0.0440 & 0.0595 & 1.74$\times$ \\
+Erlang$^c$ & 0.0568 & 0.0444 & \textbf{0.0330} & 0.0355 & 0.0539 & 0.0453 & 0.0761 & 1.72$\times$ \\ \bottomrule
+\end{tabular}
+\caption{Milliseconds per round for the parallel solvers by number of threads, best of three passes over
+the 10{,}000 benchmark rounds, with every answer identical to $\operatorname{Solve}$. Up to 8 threads, each
+thread has its own performance core. At 16, P+HT uses both hardware threads of the eight performance cores
+and P+E adds eight efficiency cores. ``Best'' is the largest speed-up over the same code on one thread.
+$^c$As in Table~\ref{tab:perf}.}\label{tab:scale}
+\end{table}
+
+Table~\ref{tab:scale} shows the result on the 32 logical CPUs of the test machine. Its findings are as follows.
+
+\paragraph{The gain is small and stops at four to eight threads.}
+The best speed-ups are between 1.1 and 2.0, and every solver is at its fastest with 4 or 8 threads. The
+reason is Amdahl's law applied to Table~\ref{tab:sets}'s shape. About 46\% of rounds are settled by the
+four-number subsets and never go parallel. At the five-number level there are only six subsets, so (i) can
+keep at most six threads busy. Within each subset, removing duplicates is serial, and in Rust it alone
+was 37\% of the time. Rounds that use all six numbers gain the most, 1.7--2.9 times at four threads, and so
+do the rounds that miss, which run the closest pass (iii).
+
+\paragraph{More threads make it slower.}
+At 32 threads only Rust still beats its single thread. C is 1.26 times slower than on one thread, Erlang
+1.34, Java 1.39 and Go 2.2. Each phase ends at a barrier and so waits for its slowest thread, which past 8 is
+either an efficiency core, running at roughly half the speed, or a hardware thread sharing its core with
+another worker. Every extra thread also adds a hand-off, scratch memory to allocate for every solve (the no-reuse
+rule costs C 44\% more build work) and pressure on the shared cache, while having no work to take on.
+Hardware threads and efficiency cores did about equally badly at 16 for C, Julia and Elixir. The
+garbage-collected Go and Java did worse with efficiency cores, and Erlang better; we did not measure why.
+
+\paragraph{Only spinning pools pay.}
+A round lasts 20--60\,\textmu s, and a thread that has gone to sleep takes several microseconds to wake.
+Handing work to a hand-written pool whose idle workers spin cost 0.3\,\textmu s in Rust and 0.6\,\textmu s in
+Java, against 8.5\,\textmu s for Rust's \texttt{rayon} and 11--12\,\textmu s for Java's fork-join pool and
+virtual threads. With fork-join, the parallel solver was slower than the serial one. Go's goroutines also lost to a
+spinning pool. Julia's \texttt{@spawn} came closest, 7\% behind.
+
+\paragraph{The memory manager decides the managed languages.}
+At Go's default collector setting, four workers were slower than one, because each allocates a bitset of up
+to about 1\,MB per round and the collector ran far more often; the pool now raises its threshold. Julia's
+collector stops every thread, so its per-thread bitsets are allocated outside it, with \texttt{calloc}.
+On BEAM, processes share no memory. The first parallel Erlang copied every built value list to each worker
+and gained only 1.4 times. Like Elixir, it now has each worker rebuild the small subsets itself from the
+six numbers and the target, pass the three-number subsets once as a shared binary, and claim tasks through
+atomic counters. With that design the two BEAM languages match again, at 1.72 and 1.74 times. Both also
+needed scheduler settings: idle BEAM schedulers sleep, and Elixir's spare ``dirty'' schedulers spun and took
+processors from the real work, so 2 threads were slower than 1 until they were turned off.
+
+\paragraph{A race that only 32 threads exposed.}
+The first sweep never finished Elixir at 32 threads: the virtual machine spun on every CPU for three hours.
+The caller read the best position of (ii) once and then waited for each split before it to be marked done.
+Meanwhile one worker could lower the best, and another would then skip a split at or after the new
+best without marking it, correctly, since it can no longer matter. The caller kept waiting for that split
+against the stale best. Re-reading the best on every poll and stopping on reaching it removes the race.
+The answer cannot change, because the winning split's result is stored before the best is lowered. The
+window opens only when about 30 workers really run at once, which is why 4 or 8 threads never showed it.
+The Erlang port, which copied the design, hit the same deadlock about once in 15 runs with four schedulers
+before it received the same fix.
+
+\paragraph{Summary.}
+Parallelism inside one round of a single game gives at most a factor of two, and only by careful
+engineering. A batch is a different matter: the CUDA solver of Section~\ref{sec:gpu} is about forty times
+faster than one core, because there each round is independent and needs no barriers.
+
+\begin{thebibliography}{9}
+\bibitem{hutton} G.~Hutton. The countdown problem. \emph{Journal of Functional Programming}, 12(6):609--616, 2002.
+\bibitem{repo} The Countdown solvers, benchmarks and this paper's source. \url{https://github.com/ZippyManaic/countdown}, 2026.
+\end{thebibliography}
+
+\end{document}

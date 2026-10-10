@@ -1,0 +1,4 @@
+#!/bin/bash
+# Deal and solve one round with bwBASIC, which needs the program and solver joined and prints a banner first
+here=$(cd "$(dirname "$0")" && pwd)
+COUNTDOWN_SEED=$RANDOM$RANDOM bwbasic "$here/countdown.bas" < /dev/null | tail -n +5 | sed "\$ {/^\$/d}"

@@ -1,0 +1,27 @@
+[package]
+name = "countdown-rs-par"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "countdown_par"
+path = "src/lib.rs"
+
+[[bin]]
+name = "countdown"
+path = "src/main.rs"
+
+[[bin]]
+name = "bench"
+path = "src/bin/bench.rs"
+
+[features]
+# Dispatch parallel work through rayon instead of the hand-written spinning pool
+rayon = ["dep:rayon"]
+
+[dependencies]
+rand = "0.10.3"
+rayon = { version = "1", optional = true }
+
+[profile.release]
+codegen-units = 1

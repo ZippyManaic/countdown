@@ -1,0 +1,12 @@
+[package]
+name = "countdown-cuda"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cudarc = { version = "0.19", default-features = false, features = ["std", "driver", "cuda-12040", "dynamic-loading", "nvrtc"] }
+rand = "0.10.3"
+
+[[bin]]
+name = "countdown"
+path = "src/main.rs"

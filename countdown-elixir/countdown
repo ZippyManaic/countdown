@@ -1,0 +1,5 @@
+#!/bin/sh
+# Deal and solve one round by starting the virtual machine directly since the elixir launcher adds about 60 ms
+cd "$(dirname "$0")" || exit 2
+lib="$(dirname "$(readlink -f "$(command -v elixir)")")/../lib"
+exec erl -noshell +S 1 -mode minimal -pa ebin -pa "$lib/elixir/ebin" -eval "'Elixir.Countdown':main()"

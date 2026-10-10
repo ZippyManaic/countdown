@@ -1,0 +1,74 @@
+# Ignore build output from every toolchain
+bench/build/
+target/
+.venv/
+__pycache__/
+.zig-cache/
+zig-out/
+.build/
+ebin/
+out/
+countdown-haskell/build/
+countdown-csharp/*/bin/
+countdown-csharp/*/obj/
+countdown-fsharp/*/bin/
+countdown-fsharp/*/obj/
+*.o
+*.ali
+*.mod
+*.ppu
+*.hi
+*.cmi
+*.cmx
+*.cmo
+*.beam
+*.class
+*.jar
+*.fasl
+*.wasm
+*.pyc
+
+# Ignore empty stamp files the Java makefiles leave behind
+countdown-java/build
+countdown-java-par/build
+
+# Ignore launchers and joined sources the makefiles generate
+countdown-erlang/countdown
+countdown-erlang-par/countdown
+countdown-basic/countdown.bas
+countdown-basic/tests-run.*
+
+# Ignore generated data that is too large to share and can be rebuilt with make
+countdown-table/answers.bin
+countdown-ml/train.pt
+
+# Ignore LaTeX intermediates but keep the PDF
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+
+# Ignore compiled programs and test binaries
+countdown-ada/countdown
+countdown-asm/countdown
+countdown-c-par/countdown
+countdown-c-par/run-tests
+countdown-c/countdown
+countdown-c/run-tests
+countdown-cobol/countdown
+countdown-cobol/run-tests
+countdown-cpp/countdown
+countdown-cpp/run-tests
+countdown-fortran/countdown
+countdown-fortran/run-tests
+countdown-freebasic/countdown
+countdown-freebasic/tests
+countdown-go-par/countdown
+countdown-go/countdown
+countdown-haskell/countdown
+countdown-lisp/countdown
+countdown-ocaml/countdown
+countdown-pascal/countdown
+countdown-pascal/tests

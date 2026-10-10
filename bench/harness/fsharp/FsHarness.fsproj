@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <SolverPath Condition="'$(SolverPath)' == ''">../../../countdown-fsharp/Countdown/Solver.fs</SolverPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(SolverPath)" />
+    <Compile Include="Harness.fs" />
+  </ItemGroup>
+</Project>

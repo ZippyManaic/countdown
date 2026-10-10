@@ -1,0 +1,8 @@
+#!/bin/sh
+# Deal and solve one round starting the virtual machine directly with one scheduler per thread
+cd "$(dirname "$0")" || exit 2
+lib="$(dirname "$(readlink -f "$(command -v elixir)")")/../lib"
+threads="${COUNTDOWN_THREADS:-8}"
+# Stop the dirty schedulers busy-waiting since they would take processors from the spinning workers
+exec erl -noshell +S "$threads" +sbwtdcpu none +sbwtdio none -mode minimal -pa ebin -pa "$lib/elixir/ebin" \
+    -eval "'Elixir.CountdownPar':main()"
